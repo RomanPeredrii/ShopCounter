@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 const checkAuth = require('../modules/authentication.js');
 
-router.all('/*', (req, res, next) => {
+router.all('/*', (req, res, next) => { log('******')
   //log('ROUTER COOKIE', req.cookies);
   //log('USER', req.body.UserLogInfo /*|| 'USER UNDEFINED'*/);
   if (req.cookies.token === undefined) {res.json('NOT LOGGED')}
