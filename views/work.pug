@@ -1,0 +1,19 @@
+extends layout
+
+block content
+
+  form.enterForm
+    h1 Enter with
+    p
+      input#login.text(type='text', placeholder='Login', required='')
+    p
+      input#password.text(type='password', autocomplete='off', placeholder='Password', required='')
+    p
+      input#showpassword(type='checkbox', name='showpassword')
+      label(for='showpassword') Show password 
+    p
+      input#remember.remember(type='checkbox', name='remember')
+      label(for='remember') Remember
+    p
+      input#submitButton.submitButton(type='submit', name='submit', value='Continue')
+      
