@@ -13,7 +13,6 @@ router.post('/', function (req, res, next) {
       res.json({ ok: true });
     }
   });
-
 });
 
 async function getUser(UserLogInfo) {
