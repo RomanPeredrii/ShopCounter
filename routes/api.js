@@ -22,7 +22,7 @@ router.all('/*', (req, res, next) => { log('******')
 
 /* API GET WORK page. */
 router.get('/work', (req, res, next) => {
-  res.render('work', { title: 'YOU WELCOME', logged: true });
+  res.render('work.pug', { title: 'YOU WELCOME', logged: true });
 });
 
 

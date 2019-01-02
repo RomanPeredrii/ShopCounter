@@ -18,24 +18,22 @@ let timeStampF = "'2018-06-01'";
 let scriptGETD = " SELECT CH1 FROM COUNTERDATA WHERE TIMEPOINT >= " + timeStampS + " AND TIMEPOINT <= " + timeStampF;
 
 router.post('/', async (req, res, next) => {
-    let data = req.body;
+    let data = req.body.timeStamp;
+
+    log('REQUEST', req.body);
 
     firebird.attach(options, function (err, db) {
-        if (err)
-            throw err
+        if (err) res.json(err)
         else
             log("ATTACHED");
         db.query(scriptGETD, function (err, result) {
             if (err) log(err);
             db.detach();
-           log("DETACHED");
-           result.map((result) => log(result));
-           
+            log("DETACHED");
+            result.map((result) => log(result));
+            res.json(result);
         });
     });
-  });
-
-
-
+});
 
 module.exports = router;

@@ -8,4 +8,5 @@ const checkAuth = require('../modules/authentication.js');
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'YOU WELCOME', logged: true });
 });
+
 module.exports = router;
