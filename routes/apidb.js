@@ -12,15 +12,13 @@ options.password = 'a2vvczib';
 options.pageSize = 4096;
 options.role = 'ADMIN';
 
-let timeStampS = "'2018-05-01'";
-let timeStampF = "'2018-06-01'";
 
-let scriptGETD = " SELECT CH1 FROM COUNTERDATA WHERE TIMEPOINT >= " + timeStampS + " AND TIMEPOINT <= " + timeStampF;
+
+
 
 router.post('/', async (req, res, next) => {
-    let data = req.body.timeStamp;
 
-    log('REQUEST', req.body);
+    let scriptGETD = " SELECT CH1 FROM COUNTERDATA WHERE TIMEPOINT >= " + "'"+ req.body.TimeStamp.timeStart + "'" + " AND TIMEPOINT <= " + "'"+ req.body.TimeStamp.timeFinish + "'";
 
     firebird.attach(options, function (err, db) {
         if (err) res.json(err)
@@ -30,7 +28,7 @@ router.post('/', async (req, res, next) => {
             if (err) log(err);
             db.detach();
             log("DETACHED");
-            result.map((result) => log(result));
+            //result.map((result) => log(result));
             res.json(result);
         });
     });
