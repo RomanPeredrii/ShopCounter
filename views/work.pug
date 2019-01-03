@@ -4,19 +4,24 @@ block content
   p
   label.choosePeriod choose period
   table.forDateChoise
-   tbody
-   tr
-    td 
-     label.startDate start date
-      br 
-      input#timeStampS(type='date' value = '2018-04-01')
-    td 
-     label.finishDate finish date
-      br
-      input#timeStampF(type='date' value = '2018-08-01')
-   tr
-  p
-    button#sendReq REQUEST
-  table#dataFromDB.dataFromDB 
     tbody
+    tr
+      td 
+        label.startDate start date
+        br 
+        input#timeStampS(type='date' value = '2018-07-31')
+      td 
+        label.finishDate finish date
+        br
+        input#timeStampF(type='date' value = '2018-08-01')
+  div
+    p
+      button#sendReq REQUEST
+  br
+  .dataFromDB  
+    table#dataFromDB 
+      tbody
+
+
+
   script(src='/js/work.js')

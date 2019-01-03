@@ -18,17 +18,16 @@ options.role = 'ADMIN';
 
 router.post('/', async (req, res, next) => {
 
-    let scriptGETD = " SELECT CH1 FROM COUNTERDATA WHERE TIMEPOINT >= " + "'"+ req.body.TimeStamp.timeStart + "'" + " AND TIMEPOINT <= " + "'"+ req.body.TimeStamp.timeFinish + "'";
-
+    let scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE TIMEPOINT >= " + "'" + req.body.TimeStamp.timeStart + "'" + " AND TIMEPOINT <= " + "'" + req.body.TimeStamp.timeFinish + "'";
+    // let scriptGETSUM = " SELECT SUM(CH1) FROM COUNTERDATA WHERE  (CAST(TIMEPOINT AS DATE) >= " + "'"+ req.body.TimeStamp.timeStart + "'" + ") AND (CAST(TIMEPOINT AS DATE) <= " + "'"+ req.body.TimeStamp.timeFinish + "'" + ") AND CH1 = CH2 ";
     firebird.attach(options, function (err, db) {
         if (err) res.json(err)
-        else
-            log("ATTACHED");
-        db.query(scriptGETD, function (err, result) {
+        else log("ATTACHED");
+        db.query(scriptGETDATA, function (err, result) {
             if (err) log(err);
             db.detach();
             log("DETACHED");
-            //result.map((result) => log(result));
+            result.map((result) => log('RESULT = ', result));
             res.json(result);
         });
     });
