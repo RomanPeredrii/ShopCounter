@@ -14,6 +14,13 @@ block content
         label.finishDate finish date
         br
         input#timeStampF(type='date' value = '2018-08-01')
+  div#periodSet
+    input#periodMonth(type='radio', name='period', value='month', checked)
+    label(for='periodMonth') month  
+    input#periodWeek(type='radio', name='period', value='week')
+    label(for='periodWeek') week  
+    input#periodDay(type='radio', name='period', value='day')
+    label(for='periodDay') day  
   div
     p
       button#sendReq REQUEST
@@ -23,5 +30,5 @@ block content
       tbody
 
 
-
+  link(rel='stylesheet', href='/css/style.css')
   script(src='/js/work.js')
