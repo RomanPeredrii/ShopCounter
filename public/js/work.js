@@ -1,14 +1,15 @@
 
-'use strict'
+"use strict";
 
 var log = console.log;
-
 
 const reqButton = document.querySelector('#sendReq')
 const timeStampS = document.querySelector('#timeStampS');
 const timeStampF = document.querySelector('#timeStampF');
 const dataTable = document.querySelector('#dataFromDB > tbody');
 const periodChoice = document.querySelectorAll('#periodSet > input');
+const divPeriodSet = document.querySelector('#periodSet');
+
 
 const headers = {
     'Accept': 'application/json',
@@ -18,43 +19,48 @@ const headers = {
 
 
 
-const forDateChoise = document.querySelector('.forDateChoise > tbody > tr');
+//const forDateChoise = document.querySelector('.forDateChoise > tbody > tr');
 //log(forDateChoise);
-
-
-
 
 //timeStampS.addEventListener('change', );
 //timeStampF.addEventListener('change', periodValidator);
 
+function blockPeriod(periodCheck) {
+    for (let period of periodChoice) {
+        if (period.value === periodCheck) period.checked = false;
+
+    };
+};
+
+
 function setPeriod(periodCheck) {
-    for (let period of periodChoice) { log(period, periodCheck)
-        if (period.value !== periodCheck) period.checked = false
+    for (let period of periodChoice) {
+        if (period.value !== periodCheck) period.checked = false;
         else period.checked = true;
     };
 };
 
 function periodValidator() {
 
-    if (timeStampS.value > timeStampF.value) {
-        timeStampS.value = timeStampF.value;
-        setPeriod('day');
-    };
-
     if ((timeStampF.valueAsDate - timeStampS.valueAsDate) < 2678400000) {
-       // periodChoice[0].checked = false;
-       // periodChoice[1].checked = true;
+        blockPeriod('month');
+        if ((timeStampF.valueAsDate - timeStampS.valueAsDate) < 604800000) {
+            blockPeriod('week');
+            setPeriod('day');
+            if (timeStampS.value >= timeStampF.value) {
+                timeStampS.value = timeStampF.value;
+                setPeriod('day');
+            };
+        };
     };
 
-
-    log(timeStampS.value, timeStampF.value);
+//    log(timeStampS.value, timeStampF.value);
 };
 
-
-
-
-forDateChoise.addEventListener('change', periodValidator)
-forDateChoise.addEventListener('click', periodValidator)
+divPeriodSet.addEventListener('click', periodValidator);
+divPeriodSet.addEventListener('change', periodValidator);
+//forDateChoise.addEventListener('change', periodValidator);
+//forDateChoise.addEventListener('click', periodValidator);
 
 
 function getChoicePeriod(periodCheck) {
@@ -80,19 +86,17 @@ reqButton.addEventListener('click', async () => {
         const result = await rawResponse.json();
         if (result) {
             log('RESULT', result);
-            /*
+            
                         result.map((rowResult) => {
             
                             dataTable.innerHTML += `
                                 <tr>
-                                    <td> ${rowResult.CH1} </td>
-                                    <td> ${rowResult.CH2} </td>
-                                    <td> ${rowResult.TIMEPOINT} </td>
-                                    <td> ${rowResult.SERIAL} </td>
+                                    <td> ${rowResult.SUM} </td>
+                                    
                                 </tr>                    
                                                 `;
                         });
-            */
+            
 
         };
     }

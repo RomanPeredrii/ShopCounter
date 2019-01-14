@@ -35,7 +35,7 @@ router.post('/', async (req, res, next) => {
     });
 */
 
-});
+
 
 function forPaintWeekend(date) {
     d = new Date(date);
@@ -45,34 +45,33 @@ function forPaintWeekend(date) {
 
 
 function selectionFromDB(timePoints) {
-
-    log(timePoints.period);
+    log('TIMEPOINTS:', timePoints);
+    log('PERIOD:', timePoints.period);
     let dateStart = new Date(timePoints.timeStart);
-    let dateFinish = new Date(timePoints.timeStart);
+    let dateFinish = new Date(timePoints.timeFinish + ' 23:59:59:999');
 
 
 
-    let month = dateStart.getMonth() + 1;
-
-
-    let timeS = dateStart.getFullYear() + '-' + month + '-' +
+    let timeS = dateStart.getFullYear() + '-' + (dateStart.getMonth() + 1) + '-' +
         dateStart.getDate() + ' ' + dateStart.getUTCHours() + ':' +
         dateStart.getMinutes() + ':' + dateStart.getSeconds();
 
+    let timeF = dateFinish.getFullYear() + '-' + (dateFinish.getMonth() + 1) + '-' +
+        dateFinish.getDate() + ' ' + dateFinish.getHours() + ':' +
+        dateFinish.getMinutes() + ':' + dateFinish.getSeconds();
 
 
-
-    //let tryDateTimeStamp = req.body.TimeStamp.timeStart + ' 9:0:0';
-    //log('TimeStamp= ', tryDateTimeStamp);
     log('***********************');
-    // log('timeStart= ', req.body.TimeStamp.timeStart);
-    log('DATE:', timeS);
+    log('START:', timeS);
+    log('FINISH:', timeF);
     log('***********************');
+
+
 
     let scriptGETSUM = " SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= " + "'"
         + timeS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= " + "'"
-        + timePoints.timeFinish + "'" + ") AND CH1 = CH2 ";
-        
+        + timeF + "'" + ") AND CH1 = CH2 ";
+
     firebird.attach(options, (err, db) => {
         if (err) res.json(err)
         else //log("ATTACHED");
@@ -81,11 +80,11 @@ function selectionFromDB(timePoints) {
                 db.detach();
                 //log("DETACHED");
                 log(result);
-                // res.json(result);
+                res.json(result);
             });
     });
 
 }
-
+});
 
 module.exports = router;
