@@ -26,12 +26,24 @@ router.post('/', async (req, res, next) => {
         else return false;
     };
 
-    // 
+    // ДУРКА!!!! ЯК ВОНА Э
     function selectionFromDB(timePoints) {
         log('TIMEPOINTS:', timePoints);
         log('PERIOD:', timePoints.period);
+
         let dateStart = new Date(timePoints.timeStart);
         let dateFinish = new Date(timePoints.timeFinish + ' 23:59:59:999');
+
+        log('valueOfStart', dateStart.valueOf());
+        log('valueOfFinish', dateFinish.valueOf());
+
+        let d1 = dateStart.valueOf();
+        let d2 = dateFinish.valueOf();
+        let d11 = new Date(d1);
+        let d22 = new Date(d2);
+        log('NewOfStart', d11);
+        log('NewOfFinish', d22);
+
 
         let timeS = dateStart.getFullYear() + '-' + (dateStart.getMonth() + 1) + '-' +
             dateStart.getDate() + ' ' + dateStart.getUTCHours() + ':' +
@@ -48,26 +60,44 @@ router.post('/', async (req, res, next) => {
         log('***********************');
 
 
-        // GENERATING SQL SCRIPT
-        let scriptGETSUM = " SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= " + "'"
-            + timeS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= " + "'"
-            + timeF + "'" + ") AND CH1 = CH2 ";
-
-
-        // REQUEST DB
-        firebird.attach(options, (err, db) => {
-            if (err) res.json(err)
-            else //log("ATTACHED");
-                db.query(scriptGETSUM, (err, result) => {
-                    if (err) log(err);
-                    db.detach();
-                    //log("DETACHED");
-                    log(result);
-                    res.json(result);
-                });
-        });
-
+        getDataFomDb(timeS, timeF, options).then((result) => res.json(result));
     }
 });
+
+
+
+async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
+
+    return new Promise((res, rej) => {
+        firebird.attach(accessOptions, async (err, db) => {
+            try {
+                if (err) rej(err)
+                else res(await queryToDB(timePointSart, timePointFinish, db));
+            }
+            catch (err) { log(err) };
+        });
+    });
+
+};
+
+function queryToDB(timePointSart, timePointFinish, db) {
+
+    let scriptGETSUM = " SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= " + "'"
+        + timePointSart + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= " + "'"
+        + timePointFinish + "'" + ") AND CH1 = CH2 ";
+
+    try {
+        return new Promise((res, rej) => {
+            db.query(scriptGETSUM, (err, result) => {
+                if (err) rej(err);
+                db.detach();
+                log('getDataFomDb', result);
+                res(result);
+            });
+        });
+    }
+    catch (err) { log(err) };
+};
+
 
 module.exports = router;

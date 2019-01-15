@@ -1,5 +1,5 @@
 
-"use strict";
+"use strict"
 
 var log = console.log;
 
@@ -17,34 +17,30 @@ const headers = {
 };
 
 
-function setPeriod(set) {
-    let period = ["day", "week", "month"];
+function setPeriod(from, to) {
+    let period = ["hour", "day", "week", "month"];
     let inputs = '';
-    for (let i = 0; i <= set; i++) {
+    for (let i = from; i <= to; i++) {
         // log(i);
         inputs += `
             <input id="period${period[i]}" type="radio" name="period" value= ${period[i]} />
             <label for="period${period[i]}"> ${period[i]} </label>
          `};
     divPeriodSet.innerHTML = inputs;
-
 };
 
 function periodValidator() {
-
     let period = timeStampF.valueAsDate - timeStampS.valueAsDate;
     let month = 2678400000;
     let week = 604800000;
 
-    if (period > month) setPeriod(2);
-    if (period < month) setPeriod(1);
-    if (period < week) setPeriod(0);
+    if (period > month) setPeriod(1, 3);
+    if (period < month) setPeriod(1, 2);
+    if (period < week) setPeriod(0, 1);
     if (timeStampS.value >= timeStampF.value) {
         timeStampS.value = timeStampF.value;
-        setPeriod(0);
+        setPeriod(0, 0);
     };
-
-
 };
 
 forDateChoise.addEventListener('click', () => divSendReq.style.display = 'none');
@@ -52,14 +48,11 @@ divPeriodSet.addEventListener('click', () => divSendReq.style.display = 'block')
 forDateChoise.addEventListener('change', periodValidator);
 forDateChoise.addEventListener('click', periodValidator);
 
-
 function getChoicePeriod(periodCheck) {
     for (let period of periodCheck) {
         if (period.checked) return period.value;
     };
 };
-
-
 
 reqButton.addEventListener('click', async () => {
     const periodChoice = document.querySelectorAll('#periodSet > input');
@@ -87,7 +80,7 @@ reqButton.addEventListener('click', async () => {
                                 <tr>
                                     <td> ${rowResult.SUM} </td>
                                     
-                                </tr>                    
+                                </tr>
                                                 `;
                 });
             };
