@@ -27,25 +27,6 @@ submitButton.addEventListener('click', async () => {
 }
 catch (err) { log(err) };
 
-
 });
-
-/*
-socket.on('token', async (user) => {
-    try {
-        //if (user === null) alert('R U O P')
-        // else
-        // log(user);
-        const rawResponse = await fetch('http://localhost:3000/login', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ user })
-        });
-        const result = await rawResponse.json();
-    }
-    catch (err) { log(err) };
-});
-
-*/
 
 

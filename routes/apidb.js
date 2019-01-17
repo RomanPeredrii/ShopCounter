@@ -1,4 +1,6 @@
-log = console.log;
+'use strict';
+
+const log = console.log;
 var express = require('express');
 var router = express.Router();
 var firebird = require('node-firebird');
@@ -16,88 +18,116 @@ options.role = 'ADMIN';
 
 router.post('/', async (req, res, next) => {
 
-    log(forPaintWeekend(req.body.TimeStamp.timeStart));
     selectionFromDB(req.body.TimeStamp);
 
-
-    function forPaintWeekend(date) {
-        d = new Date(date);
-        if (d.getDay() === 0 || d.getDay() === 6) return true
-        else return false;
-    };
-
-    // ДУРКА!!!! ЯК ВОНА Э
+    // ДУРКА!!!! ЯК ВОНА Є
     function selectionFromDB(timePoints) {
-        log('TIMEPOINTS:', timePoints);
-        log('PERIOD:', timePoints.period);
 
         let dateStart = new Date(timePoints.timeStart);
-        let dateFinish = new Date(timePoints.timeFinish + ' 23:59:59:999');
+        let dateFinish = new Date(timePoints.timeFinish + 86400000);
 
-        log('valueOfStart', dateStart.valueOf());
-        log('valueOfFinish', dateFinish.valueOf());
+        var timeS = dateStart.getUTCFullYear() + '-' + (dateStart.getUTCMonth() + 1) + '-' +
+            dateStart.getUTCDate() + ' ' + dateStart.getUTCHours() + ':' +
+            dateStart.getUTCMinutes() + ':' + dateStart.getUTCSeconds();
 
-        let d1 = dateStart.valueOf();
-        let d2 = dateFinish.valueOf();
-        let d11 = new Date(d1);
-        let d22 = new Date(d2);
-        log('NewOfStart', d11);
-        log('NewOfFinish', d22);
-
-
-        let timeS = dateStart.getFullYear() + '-' + (dateStart.getMonth() + 1) + '-' +
-            dateStart.getDate() + ' ' + dateStart.getUTCHours() + ':' +
-            dateStart.getMinutes() + ':' + dateStart.getSeconds();
-
-        let timeF = dateFinish.getFullYear() + '-' + (dateFinish.getMonth() + 1) + '-' +
-            dateFinish.getDate() + ' ' + dateFinish.getHours() + ':' +
-            dateFinish.getMinutes() + ':' + dateFinish.getSeconds();
-
-
-        log('***********************');
+        var dateF = timePoints.timeFinish;
+        var dateS = timePoints.timeStart;
         log('START:', timeS);
-        log('FINISH:', timeF);
-        log('***********************');
+        let e = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
+        log('++++++++++++++++', e);
+        var arrRes = [];
+
+        let j = 1;
+
+        for (let i = 1; i <= e; i++) {
+
+            dateFinish = new Date(dateF);
+            dateStart = new Date(dateS);
+
+            var timeS = dateStart.getUTCFullYear() + '-' + (dateStart.getUTCMonth() + 1) + '-' +
+                dateStart.getUTCDate() + ' ' + dateStart.getUTCHours() + ':' +
+                dateStart.getUTCMinutes() + ':' + dateStart.getUTCSeconds();
+
+            var timeF = dateFinish.getUTCFullYear() + '-' + (dateFinish.getUTCMonth() + 1) + '-' +
+                dateFinish.getUTCDate() + ' ' + dateFinish.getUTCHours() + ':' +
+                dateFinish.getUTCMinutes() + ':' + dateFinish.getUTCSeconds();
+
+            dateF = dateF + timePoints.period;
+            dateS = dateS + timePoints.period;
+
+            log('START:', timeS);
 
 
-        getDataFomDb(timeS, timeF, options).then((result) => res.json(result));
+            getDataFomDb(timeS, timeF, options)
+                .then(result => {
+                    j++;
+                    log(i, e, j, result);
+                    arrRes.push(result);
+                    if (j - 1 === e) res.json(arrRes);
+
+                })
+                .catch(err => log('DB CONNECTION ERROR!', err));
+
+
+
+            log('FINISH:', timeF);
+            log('***********************');
+        };
+
+
+
+        // getDataFomDb(timeS, timeF, options)
+        //     .then(result => {
+        //         if (result) res.json(result)
+        //     })
+        //     .catch(err => log('DB CONNECTION ERROR!', err));
     }
 });
 
 
 
+
+
+
 async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
-
-    return new Promise((res, rej) => {
-        firebird.attach(accessOptions, async (err, db) => {
-            try {
-                if (err) rej(err)
-                else res(await queryToDB(timePointSart, timePointFinish, db));
-            }
-            catch (err) { log(err) };
-        });
-    });
-
-};
-
-function queryToDB(timePointSart, timePointFinish, db) {
 
     let scriptGETSUM = " SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= " + "'"
         + timePointSart + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= " + "'"
         + timePointFinish + "'" + ") AND CH1 = CH2 ";
 
-    try {
-        return new Promise((res, rej) => {
-            db.query(scriptGETSUM, (err, result) => {
-                if (err) rej(err);
-                db.detach();
-                log('getDataFomDb', result);
-                res(result);
-            });
+    return new Promise((res, rej) => {
+        firebird.attach(accessOptions, async (err, db) => {
+            if (err) rej(err)
+            else res(await queryToDB(scriptGETSUM, db).catch(err => log('SQL SCRIPT ERROR!', err)));
         });
-    }
-    catch (err) { log(err) };
+    });
+
 };
 
+function queryToDB(script, db) {
+    return new Promise((res, rej) => {
+        db.query(script, (err, result) => {
+            if (err) rej(err);
+            db.detach();
+            log('getDataFomDb', result);
+            res(result);
+        });
+    });
+};
+
+function dateToUTC(date) {
+    let dateArr = date.replace((/-|:|\s/g), ", ").split(',');
+    for (let i = 0; i < dateArr.length; i++) {
+        if (i === 1)--dateArr[i];
+        if (i === 2)++dateArr[i];
+    };
+    return Date.UTC(...dateArr);
+};
+
+function forPaintWeekend(date) {
+    date = new Date(date);
+    if (date.getDay() === 0 || date.getDay() === 6) return true
+    else return false;
+};
 
 module.exports = router;
