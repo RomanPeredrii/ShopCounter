@@ -1,17 +1,16 @@
-
+const log = console.log;
 const submitButton = document.querySelector('#submitButton');
 const inlineFormInput = document.querySelector('#inlineFormInput');
 const inlineFormInputGroup = document.querySelector('#inlineFormInputGroup');
-const checkCookie = document.querySelector('#checkCookie');
+
 
 const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
 };
 
-
 submitButton.addEventListener('click', async () => {
-   // socket.emit('sendLogInfo', UserLogInfo);
+
    try {
     let UserLogInfo = {
         userName: inlineFormInput.value,

@@ -3,9 +3,6 @@ extends layout
 block content
   .startform
     h1= title
-    if logged
-      h5(style = "color: green") LOGGED 
-    //-p Welcome to #{title}
     form.form-inline
       //- label.sr-only(for='inlineFormInput') Name
       input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Login')
@@ -18,7 +15,6 @@ block content
         input.form-check-input(type='checkbox')
         |  Remember me
       button#submitButton.btn.btn-primary(type='submit') Submit
-    br
-    button#checkCookie() check cookie
+
   script(src='/js/start.js')
   script(src='/js/index.js')

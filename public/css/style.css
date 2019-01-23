@@ -7,6 +7,10 @@ a {
   color: #00B7FF;
 }
 
+.whole {
+  display: flex;
+}
+
 .divSendReq {
   display: none;
 }
@@ -15,9 +19,12 @@ a {
   border-collapse: collapse;
   text-align: left;
   margin-bottom: 20px;
-  width:auto;
+  width: fit-content;
+  max-height : 65vh;
   font-size: 12px;
   color: #000000;
+  overflow-y: auto;
+  
   }
   tbody tr {
   font-weight: normal;

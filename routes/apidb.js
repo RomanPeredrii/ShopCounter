@@ -21,87 +21,52 @@ router.post('/', async (req, res, next) => {
     selectionFromDB(req.body.TimeStamp);
 
     // ДУРКА!!!! ЯК ВОНА Є
-    function selectionFromDB(timePoints) {
+    async function selectionFromDB(timePoints) {
 
         let dateStart = new Date(timePoints.timeStart);
         let dateFinish = new Date(timePoints.timeFinish + 86400000);
 
-        var timeS = dateStart.getUTCFullYear() + '-' + (dateStart.getUTCMonth() + 1) + '-' +
-            dateStart.getUTCDate() + ' ' + dateStart.getUTCHours() + ':' +
-            dateStart.getUTCMinutes() + ':' + dateStart.getUTCSeconds();
-
         var dateF = timePoints.timeFinish;
         var dateS = timePoints.timeStart;
-        log('START:', timeS);
-        let e = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
-        log('++++++++++++++++', e);
+
+        let step = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
+        log('++++++++++++++++', step);
+
+
         var arrRes = [];
+        for (let i = 0; i < step; i++) {
 
-        let j = 1;
-
-        for (let i = 1; i <= e; i++) {
-
+            dateF = dateS + timePoints.period;
             dateFinish = new Date(dateF);
             dateStart = new Date(dateS);
 
-            var timeS = dateStart.getUTCFullYear() + '-' + (dateStart.getUTCMonth() + 1) + '-' +
-                dateStart.getUTCDate() + ' ' + dateStart.getUTCHours() + ':' +
-                dateStart.getUTCMinutes() + ':' + dateStart.getUTCSeconds();
+            await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
+                .then((res) => arrRes.push(res));
 
-            var timeF = dateFinish.getUTCFullYear() + '-' + (dateFinish.getUTCMonth() + 1) + '-' +
-                dateFinish.getUTCDate() + ' ' + dateFinish.getUTCHours() + ':' +
-                dateFinish.getUTCMinutes() + ':' + dateFinish.getUTCSeconds();
-
-            dateF = dateF + timePoints.period;
-            dateS = dateS + timePoints.period;
-
-            log('START:', timeS);
-
-
-            getDataFomDb(timeS, timeF, options)
-                .then(result => {
-                    j++;
-                    log(i, e, j, result);
-                    arrRes.push(result);
-                    if (j - 1 === e) res.json(arrRes);
-
-                })
-                .catch(err => log('DB CONNECTION ERROR!', err));
-
-
-
-            log('FINISH:', timeF);
-            log('***********************');
+            dateF = dateS + timePoints.period;
+            dateS += timePoints.period;
         };
-
-
-
-        // getDataFomDb(timeS, timeF, options)
-        //     .then(result => {
-        //         if (result) res.json(result)
-        //     })
-        //     .catch(err => log('DB CONNECTION ERROR!', err));
-    }
+        log('**arrRes', arrRes);
+        res.json(arrRes)
+    };
 });
-
-
-
-
 
 
 async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
 
-    let scriptGETSUM = " SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= " + "'"
-        + timePointSart + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= " + "'"
-        + timePointFinish + "'" + ") AND CH1 = CH2 ";
+    log(timePointSart, '-', timePointFinish);
 
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
             if (err) rej(err)
-            else res(await queryToDB(scriptGETSUM, db).catch(err => log('SQL SCRIPT ERROR!', err)));
+            else {
+                let arr = [timePointSart, timePointFinish];
+                arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish), db)
+                    .catch(err => log('SQL SCRIPT ERROR!', err)));
+                res(arr);
+            };
         });
     });
-
 };
 
 function queryToDB(script, db) {
@@ -109,8 +74,9 @@ function queryToDB(script, db) {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            log('getDataFomDb', result);
-            res(result);
+            log('--> func! getDataFomDb', typeof result, typeof result[0], result[0].SUM);
+            if (!result[0].SUM) result[0].SUM = 0;
+            res(result[0].SUM);
         });
     });
 };
@@ -124,10 +90,16 @@ function dateToUTC(date) {
     return Date.UTC(...dateArr);
 };
 
-function forPaintWeekend(date) {
-    date = new Date(date);
-    if (date.getDay() === 0 || date.getDay() === 6) return true
-    else return false;
+function makeDateString(dateVal) {
+    return (dateVal.getUTCFullYear() + '-' + (dateVal.getUTCMonth() + 1) + '-' +
+        dateVal.getUTCDate() + ' ' + dateVal.getUTCHours() + ':' +
+        dateVal.getUTCMinutes() + ':' + dateVal.getUTCSeconds());
+};
+
+function scriptGetSUM(timePointS, timePointF) {
+    return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
+        + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
+        + "'" + timePointF + "'" + ") AND CH1 = CH2 ");
 };
 
 module.exports = router;
