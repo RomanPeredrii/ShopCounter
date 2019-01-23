@@ -25,26 +25,19 @@ router.post('/', async (req, res, next) => {
 
         let dateStart = new Date(timePoints.timeStart);
         let dateFinish = new Date(timePoints.timeFinish + 86400000);
-
-        var dateF = timePoints.timeFinish;
-        var dateS = timePoints.timeStart;
-
         let step = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
-        log('++++++++++++++++', step);
-
-
-        var arrRes = [];
+        let arrRes = [];
         for (let i = 0; i < step; i++) {
 
-            dateF = dateS + timePoints.period;
-            dateFinish = new Date(dateF);
-            dateStart = new Date(dateS);
+            timePoints.timeFinish = timePoints.timeStart + timePoints.period;
+            dateFinish = new Date(timePoints.timeFinish);
+            dateStart = new Date(timePoints.timeStart);
 
             await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
-                .then((res) => arrRes.push(res));
+                .then((result) => arrRes.push(result));
 
-            dateF = dateS + timePoints.period;
-            dateS += timePoints.period;
+            timePoints.timeFinish = timePoints.timeStart + timePoints.period;
+            timePoints.timeStart += timePoints.period;
         };
         log('**arrRes', arrRes);
         res.json(arrRes)
@@ -53,8 +46,6 @@ router.post('/', async (req, res, next) => {
 
 
 async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
-
-    log(timePointSart, '-', timePointFinish);
 
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
@@ -69,12 +60,14 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
     });
 };
 
+
+
 function queryToDB(script, db) {
     return new Promise((res, rej) => {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            log('--> func! getDataFomDb', typeof result, typeof result[0], result[0].SUM);
+            //log('--> func! getDataFomDb', typeof result, typeof result[0], result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
             res(result[0].SUM);
         });

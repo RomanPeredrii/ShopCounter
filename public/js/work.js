@@ -56,11 +56,22 @@ function getChoicePeriod(periodCheck) {
 };
 
 function colourOfWeekend(date, period) {
-    date = new Date(date);
+    date = new Date(Date.parse(date));
     return (period === day ? (date.getDay() === 0 || date.getDay() === 6 ? ('#e46464') : ('#ffffff')) : ('#ffffff'));
 };
 
+function makeDateForPerfomance(dateTime, period) {
+    dateTime = new Date(Date.parse(dateTime));
+
+    return (period === hour
+        ? (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
+            dateTime.getDate() + ' ' + dateTime.getHours() + ':' + dateTime.getMinutes() + '0')
+        : (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
+            dateTime.getDate()));
+};
+
 reqButton.addEventListener('click', async () => {
+    
     const periodChoice = document.querySelectorAll('#periodSet > input');
     if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
     else {
@@ -75,52 +86,63 @@ reqButton.addEventListener('click', async () => {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ TimeStamp })
-
             });
 
             const result = await rawResponse.json();
             if (result) {
                 log('RESULT', result);
+                bildChart(result.map(arr => arr[2]));
                 dataTable.innerHTML = '';
                 result.map((rowResult) => {
-                    log('RESULT', rowResult);
-
-                    let time = new Date(Date.parse(rowResult[0]));
-                    var timeS = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' +
-                        time.getDate() + ' ' + time.getHours() + ':' +
-                        time.getMinutes() + ':' + time.getSeconds();
-                    log('DAY', time.getDay());
-                    log('TIMEPOINT', timeS);
 
                     const tr = document.createElement('tr');
                     const td0 = document.createElement('td');
                     const td1 = document.createElement('td');
                     const td2 = document.createElement('td');
-                    td0.textContent = rowResult[0];
-                    td1.textContent = rowResult[1];
+                    td0.textContent = makeDateForPerfomance(rowResult[0], getChoicePeriod(periodChoice));
+                    td1.textContent = makeDateForPerfomance(rowResult[1], getChoicePeriod(periodChoice));
+                    
                     td2.textContent = rowResult[2];
 
                     [td0, td1, td2].map(td => tr.appendChild(td));
-
-                    // tr.appendChild(td0);
-                    // tr.appendChild(td1);
-                    // tr.appendChild(td2);    
-                    tr.style.background = colourOfWeekend(timeS, getChoicePeriod(periodChoice));
+                    tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(periodChoice));
                     dataTable.appendChild(tr);
-                    // dataTable.innerHTML += `
-                    //             <tr> 
-                    //                 <td> ${rowResult[0]} </td>
-                    //                 <td> ${rowResult[1]} </td>
-                    //                 <td> ${rowResult[2]} </td>                                    
-                    //             </tr>
-                    //                             `;
-                    // var dataTableTr = document.querySelector('#dataFromDB > tbody > tr');
-                    // dataTableTr.style.background = colourOfWeekend(timeS, getChoicePeriod(periodChoice));
-                    // log('dataTableTr --->', dataTableTr);
-                    // log('colourOfWeekend --->', colourOfWeekend(timeS, getChoicePeriod(periodChoice)));
+
                 });
             } else throw err;
         }
         catch (err) { log(err) };
     };
 });
+
+function bildChart(dataFromDB) {
+
+    var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
+
+    var chart = new Chart (chartCanvas, {
+
+        type: 'bar',
+        
+        data: {
+                labels: dataFromDB,
+                datasets: [{
+
+                label: '########################',
+                data: dataFromDB,
+                backgroundColor:  '#298096',
+                borderColor: '#298096',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+};
