@@ -3,25 +3,22 @@ extends layout
 block content
   .whole
     .left
-      p
-      label.choosePeriod choose period
-      table.forDateChoise
-        tbody
-        tr
-          td 
+      .period
+        label.choosePeriod choose period
+        .forDateChoise
+          .divStart
             label.startDate start date
-            br 
+            br
             input#timeStampS(type='date' value = '2018-07-31')
-          td 
+          .divFinish 
             label.finishDate finish date
             br
             input#timeStampF(type='date' value = '2018-08-01')
-      br
+        br
       .dinamic
         div#periodSet
         .divSendReq
-          p
-            button#sendReq REQUEST
+          button#sendReq REQUEST
       br
       .dataFromDB  
         table#dataFromDB 

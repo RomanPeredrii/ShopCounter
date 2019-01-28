@@ -9,8 +9,8 @@ const timeStampS = document.querySelector('#timeStampS');
 const timeStampF = document.querySelector('#timeStampF');
 const dataTable = document.querySelector('#dataFromDB > tbody');
 const divPeriodSet = document.querySelector('#periodSet');
-const forDateChoise = document.querySelector('.forDateChoise > tbody > tr');
-
+const forDateChoise = document.querySelector('.forDateChoise');
+ 
 const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ function periodValidator() {
 };
 
 forDateChoise.addEventListener('click', () => divSendReq.style.display = 'none');
-divPeriodSet.addEventListener('click', () => divSendReq.style.display = 'block');
+divPeriodSet.addEventListener('click', () => divSendReq.style.display = 'inline-block');
 forDateChoise.addEventListener('change', periodValidator);
 forDateChoise.addEventListener('click', periodValidator);
 
@@ -71,7 +71,9 @@ function makeDateForPerfomance(dateTime, period) {
 };
 
 reqButton.addEventListener('click', async () => {
-    
+
+    log('DATE', timeStampS.valueAsDate);
+
     const periodChoice = document.querySelectorAll('#periodSet > input');
     if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
     else {
@@ -91,7 +93,11 @@ reqButton.addEventListener('click', async () => {
             const result = await rawResponse.json();
             if (result) {
                 log('RESULT', result);
-                bildChart(result.map(arr => arr[2]));
+                bildChart(
+                    makeDateForPerfomance(timeStampS.valueAsDate, getChoicePeriod(periodChoice)),
+                    makeDateForPerfomance(timeStampS.valueAsDate, getChoicePeriod(periodChoice)),
+                    result.map(arr => arr[2]));
+
                 dataTable.innerHTML = '';
                 result.map((rowResult) => {
 
@@ -101,7 +107,7 @@ reqButton.addEventListener('click', async () => {
                     const td2 = document.createElement('td');
                     td0.textContent = makeDateForPerfomance(rowResult[0], getChoicePeriod(periodChoice));
                     td1.textContent = makeDateForPerfomance(rowResult[1], getChoicePeriod(periodChoice));
-                    
+
                     td2.textContent = rowResult[2];
 
                     [td0, td1, td2].map(td => tr.appendChild(td));
@@ -115,22 +121,24 @@ reqButton.addEventListener('click', async () => {
     };
 });
 
-function bildChart(dataFromDB) {
+function bildChart(begin, end, dataFromDB) {
+
+    if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
 
     var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
 
-    var chart = new Chart (chartCanvas, {
+    window.chartDB = new Chart(chartCanvas, {
 
         type: 'bar',
-        
-        data: {
-                labels: dataFromDB,
-                datasets: [{
 
-                label: '########################',
+        data: {
+            labels: dataFromDB,
+            datasets: [{
+
+                label: begin + ' - ' + end,
                 data: dataFromDB,
-                backgroundColor:  '#298096',
-                borderColor: '#298096',
+                backgroundColor: '#298096',
+                borderColor: '#202000',
                 borderWidth: 1
             }]
         },
@@ -142,7 +150,7 @@ function bildChart(dataFromDB) {
                     }
                 }]
             }
-        }
+        },
     });
-
+    
 };

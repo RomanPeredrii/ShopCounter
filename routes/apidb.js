@@ -33,14 +33,16 @@ router.post('/', async (req, res, next) => {
             dateFinish = new Date(timePoints.timeFinish);
             dateStart = new Date(timePoints.timeStart);
 
-            await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
-                .then((result) => arrRes.push(result));
+            // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
+            //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
+
+            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options).catch(err => log('CONNECTION TO DB ERROR ', err)));
 
             timePoints.timeFinish = timePoints.timeStart + timePoints.period;
             timePoints.timeStart += timePoints.period;
         };
-        log('**arrRes', arrRes);
-        res.json(arrRes)
+       // log('**arrRes', arrRes);
+        res.json(arrRes);
     };
 });
 
@@ -53,7 +55,7 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
             else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish), db)
-                    .catch(err => log('SQL SCRIPT ERROR!', err)));
+                    .catch(err => log('SQL SCRIPT ERROR!', err))); //log(arr);
                 res(arr);
             };
         });
