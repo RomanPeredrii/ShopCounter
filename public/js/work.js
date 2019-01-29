@@ -57,7 +57,8 @@ function getChoicePeriod(periodCheck) {
 
 function colourOfWeekend(date, period) {
     date = new Date(Date.parse(date));
-    return (period === day ? (date.getDay() === 0 || date.getDay() === 6 ? ('#e46464') : ('#ffffff')) : ('#ffffff'));
+if ((period === day) && ((date.getDay() === 0) || (date.getDay() === 6)))
+    return '#e46464'; //(period === day ? (date.getDay() === 0 || date.getDay() === 6 ? ('#e46464') : ('#ffffff')) : ('#ffffff'));
 };
 
 function makeDateForPerfomance(dateTime, period) {
@@ -93,10 +94,7 @@ reqButton.addEventListener('click', async () => {
             const result = await rawResponse.json();
             if (result) {
                 log('RESULT', result);
-                bildChart(
-                    makeDateForPerfomance(timeStampS.valueAsDate, getChoicePeriod(periodChoice)),
-                    makeDateForPerfomance(timeStampS.valueAsDate, getChoicePeriod(periodChoice)),
-                    result.map(arr => arr[2]));
+                bildChart(result.map(arr => arr[2]), result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))));
 
                 dataTable.innerHTML = '';
                 result.map((rowResult) => {
@@ -113,7 +111,7 @@ reqButton.addEventListener('click', async () => {
                     [td0, td1, td2].map(td => tr.appendChild(td));
                     tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(periodChoice));
                     dataTable.appendChild(tr);
-
+                    
                 });
             } else throw err;
         }
@@ -121,7 +119,7 @@ reqButton.addEventListener('click', async () => {
     };
 });
 
-function bildChart(begin, end, dataFromDB) {
+function bildChart(dataFromDB, dateLabel) {
 
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
 
@@ -132,10 +130,10 @@ function bildChart(begin, end, dataFromDB) {
         type: 'bar',
 
         data: {
-            labels: dataFromDB,
+            labels: dateLabel,
             datasets: [{
 
-                label: begin + ' - ' + end,
+               label: 'XXX',
                 data: dataFromDB,
                 backgroundColor: '#298096',
                 borderColor: '#202000',
@@ -152,5 +150,5 @@ function bildChart(begin, end, dataFromDB) {
             }
         },
     });
-    
+    log(window.chartDB);
 };
