@@ -24,6 +24,9 @@ router.all('/*', (req, res, next) => { log('******')
 router.get('/work', (req, res, next) => {
   res.render('work.pug', { title: 'YOU WELCOME', logged: true });
 });
-
+/* API GET ADMIN page. */
+router.get('/admin', (req, res, next) => {
+  res.render('admin.pug', { title: 'YOU WELCOME', logged: true });
+});
 
 module.exports = router;

@@ -2,15 +2,27 @@ var log = console.log;
 var router = require('express').Router();
 const User = require('../models/user.js');
 
+
 router.post('/', function (req, res, next) {
+  const result = {
+    ok: false,
+    admin: false
+  };
   let user = req.body.UserLogInfo;
   getUser(user).then((user) => {
-    if (!user) { log ('!USER', user); return res.json({ ok: false });}
-    if (user.token) {
-      res.cookie('token', user.token, { maxAge: 120000000, httpOnly: true });
-      //client.emit('token', user); 
-      res.json({ ok: true });
-    }
+    if (!user) /*{
+      log('!USER', user);
+      return res.json(result);
+    } */ { }
+    else if (user.token) {
+      result.ok = true
+      res.cookie('token', user.token, { maxAge: 120000000, httpOnly: true })
+    };
+    if (user.username === "Admin") {
+      result.ok = false;
+      result.admin = true;
+    };
+    res.json(result);
   });
 });
 
@@ -27,8 +39,8 @@ async function getUser(UserLogInfo) {
         {
           token: tokenString
         });
-        log('USER', user)
-    if (!user) {log('USER NOT EXIST OR PASSWORD UNCORRECT')} else {
+    log('USER', user)
+    if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') } else {
       user.token = tokenString;
     };
     return user;
@@ -43,6 +55,6 @@ function makeid() {
   };
   log('GENERATE TOKEN', text);
   return text;
-}
+};
 
 module.exports = router;

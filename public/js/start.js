@@ -22,7 +22,10 @@ submitButton.addEventListener('click', async () => {
         body: JSON.stringify({ UserLogInfo })
     });
     const result = await rawResponse.json();
-    if (result.ok) window.location.replace('http://localhost:3000/api/work');;
+    log('result', result);
+    if (result.admin) window.location.replace('http://localhost:3000/api/admin');
+    else if (result.ok) window.location.replace('http://localhost:3000/api/work');
+    
 }
 catch (err) { log(err) };
 

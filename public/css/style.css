@@ -4,12 +4,14 @@ body {
 }
 
 .whole {
+  
   display: flex;
 }
 
 .right {
   width: 80%;
 }
+
 
 .left {
   width: 20%;
@@ -20,7 +22,17 @@ body {
 }
 
 .divSendReq {
+  margin: 1em;
+  position: relative;
   display: none;
+}
+:focus
+{
+  background-color:#fafabf;
+}
+
+#periodSet{
+  display: inline-block;
 }
 
 .dataFromDB {
@@ -31,8 +43,7 @@ body {
   max-height : 65vh;
   font-size: 12px;
   color: #000000;
-  overflow-y: auto;
-  
+  overflow-y: auto;  
   }
 tbody tr {
   font-weight: normal;
@@ -68,7 +79,8 @@ tr td:first-child {
     background: #2e2e2e; 
   }
 #pie {
-  margin:1em;
+  outline: none;
+  margin: 1em;
   width: 3em;
   height: 3em;
   border-radius: 0.5em;
@@ -78,7 +90,8 @@ tr td:first-child {
   background-size: 2em, 2em;
   }
 #bar {
-  margin:1em;
+  outline: none;
+  margin: 1em;
   width: 3em;
     height: 3em;
   border-radius: 0.5em;
@@ -88,7 +101,8 @@ tr td:first-child {
   background-size: 2em, 2em;
   }
 #line {
-  margin:1em;
+  outline: none;
+  margin: 1em;
   width: 3em;
   height: 3em;
   border-radius: 0.5em;
@@ -97,8 +111,7 @@ tr td:first-child {
   background-repeat: no-repeat;
   background-size: 2em, 2em;
   }
-  .typeChart {
-  position:absolute;
-  top:30%;
-  left:50%;
+  .typeOfChart {
+  display: none;
+  text-align: center;
   }

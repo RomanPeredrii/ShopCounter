@@ -126,14 +126,14 @@ function bildChart(dataFromDB, dateLabel) {
     var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
 
     window.chartDB = new Chart(chartCanvas, {
-
+        
         type: 'bar',
 
         data: {
             labels: dateLabel,
             datasets: [{
 
-               label: 'XXX',
+               label: dataFromDB,
                 data: dataFromDB,
                 backgroundColor: '#298096',
                 borderColor: '#202000',
@@ -141,6 +141,9 @@ function bildChart(dataFromDB, dateLabel) {
             }]
         },
         options: {
+            legend: {
+display: false
+            },
             scales: {
                 yAxes: [{
                     ticks: {
@@ -150,5 +153,5 @@ function bildChart(dataFromDB, dateLabel) {
             }
         },
     });
-    log(window.chartDB);
+    log(delete window.chartDB.data.datasets[0].label)
 };
