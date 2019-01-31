@@ -1,28 +1,29 @@
 extends layout
 
 block content
+  h1= title
   .whole
     .divDataForAttach
       label Host:
       input#optionsHost(type='text' value = '')
       br
       label Port:
-      input#optionsPort(type='text' value = '')
+      input#optionsPort(pattern = "^[ 0-9]+$", value = '')
       br
-      label Path
-      input#timeStampS(type='text' value = '')
+      label Path:
+      input#optionsPath(type='text' value = '')
       br
-      label User
-      input#timeStampS(type='text' value = '')
+      label User:
+      input#optionsUser(type='text' value = '')
       br
-      label Password
-      input#timeStampS(type='text' value = '')
+      label Password:
+      input#optionsPassword(type='text' value = '')
       br
-      label Page Size      
-      input#timeStampS(type='text' value = '')
+      label Page Size:
+      input#optionsPageSize(type='text' value = '')
       br
-      label Role      
-      input#timeStampS(type='text' value = '')
+      label Role:
+      input#optionsRole(type='text' value = '')
 
-  link(rel='stylesheet', href='/css/style.css')
-  // script(src='/js/work.js')
+  link(rel='stylesheet', href='/css/adminStyle.css')
+  script(src='/js/admin.js')

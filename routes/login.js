@@ -7,7 +7,8 @@ router.post('/', function (req, res, next) {
   const result = {
     ok: false,
     admin: false,
-    error: false,    
+    error: false,
+    logged: false
   };
   let user = req.body.UserLogInfo;
   getUser(user).then((user) => {
@@ -17,7 +18,7 @@ router.post('/', function (req, res, next) {
     } */ { }
     else if (user.token) {
       result.ok = true
-      res.cookie('token', user.token, { maxAge: 120000000, httpOnly: true })
+      res.cookie('token', user.token, { maxAge: 30000, httpOnly: true })
     };
     if (user.username === "Admin") {
       result.ok = false;

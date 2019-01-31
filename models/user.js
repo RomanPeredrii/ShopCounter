@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/ShopCounter');
 
 let User = mongoose.model('User', {
 

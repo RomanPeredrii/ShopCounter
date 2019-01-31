@@ -10,26 +10,23 @@ const headers = {
 };
 
 submitButton.addEventListener('click', async () => {
-
-   try {
-    let UserLogInfo = {
-        userName: inlineFormInput.value,
-        pswd: inlineFormInputGroup.value
-    };
-    const rawResponse = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ UserLogInfo })
-    });
-    const result = await rawResponse.json();
-    log('result', result);
-    if (result.error) alert('USER OR PASSWORD INCORRECT');
-   
-    else if (result.admin) window.location.replace('http://localhost:3000/api/admin');
-    else if (result.ok) window.location.replace('http://localhost:3000/api/work');
-    
-}
-catch (err) { log(err) };
+    try {
+        let UserLogInfo = {
+            userName: inlineFormInput.value,
+            pswd: inlineFormInputGroup.value
+        };
+        const rawResponse = await fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ UserLogInfo })
+        });
+        const result = await rawResponse.json();
+        log('result', result);
+        if (result.error) alert('USER OR PASSWORD INCORRECT');
+        else if (result.admin) window.location.replace('http://localhost:3000/api/admin');
+        else if (result.ok) window.location.replace('http://localhost:3000/api/work');
+    }
+    catch (err) { log(err) };
 
 });
 
