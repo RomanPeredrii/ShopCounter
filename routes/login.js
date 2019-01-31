@@ -6,7 +6,8 @@ const User = require('../models/user.js');
 router.post('/', function (req, res, next) {
   const result = {
     ok: false,
-    admin: false
+    admin: false,
+    error: false,    
   };
   let user = req.body.UserLogInfo;
   getUser(user).then((user) => {
@@ -23,7 +24,8 @@ router.post('/', function (req, res, next) {
       result.admin = true;
     };
     res.json(result);
-  });
+  }).catch((err) => {log('getUser ERROR', err); result.error = true; res.json(result);});
+  
 });
 
 async function getUser(UserLogInfo) {

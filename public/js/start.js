@@ -23,7 +23,9 @@ submitButton.addEventListener('click', async () => {
     });
     const result = await rawResponse.json();
     log('result', result);
-    if (result.admin) window.location.replace('http://localhost:3000/api/admin');
+    if (result.error) alert('USER OR PASSWORD INCORRECT');
+   
+    else if (result.admin) window.location.replace('http://localhost:3000/api/admin');
     else if (result.ok) window.location.replace('http://localhost:3000/api/work');
     
 }
