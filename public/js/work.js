@@ -10,7 +10,7 @@ const timeStampF = document.querySelector('#timeStampF');
 const dataTable = document.querySelector('#dataFromDB > tbody');
 const divPeriodSet = document.querySelector('#periodSet');
 const forDateChoise = document.querySelector('.forDateChoise');
- 
+
 const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
@@ -57,8 +57,8 @@ function getChoicePeriod(periodCheck) {
 
 function colourOfWeekend(date, period) {
     date = new Date(Date.parse(date));
-if ((period === day) && ((date.getDay() === 0) || (date.getDay() === 6)))
-    return '#e46464'; //(period === day ? (date.getDay() === 0 || date.getDay() === 6 ? ('#e46464') : ('#ffffff')) : ('#ffffff'));
+    if ((period === day) && ((date.getDay() === 0) || (date.getDay() === 6)))
+        return '#e46464'; //(period === day ? (date.getDay() === 0 || date.getDay() === 6 ? ('#e46464') : ('#ffffff')) : ('#ffffff'));
 };
 
 function makeDateForPerfomance(dateTime, period) {
@@ -85,15 +85,21 @@ reqButton.addEventListener('click', async () => {
                 period: getChoicePeriod(periodChoice)
             };
             log('-------', TimeStamp);
-            const rawResponse = await fetch('http://localhost:3000/apidb', {
+
+            const rawResponse = await fetch('http://localhost:3000/api/apidb', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ TimeStamp })
             });
 
             const result = await rawResponse.json();
+            log('RESULT:', result);
+            // log('work LOGGED:', result.logged);
+            // if (!result.logged) { //window.location.replace('/');
+            // }
+            // else 
             if (result) {
-                log('RESULT', result);
+
                 bildChart(result.map(arr => arr[2]), result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))));
 
                 dataTable.innerHTML = '';
@@ -111,12 +117,15 @@ reqButton.addEventListener('click', async () => {
                     [td0, td1, td2].map(td => tr.appendChild(td));
                     tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(periodChoice));
                     dataTable.appendChild(tr);
-                    
+
                 });
             } else throw err;
         }
         catch (err) { log(err) };
     };
+    const typeOfChart = document.querySelector('.typeOfChart');
+    typeOfChart.style.display = 'block';
+
 });
 
 function bildChart(dataFromDB, dateLabel) {
@@ -126,14 +135,14 @@ function bildChart(dataFromDB, dateLabel) {
     var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
 
     window.chartDB = new Chart(chartCanvas, {
-        
+
         type: 'bar',
 
         data: {
             labels: dateLabel,
             datasets: [{
 
-               label: dataFromDB,
+                label: dataFromDB,
                 data: dataFromDB,
                 backgroundColor: '#298096',
                 borderColor: '#202000',
@@ -142,7 +151,7 @@ function bildChart(dataFromDB, dateLabel) {
         },
         options: {
             legend: {
-display: false
+                display: false
             },
             scales: {
                 yAxes: [{
@@ -153,5 +162,5 @@ display: false
             }
         },
     });
-    log(delete window.chartDB.data.datasets[0].label)
+    //log(delete window.chartDB.data.datasets[0].label)
 };

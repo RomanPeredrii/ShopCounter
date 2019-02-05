@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/ShopCounter');
+mongoose.connect('mongodb://localhost/ShopCounter', { useNewUrlParser: true });
+mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 
 let User = mongoose.model('User', {
 
@@ -16,8 +18,5 @@ let User = mongoose.model('User', {
     type: String,
   }
 });
-
-mongoose.options.useNewUrlParser = true;
-mongoose.set('useCreateIndex', true);
 
 module.exports = User;

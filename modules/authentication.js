@@ -5,7 +5,7 @@ const m = {};
 
 m.checkToken = async (token) => {
   try { log('TOKEN', token);
-   return await User.findOne({token});   
+   return await User.findOne({token});
   } catch (error) { log(error) };
 };
 

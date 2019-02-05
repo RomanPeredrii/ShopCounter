@@ -15,16 +15,18 @@ submitButton.addEventListener('click', async () => {
             userName: inlineFormInput.value,
             pswd: inlineFormInputGroup.value
         };
-        const rawResponse = await fetch('http://localhost:3000/login', {
+        const rawResponse = await fetch('http://localhost:3000/api/login', {
             method: 'POST',
             headers,
             body: JSON.stringify({ UserLogInfo })
         });
+
         const result = await rawResponse.json();
-        log('result', result);
+
+       // log('result', result);
         if (result.error) alert('USER OR PASSWORD INCORRECT');
-        else if (result.admin) window.location.replace('http://localhost:3000/api/admin');
-        else if (result.ok) window.location.replace('http://localhost:3000/api/work');
+        else if (result.admin) window.location.replace('http://localhost:3000/pages/admin');
+        else if (result.ok) window.location.replace('http://localhost:3000/pages/work');
     }
     catch (err) { log(err) };
 

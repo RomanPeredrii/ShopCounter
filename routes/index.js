@@ -4,9 +4,10 @@ module.exports = function (app) {
     
   // routes
   app.use('/', require('./root'));
-  app.use('/login', require('./login'));
   app.use('/api', require('./api'));
-  app.use('/apidb', require('./apidb'));
+  app.use('/api', require('./login'));
+  app.use('/api', require('./apidb'));
+  app.use('/pages', require('./pages'));
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {

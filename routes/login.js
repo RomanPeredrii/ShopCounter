@@ -3,12 +3,12 @@ var router = require('express').Router();
 const User = require('../models/user.js');
 
 
-router.post('/', function (req, res, next) {
+router.post('/login', function (req, res, next) {
   const result = {
     ok: false,
     admin: false,
     error: false,
-    logged: false
+    logged: true
   };
   let user = req.body.UserLogInfo;
   getUser(user).then((user) => {
@@ -17,12 +17,14 @@ router.post('/', function (req, res, next) {
       return res.json(result);
     } */ { }
     else if (user.token) {
-      result.ok = true
-      res.cookie('token', user.token, { maxAge: 30000, httpOnly: true })
+      result.ok = true;
+      result.logged = true;
+      res.cookie('token', user.token, { maxAge: 60000, httpOnly: true })
     };
     if (user.username === "Admin") {
       result.ok = false;
       result.admin = true;
+      result.logged = true;
     };
     res.json(result);
   }).catch((err) => {log('getUser ERROR', err); result.error = true; res.json(result);});

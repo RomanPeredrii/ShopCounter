@@ -15,9 +15,15 @@ options.password = 'a2vvczib';
 options.pageSize = 4096;
 options.role = 'ADMIN';
 
+const result = {
+    ok: false,
+    admin: false,
+    error: false,
+    logged: true
+  };
 
-router.post('/', async (req, res, next) => {
-
+router.post('/apidb', async (req, res, next) => {
+    log('**apiDB router.post / ');
     selectionFromDB(req.body.TimeStamp);
 
     // ДУРКА!!!! ЯК ВОНА Є
@@ -41,7 +47,9 @@ router.post('/', async (req, res, next) => {
             timePoints.timeFinish = timePoints.timeStart + timePoints.period;
             timePoints.timeStart += timePoints.period;
         };
-       // log('**arrRes', arrRes);
+       
+    //    result.data = arrRes;
+    //    log('**arrRes', result.data);       
         res.json(arrRes);
     };
 });

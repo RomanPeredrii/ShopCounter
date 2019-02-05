@@ -5,3 +5,19 @@ body {
   h1 {
     text-align: center;
   }
+
+.UserData {
+  display: inline-block;
+  text-align: right;
+  border: solid 2px;
+  margin: 4em;
+  padding: 5em;
+  }
+
+.divDataForAttach {
+  text-align: right;
+  display: inline-block;
+  border: solid 2px;
+  margin: 4em;
+  padding: 5em;
+  }
