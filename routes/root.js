@@ -1,63 +1,24 @@
+"use strict"
 var log = console.log;
 var express = require('express');
 var router = express.Router();
-const checkAuth = require('../modules/authentication.js');
 
+// /* All check cookies */
 
-// All
 router.all('/*', async (req, res, next) => {
-    log('root: req.url', req.url);
 
-    log('root:', req.cookies.token, ' && ', req.url.split('/')[1]);
+    if ((req.url === '/') || (req.url === '/api/login') || (req.url === '/pages/work')) {
+        return next();
+    };
 
-    if ((req.url === '/') || (req.url === '/api/login')) {
-        log("root: ->->->->->->->->->->->"); 
+    if ((!req.cookies.token) && (req.url.split('/')[1] === 'api')) {
+        return res.json({ unlogged: true });
     }
-next();
-    // if ((!req.cookies.token) && (req.url.split('/')[1] === 'pages')) {
-    //     log("root: -------------------------");
-    //     res.render('index.pug', { title: 'YOU WELCOME', logged: false });
+    else if ((req.cookies.token) && (req.url.split('/')[1] === 'api'))
+        res.cookie('token', req.cookies.token, { maxAge: 60000, httpOnly: true });
 
-    //     log('BEFORE NEXT', req.cookies.token, ' && ', req.url.split('/')[1]);
-    //     next();
-    // };
-
-    // if ((!req.cookies.token) && (req.url.split('/')[1] === 'api')) {
-    //     log("root: -------------------------");
-    //     res.json({ logged: false });
-
-    //     log('BEFORE NEXT', req.cookies.token, ' && ', req.url.split('/')[1]);
-    //     next();
-    // };
-    //     //     log('/* token:', req.cookies.token);
-    //     //     res.render('../views/index.pug', { title: 'YOU WELCOME', logged: false })
-    //     // };
-    // }
-    // log('\n programs ::::::::::::::::::::::::::::::::::::::::::::::::');
-    // log('req.url', req.url);
-    // log('programs ::::::::::::::::::::::::::::::::::::::::::::::::');
-
-
-    //return res.render('index.pug', { title: 'YOU WELCOME', logged: false })
-
-
-
+    next();
 });
-
-
-// router.all('/*', (req, res, next) => {
-//     log('******')
-//     if (req.cookies.token === undefined) return res.render('index.pug', { title: 'YOU WELCOME', logged: false });
-//     checkAuth.checkToken(req.cookies.token).
-//       then((user) => {
-//         log('API USER', user)
-//         if (user) {
-//           next();
-//         } else {
-//           return res.render('index.pug', { title: 'YOU WELCOME', logged: false })
-//         };
-//       });
-//   });
 
 // /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -66,3 +27,30 @@ router.get('/', function (req, res, next) {
 
 
 module.exports = router;
+
+
+
+
+// error = (err, req, res, status, msg2) => {
+//     err = err.toString()
+//     log('error Universal'.error, err, status, msg2, '\n')
+//     res.json({
+//         status,
+//         err,
+//         success: false,
+//         msg: 'Error in ' + req.url,
+//         msg2: msg2 || '',
+//         from: 'error Universal'
+//     })
+// }
+
+// send = (result, req, res, msg2) => {
+//     res.json({
+//         code: '200',
+//         result,
+//         success: true,
+//         msg: 'ok',
+//         msg2: msg2 || '',
+//         from: 'send Universal'
+//     })
+// }

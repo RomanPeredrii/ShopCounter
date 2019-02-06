@@ -94,11 +94,11 @@ reqButton.addEventListener('click', async () => {
 
             const result = await rawResponse.json();
             log('RESULT:', result);
-            // log('work LOGGED:', result.logged);
-            // if (!result.logged) { //window.location.replace('/');
-            // }
-            // else 
-            if (result) {
+            log('work LOGGED:', result.unlogged);
+            if (result.unlogged) {
+                log('RESULT:', result); window.location.replace('/');
+            }
+            else if (result) {
 
                 bildChart(result.map(arr => arr[2]), result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))));
 

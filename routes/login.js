@@ -8,7 +8,7 @@ router.post('/login', function (req, res, next) {
     ok: false,
     admin: false,
     error: false,
-    logged: true
+    unlogged: false
   };
   let user = req.body.UserLogInfo;
   getUser(user).then((user) => {
@@ -33,7 +33,7 @@ router.post('/login', function (req, res, next) {
 
 async function getUser(UserLogInfo) {
   try {
-    log('USER INCOME ODJECT', UserLogInfo)
+    //log('USER INCOME ODJECT', UserLogInfo)
     var tokenString = makeid();
     var user = await
       User.findOneAndUpdate(
@@ -44,7 +44,7 @@ async function getUser(UserLogInfo) {
         {
           token: tokenString
         });
-    log('USER', user)
+    //log('USER', user)
     if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') } else {
       user.token = tokenString;
     };
@@ -58,7 +58,7 @@ function makeid() {
   for (let i = 0; i < 20; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length))
   };
-  log('GENERATE TOKEN', text);
+  //log('GENERATE TOKEN', text);
   return text;
 };
 
