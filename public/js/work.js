@@ -27,8 +27,10 @@ function setPeriod(from, to) {
     let inputs = '';
     for (let i = from; i <= to; i++) {
         inputs += `
+            <div class="periodSet">
             <input id="period${period[i]}" type="radio" name="period" value= ${periodMs[i]} />
             <label for="period${period[i]}"> ${period[i]} </label>
+            </div>
          `};
     divPeriodSet.innerHTML = inputs;
 };
@@ -75,7 +77,7 @@ reqButton.addEventListener('click', async () => {
 
     log('DATE', timeStampS.valueAsDate);
 
-    const periodChoice = document.querySelectorAll('#periodSet > input');
+    const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
     if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
     else {
         try {
@@ -100,7 +102,21 @@ reqButton.addEventListener('click', async () => {
             }
             else if (result) {
 
-                bildChart(result.map(arr => arr[2]), result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))));
+
+                var barChart = document.querySelector('#bar')
+                barChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), barChart.value));
+
+                var lineChart = document.querySelector('#line')
+                lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
+
+                var pieChart = document.querySelector('#pie')
+                pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
+
+                bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'bar');
 
                 dataTable.innerHTML = '';
                 result.map((rowResult) => {
@@ -128,21 +144,24 @@ reqButton.addEventListener('click', async () => {
 
 });
 
-function bildChart(dataFromDB, dateLabel) {
+
+
+function bildChart(dataFromDB, dateLabel, typeOfChart) {
 
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
 
     var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
 
+
+
     window.chartDB = new Chart(chartCanvas, {
 
-        type: 'bar',
+        type: typeOfChart,
 
         data: {
             labels: dateLabel,
             datasets: [{
-
-                label: dataFromDB,
+                //label: dataFromDB,
                 data: dataFromDB,
                 backgroundColor: '#298096',
                 borderColor: '#202000',

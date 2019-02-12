@@ -2,6 +2,7 @@ body {
   margin: 1%;  
   padding: 30px;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    overflow-y: hidden;
   }
 
   h1 {
@@ -11,20 +12,30 @@ body {
   
   .whole {    
     display: flex;
+    position: relative;
   }
   
   .right {
-  
+    
     width: 80%;
+    min-width: 20em;
   }
   
+  .canv {
+    margin: 1em;
+
+  }
   
   .left {
-    width: 20%;
+    min-width: 20em;
   }
   
   .dinamic {
     display: flex;
+  }
+
+  .periodSet {
+    min-width: 4em;
   }
   
   .divSendReq {
@@ -34,6 +45,7 @@ body {
   }
 
   canvas {
+    margin: 1em;
     display: block;
   }
   input:focus
@@ -103,7 +115,7 @@ body {
     outline: none;
     margin: 1em;
     width: 3em;
-      height: 3em;
+    height: 3em;
     border-radius: 0.5em;
     background-image: url('../img/bar-graph-icon-11.jpg');
     background-position: center center;
@@ -126,3 +138,38 @@ body {
     text-align: center;
     }
   
+
+/* portrait landscape */
+@media (min-width: 30em) and (orientation: landscape) {  } 
+
+
+/* // Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {  }
+
+/* // Medium devices (tablets, 768px and up) */
+@media (max-width: 768px) {
+  body {
+
+    overflow-y: auto;
+
+  }
+  .right {
+    display: block;
+    background-color: #fafabf;
+    width: 20em;
+  }
+  
+}
+.whole {
+    flex-direction: column;
+ }
+ .dataFromDB  {
+   text-align: inherit;
+ }
+
+/* // Large devices (desktops, 992px and up) 
+@media (min-width: 992px) {  }
+
+ // Extra large devices (large desktops, 1200px and up) 
+@media (min-width: 1200px) {  }*/
+

@@ -77,7 +77,7 @@ function queryToDB(script, db) {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            //log('--> func! getDataFomDb', typeof result, typeof result[0], result[0].SUM);
+            //log('--> func! getDataFomDb', script, result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
             res(result[0].SUM);
         });

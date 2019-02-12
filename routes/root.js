@@ -15,7 +15,7 @@ router.all('/*', async (req, res, next) => {
         return res.json({ unlogged: true });
     }
     else if ((req.cookies.token) && (req.url.split('/')[1] === 'api'))
-        res.cookie('token', req.cookies.token, { maxAge: 60000, httpOnly: true });
+        res.cookie('token', req.cookies.token, { maxAge: 600000, httpOnly: true });
 
     next();
 });

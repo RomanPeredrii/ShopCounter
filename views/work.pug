@@ -28,9 +28,9 @@ block content
       .canv
         canvas#chartFromDB
       .typeOfChart
-          button#pie
-          button#bar
-          button#line
+          button#pie(value = 'pie')
+          button#bar(value = 'bar')
+          button#line(value = 'line')
 
   link(rel='stylesheet', href='/css/workStyle.css')
   script(src='/js/work.js')

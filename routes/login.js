@@ -19,7 +19,7 @@ router.post('/login', function (req, res, next) {
     else if (user.token) {
       result.ok = true;
       result.logged = true;
-      res.cookie('token', user.token, { maxAge: 60000, httpOnly: true })
+      res.cookie('token', user.token, { maxAge: 600000, httpOnly: true })
     };
     if (user.username === "Admin") {
       result.ok = false;
