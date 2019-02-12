@@ -102,22 +102,6 @@ reqButton.addEventListener('click', async () => {
             }
             else if (result) {
 
-
-                var barChart = document.querySelector('#bar')
-                barChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), barChart.value));
-
-                var lineChart = document.querySelector('#line')
-                lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
-
-                var pieChart = document.querySelector('#pie')
-                pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
-
-                bildChart(result.map(arr => arr[2]),
-                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'bar');
-
                 dataTable.innerHTML = '';
                 result.map((rowResult) => {
 
@@ -135,6 +119,25 @@ reqButton.addEventListener('click', async () => {
                     dataTable.appendChild(tr);
 
                 });
+
+                document.querySelector('.guide').style.display = 'none';
+           
+
+                var barChart = document.querySelector('#bar')
+                barChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), barChart.value));
+
+                var lineChart = document.querySelector('#line')
+                lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
+
+                var pieChart = document.querySelector('#pie')
+                pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
+
+                bildChart(result.map(arr => arr[2]),
+                    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'bar');
+
             } else throw err;
         }
         catch (err) { log(err) };
@@ -163,6 +166,7 @@ function bildChart(dataFromDB, dateLabel, typeOfChart) {
             datasets: [{
                 //label: dataFromDB,
                 data: dataFromDB,
+                fill: false,
                 backgroundColor: '#298096',
                 borderColor: '#202000',
                 borderWidth: 1

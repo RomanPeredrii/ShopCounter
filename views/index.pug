@@ -1,20 +1,27 @@
-extends layout
+doctype html
 
-block content
-  .startform
-    h1= title
-    form.form-inline
-      //- label.sr-only(for='inlineFormInput') Name
-      input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Login')
-      //- label.sr-only(for='inlineFormInputGroup') Username
-      //-.input-group.mb-2.mr-sm-2.mb-sm-0
-        .input-group-addon 
-      input#inlineFormInputGroup.form-control(type='password', placeholder='Password')
-      //-.form-check.mb-2.mr-sm-2.mb-sm-0
-      //-  label.form-check-label
-      //-   input.form-check-input(type='checkbox')
-      //-   |  Remember me
-      button#submitButton.btn.btn-primary(type='submit') Submit
-
-  script(src='/js/start.js')
-  script(src='/js/index.js')
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/libs/bootstrap/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/index.css')
+  body
+    main
+      .startform
+        h1= title
+        form.form-inline
+          input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Login')
+          input#inlineFormInputGroup.form-control(type='password', placeholder='Password')
+          button#submitButton.btn.btn-primary(type='submit') Submit
+      br
+      .information
+        p various crap such as legal information or other rubbish
+      br
+    footer produced by group "НАШИ РУКИ НЕ ДЛЯ СКУКИ"
+    script(src='/libs/tether/dist/js/tether.min.js')
+    script(src='/libs/jquery.js')
+    script(src='/libs/moment.js')
+    script(src='/libs/bootstrap/js/bootstrap.min.js')
+    script(src='/libs/ChartBundle.js')
+    script(src='/js/start.js')
+    script(src='/js/index.js')

@@ -23,7 +23,7 @@ const result = {
   };
 
 router.post('/apidb', async (req, res, next) => {
-    log('**apiDB router.post / ');
+    //log('**apiDB router.post / ');
     selectionFromDB(req.body.TimeStamp);
 
     // ДУРКА!!!! ЯК ВОНА Є
@@ -77,9 +77,9 @@ function queryToDB(script, db) {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            //log('--> func! getDataFomDb', script, result[0].SUM);
+            log('--> func! getDataFomDb', script, result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
-            res(result[0].SUM);
+            res(Math.round(result[0].SUM));
         });
     });
 };
@@ -102,7 +102,7 @@ function makeDateString(dateVal) {
 function scriptGetSUM(timePointS, timePointF) {
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-        + "'" + timePointF + "'" + ") AND CH1 = CH2 ");
+        + "'" + timePointF + "'" + ") AND CH1 = CH2 AND SERIAL = '0001'");
 };
 
 module.exports = router;

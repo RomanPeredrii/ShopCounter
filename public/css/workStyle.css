@@ -12,24 +12,49 @@ body {
   
   .whole {    
     display: flex;
+    flex-direction: row;
     position: relative;
   }
   
-  .right {
-    
+  .left {
+    width: 15%;
+    min-width: 20em;
+  }
+
+  .date {
+    margin-top: 1em;
+    font-size: 16px;
+  }
+
+  .right {    
     width: 80%;
     min-width: 20em;
+  }
+
+  .guide {
+    font-size: 16px;
+  }
+
+  p {
+    
+    font-weight: bold;
   }
   
   .canv {
     margin: 1em;
+  }
 
+  canvas {
+    margin: 1em;
+    display: inline-block;
   }
-  
-  .left {
-    min-width: 20em;
+
+
+  .choosePeriod {
+    font-size: 16px;
+    font-weight: bold;
   }
-  
+
   .dinamic {
     display: flex;
   }
@@ -44,16 +69,48 @@ body {
     display: none;
   }
 
-  canvas {
-    margin: 1em;
-    display: block;
+  .timeStamp {
+
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #464a4c;
+    background-color: #fff;
+    background-image: none;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
   }
+
+  #sendReq {
+
+    color: #fff;
+    background-color: #0275d8;
+    border-color: #0275d8;
+    font-weight: normal;
+    line-height: 1.25;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    font-size: 16px;
+    border-radius: 0.25rem;
+  }
+
+
   input:focus
   {
     background-color:#fafabf;
   }
   
   #periodSet{
+    font-size: 16px;
+    margin-top: 1em;
     display: inline-block;
   }
   
@@ -100,6 +157,19 @@ body {
   ::-webkit-scrollbar-thumb:hover {
       background: #2e2e2e; 
     }
+
+  ::-webkit-calendar-picker-indicator {
+    background: inherit;  
+    color:  #2e2e2e;
+   }
+   ::-webkit-inner-spin-button { 
+    display: none;
+   }
+
+   ::-webkit-clear-button {
+   display: none;
+  }
+
   #pie {
     outline: none;
     margin: 1em;
@@ -143,8 +213,7 @@ body {
 @media (min-width: 30em) and (orientation: landscape) {  } 
 
 
-/* // Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) {  }
+
 
 /* // Medium devices (tablets, 768px and up) */
 @media (max-width: 768px) {
@@ -159,14 +228,13 @@ body {
     width: 20em;
   }
   
-}
 .whole {
     flex-direction: column;
  }
  .dataFromDB  {
    text-align: inherit;
  }
-
+}
 /* // Large devices (desktops, 992px and up) 
 @media (min-width: 992px) {  }
 
