@@ -113,17 +113,19 @@ body {
     margin-top: 1em;
     display: inline-block;
   }
-  
+    
   .dataFromDB {
     border-collapse: collapse;
     text-align: left;
     margin-bottom: 20px;
     width: fit-content;
-    max-height : 65vh;
+    max-height : 25%;
     font-size: 12px;
     color: #000000;
     overflow-y: auto;  
-    }
+  }
+
+
   tbody tr {
     font-weight: normal;
     background-color: #ffffff;
@@ -216,7 +218,7 @@ body {
 
 
 /* // Medium devices (tablets, 768px and up) */
-@media (max-width: 768px) {
+@media (max-width: 567px) {
   body {
 
     overflow-y: auto;
@@ -225,7 +227,7 @@ body {
   .right {
     display: block;
     background-color: #fafabf;
-    width: 20em;
+    width: auto;
   }
   
 .whole {
@@ -233,6 +235,7 @@ body {
  }
  .dataFromDB  {
    text-align: inherit;
+   max-height : 65vh;
  }
 }
 /* // Large devices (desktops, 992px and up) 

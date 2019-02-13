@@ -20,7 +20,7 @@ const result = {
     admin: false,
     error: false,
     logged: true
-  };
+};
 
 router.post('/apidb', async (req, res, next) => {
     //log('**apiDB router.post / ');
@@ -42,14 +42,15 @@ router.post('/apidb', async (req, res, next) => {
             // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
             //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
 
-            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options).catch(err => log('CONNECTION TO DB ERROR ', err)));
+            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options).
+                catch(err => log('CONNECTION TO DB ERROR ', err)));
 
             timePoints.timeFinish = timePoints.timeStart + timePoints.period;
             timePoints.timeStart += timePoints.period;
         };
-       
-    //    result.data = arrRes;
-    //    log('**arrRes', result.data);       
+
+        //    result.data = arrRes;
+        //    log('**arrRes', result.data);       
         res.json(arrRes);
     };
 });
@@ -77,7 +78,7 @@ function queryToDB(script, db) {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            log('--> func! getDataFomDb', script, result[0].SUM);
+            //log('--> func! getDataFomDb', script, result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
             res(Math.round(result[0].SUM));
         });

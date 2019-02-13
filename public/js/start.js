@@ -3,13 +3,15 @@ const submitButton = document.querySelector('#submitButton');
 const inlineFormInput = document.querySelector('#inlineFormInput');
 const inlineFormInputGroup = document.querySelector('#inlineFormInputGroup');
 
-
 const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
 };
 
 submitButton.addEventListener('click', async () => {
+    
+    if (!document.querySelector('#accept').checked) alert("DON'T YOU AGREE LEGAL TERMS?")
+    else {
     try {
         let UserLogInfo = {
             userName: inlineFormInput.value,
@@ -23,13 +25,12 @@ submitButton.addEventListener('click', async () => {
 
         const result = await rawResponse.json();
 
-       // log('result', result);
         if (result.error) alert('USER OR PASSWORD INCORRECT');
         else if (result.admin) window.location.replace('http://localhost:3000/pages/admin');
         else if (result.ok) window.location.replace('http://localhost:3000/pages/work');
     }
     catch (err) { log(err) };
-
+};
 });
 
 

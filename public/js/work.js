@@ -155,8 +155,6 @@ function bildChart(dataFromDB, dateLabel, typeOfChart) {
 
     var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
 
-
-
     window.chartDB = new Chart(chartCanvas, {
 
         type: typeOfChart,

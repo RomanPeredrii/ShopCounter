@@ -5,25 +5,27 @@ block content
   .whole
     .divDataForAttach
       label Host:
-      input#optionsHost(type='text' value = '')
+      input#optionsHost(type='text' value = 'localhost')
       br
       label Port:
-      input#optionsPort(pattern = "^[ 0-9]+$", value = '')
+      input#optionsPort(pattern = "^[ 0-9]+$", value = '3050')
       br
       label Path:
-      input#optionsPath(type='text' value = '')
+      input#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB')
       br
       label User:
-      input#optionsUser(type='text' value = '')
+      input#optionsUser(type='text' value = 'SYSDBA')
       br
       label Password:
-      input#optionsPassword(type='text' value = '')
+      input#optionsPassword(type='text' value = 'a2vvczib')
       br
       label Page Size:
-      input#optionsPageSize(type='text' value = '')
+      input#optionsPageSize(type='text' value = '4096')
       br
       label Role:
-      input#optionsRole(type='text' value = '')
+      input#optionsRole(type='text' value = 'ADMIN')
+      br
+      button#checkConnection CHECK
     .UserData
       label Brand or Point:
       input#brandUserData(type='text' value = '')
