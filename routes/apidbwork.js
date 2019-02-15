@@ -22,7 +22,7 @@ const result = {
     logged: true
 };
 
-router.post('/apidb', async (req, res, next) => {
+router.post('/apidbwork', async (req, res, next) => {
     //log('**apiDB router.post / ');
     selectionFromDB(req.body.TimeStamp);
 
@@ -60,6 +60,7 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
 
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
+            
             if (err) rej(err)
             else {
                 let arr = [timePointSart, timePointFinish];

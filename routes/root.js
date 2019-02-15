@@ -12,10 +12,10 @@ router.all('/*', async (req, res, next) => {
     };
 
     if ((!req.cookies.token) && (req.url.split('/')[1] === 'api')) {
-        return res.json({ unlogged: true });
+        return res.json({ unlogged: true }); 
     }
     else if ((req.cookies.token) && (req.url.split('/')[1] === 'api'))
-        res.cookie('token', req.cookies.token, { maxAge: 600000, httpOnly: true });
+        res.cookie('token', req.cookies.token, { maxAge: 60000000, httpOnly: true });
 
     next();
 });

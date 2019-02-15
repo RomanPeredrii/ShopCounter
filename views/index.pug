@@ -10,12 +10,12 @@ html
       .startform
         h1= title
         form.form-inline
-          input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Login')
-          input#inlineFormInputGroup.form-control(type='password', placeholder='Password')
+          input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Login', value='Admin')
+          input#inlineFormInputGroup.form-control(type='password', placeholder='Password', value='Admin')
           button#submitButton.btn.btn-primary(type='submit') Submit
       .information
         p various crap such as legal information or other rubbish which you have to 
-          input#accept.accept(type='checkbox', checked=false)
+          input#accept.accept(type='checkbox', checked=true)
           label(for='accept') accept
     footer produced by group "НАШИ РУКИ НЕ ДЛЯ СКУКИ" consisting of me and set of my psychological disorders
     script(src='/libs/tether/dist/js/tether.min.js')

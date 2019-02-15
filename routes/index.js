@@ -6,7 +6,8 @@ module.exports = function (app) {
   app.use('/', require('./root'));
   app.use('/api', require('./api'));
   app.use('/api', require('./login'));
-  app.use('/api', require('./apidb'));
+  app.use('/api', require('./apidbwork'));
+  app.use('/api', require('./apidbadmin'));
   app.use('/pages', require('./pages'));
 
   // catch 404 and forward to error handler

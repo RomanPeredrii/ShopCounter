@@ -21,3 +21,32 @@ body {
   margin: 4em;
   padding: 5em;
   }
+
+  .viewDb {
+    text-align: right;
+    display: inline-block;
+    border: solid 2px;
+    margin: 4em;
+    padding: 5em;
+    }
+
+#compositionDB:tbo {
+  border-collapse: collapse;
+    
+    margin-bottom: 20px;
+    width: fit-content;
+    max-height : 25%;
+    font-size: 12px;
+    color: #000000;
+    overflow-y: auto;  
+}
+tbody tr:hover {
+  background-color: #e0e0e0;
+  }
+td {
+  text-align: left;
+  padding: 9px 10px;
+  border-top: #d7d7d7 1px solid;
+  border-bottom: #d7d7d7 1px solid;
+  line-height: 20px;
+  }

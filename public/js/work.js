@@ -88,7 +88,7 @@ reqButton.addEventListener('click', async () => {
             };
             log('-------', TimeStamp);
 
-            const rawResponse = await fetch('http://localhost:3000/api/apidb', {
+            const rawResponse = await fetch('http://localhost:3000/api/apidbwork', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ TimeStamp })
