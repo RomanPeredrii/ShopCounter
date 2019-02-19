@@ -4,157 +4,99 @@ const log = console.log;
 const express = require('express');
 const router = require('express').Router();
 const firebird = require('node-firebird');
-const User = require('../models/user.js');
+//const User = require('../models/user.js');
 
 
 
-const response = {
-    ok: 'here',
-    admin: false,
-    error: false,
-    logged: true,
-    connected: false
-};
+// const response = {
+//     ok: 'here',
+//     admin: false,
+//     error: false,
+//     logged: true,
+//     connected: false
+// };
 
+const scriptGETTABLES = " SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE (RDB$RELATION_TYPE = 0) AND (RDB$SYSTEM_FLAG IS DISTINCT FROM 1)";
+const scriptGETFILDS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = ";
+const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 5:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-8-1 8:0:0') AND SERIAL = '0309' ";
 
 router.post('/apidbadmin', async (req, res, next) => {
+    // log('**apiDBadmin router.post / ', req.body.options.options);
 
-    log('**apiDBadmin router.post / ', req.body.options);
-
-
-
-    let scriptGETTABLES = " SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE (RDB$RELATION_TYPE = 0) AND (RDB$SYSTEM_FLAG IS DISTINCT FROM 1)";
-   // let scriptGETCOLS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = " + shTABLE;
-  let scriptGETDATA = " SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 5:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-8-1 8:0:0') AND SERIAL = '0309' ";
-    firebird.attach(req.body.options, function (err, db) {
-
-
-        if (err) throw err
-        else {
-
-            db.on('result', (result) => {
-                //log(result);
-                response.connected = true;
-                let tableList = [];
-                for (let RDB in result) {
-                    for (let name in result[RDB]) {
-
-                        tableList.push(result[RDB][name].replace(/\s+/g, ''));
-
-                    };
-
-                }
-                log(tableList);
-                res.json(tableList);
-            });
-            //  log("ATTACHED");
-            db.query(scriptGETTABLES, function (err, result) {
-                if (err) throw err;
-
-                // log("DETACHED");
-                //log(result);
-                db.detach();
-                //log(typeof result );
-                // for (let RDB in result) {
-                //     for (let name in result[RDB]) {
-                //         //log(typeof name);
-                //         // log(result[RDB][name]);
-            });
-        };
-    });
-
-
-    // queryToDB(req.body.options).catch(err => log("DB", err));
-
-    // async function queryToDB(options) {
-
-    //     try {
-    //         firebird.attach(options, function (err, db) {
-    //             if (err) {
-    //                 log('attach', err)
-    //                 throw err
-    //             }
-    //             else {
-    //                 // db.on('attach', () => { log("ATTACHED") });
-    //                 // result.connected = true;
-
-    //                 db.query(" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 5:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-8-1 8:0:0') AND SERIAL = '0309' ", (err, result) => {
-
-    //                     try {
-    //                         if (err) throw err;
-    //                         log(result);
-    //                         return result;
-    //                     } catch (error) {
-    //                         log("SCRIPT", err)
-
-    //                     }
-
-    //                 });
-    //             }
-    //             db.detach();
-
-    //             });
-
-
-
-    //         log('check', result);
-    //         res.json(result);
-
-    //     } catch (err) {
-
-    //     }
-
-    // };
+    if (req.body.request.tableName) {
+        //  log('**apiDBadmin router.post / "tableName" ', req.body.request);
+        res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
+                            .then(res => { return res })
+                            .catch(err => log(err))));
+    }
+    else if (req.body.request.db) {
+        //  log('**apiDBadmin router.post / "options" ', req.body.request);
+        res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETTABLES)
+                            .then(res => { return res })
+                            .catch(err => log(err))));
+    };
 });
 
-// async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
 
-//     return new Promise((res, rej) => {
-//         firebird.attach(accessOptions, async (err, db) => {
-//             if (err) rej(err)
-//             else {
-//                 let arr = [timePointSart, timePointFinish];
-//                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish), db)
-//                     .catch(err => log('SQL SCRIPT ERROR!', err))); //log(arr);
-//                 res(arr);
-//             };
-//         });
-//     });
-// };
+async function makeQuery(options, script) {
+    try {
+        return new Promise((res, rej) => {
+            firebird.attach(options, async (err, db) => {
+                if (err) rej(err)
+                else {
+                    var resQ = new Promise((res, rej) => {
+                        db.query(script, (err, result) => {
+                            if (err) rej(err);
+                            res(result);
+                        });
+                    });
+                    res(await resQ.then(res => { return res })
+                        .catch(err => log(err))
+                        .finally(() => db.detach()));
+                };
+            });
+        });
+    }
+    catch (err) { ('makeQuery ERROR', log(err)) };
+};
 
-
-
-// function queryToDB(script, db) {
-//     return new Promise((res, rej) => {
-//         db.query(script, (err, result) => {
-//             if (err) rej(err);
-//             db.detach();
-//             //log('--> func! getDataFomDb', script, result[0].SUM);
-//             if (!result[0].SUM) result[0].SUM = 0;
-//             res(Math.round(result[0].SUM));
-//         });
-//     });
-// };
-
-// function dateToUTC(date) {
-//     let dateArr = date.replace((/-|:|\s/g), ", ").split(',');
-//     for (let i = 0; i < dateArr.length; i++) {
-//         if (i === 1)--dateArr[i];
-//         if (i === 2)++dateArr[i];
-//     };
-//     return Date.UTC(...dateArr);
-// };
-
-// function makeDateString(dateVal) {
-//     return (dateVal.getUTCFullYear() + '-' + (dateVal.getUTCMonth() + 1) + '-' +
-//         dateVal.getUTCDate() + ' ' + dateVal.getUTCHours() + ':' +
-//         dateVal.getUTCMinutes() + ':' + dateVal.getUTCSeconds());
-// };
-
-// function scriptGetSUM(timePointS, timePointF) {
-//     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
-//         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-//         + "'" + timePointF + "'" + ") AND CH1 = CH2 AND SERIAL = '0001'");
-// };
+function makeResponse(inputObj) {
+    //log(inputObj);
+    let outputArr = [];
+    for (let RDB in inputObj) {
+        for (let name in inputObj[RDB]) {
+            outputArr.push(inputObj[RDB][name].replace(/\s+/g, ''));
+        };
+    };
+    //log(outputArr);
+    return outputArr;
+};
 
 module.exports = router;
+
+
+
+// // del fee
+// router.post('/app-settings-fee-del', async (req, res) => {
+//     try {
+//         // var-s
+//         let user_id = req.body.currentUser._id
+//         let i = req.body.i
+//         // Get Admin & Barriers
+//         let Admin = await getAdminSAFE(user_id, req, res)
+//         // Get settings - mean: (list of fee)
+//         let state = await App.findOne({ name: 'settings' })
+//         // take a list
+//         let fee_list = state.fee
+//         // remove one fee
+//         fee_list.splice(i, 1)
+//         // save settings - mean: (new list of fee)
+//         let result = await App.findOneAndUpdate({ name: 'settings' }, {
+//             fee: fee_list
+//         })
+//         // send 'ok'
+//         send('ok', req, res)
+//     } catch (e) {
+//         error(e, req, res, 500, 'Cannot Delete Fee ')
+//     }
+// })
