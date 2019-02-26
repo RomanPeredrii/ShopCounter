@@ -51,7 +51,7 @@ router.post('/apidbwork', async (req, res, next) => {
 
         //    result.data = arrRes;
         //    log('**arrRes', result.data);       
-        res.json(func(arrRes));
+        res.json((arrRes));
     };
 });
 

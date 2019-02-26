@@ -3,45 +3,41 @@ extends layout
 block content
   h1= title
   .whole
-    .divDataForAttach
+    .forOptions
       label Host:
-      input#optionsHost(type='text' value = 'localhost')
-      br
+      input.options#optionsHost(type='text' value = 'localhost')
       label Port:
-      input#optionsPort(pattern = "^[ 0-9]+$", value = '3050')
-      br
+      input.options#optionsPort(pattern = "^[ 0-9]+$", value = '3050')
       label Path:
-      input#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB')
-      br
+      input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB')
       label User:
-      input#optionsUser(type='text' value = 'SYSDBA')
-      br
+      input.options#optionsUser(type='text' value = 'SYSDBA')
       label Password:
-      input#optionsPassword(type='text' value = 'a2vvczib')
-      br
+      input.options#optionsPassword(type='text' value = 'a2vvczib')
       label Page Size:
-      input#optionsPageSize(type='text' value = '4096')
-      br
+      input.options#optionsPageSize(type='text' value = '4096')
       label Role:
-      input#optionsRole(type='text' value = 'ADMIN')
-      br
-      button#checkConnection CHECK
-    .viewDb
-      table#compositionDB 
+      input.options#optionsRole(type='text' value = 'ADMIN')
+      button#connect CONNECT
+    .view
+      .viewDb
+        table#compositionDB 
+          tbody
+      .viewTable
+        table#compositionTable 
           tbody
     .userData
       label Brand or Point:
       input#brandUserData(type='text' value = '')
-      br
       label Address:
       input#adressUserData(pattern = 'text', value = '')
-      br
       label User:
       input#userUserData(type='text' value = '')
-      br
       label Password:
       input#passwordUserData(type='text' value = '')
-      
+    .term
+      textarea#textar  
+      input#scriptInput(type="text", value = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = 'COUNTERDATA'")
 
   link(rel='stylesheet', href='/css/adminStyle.css')
   script(src='/js/admin.js')

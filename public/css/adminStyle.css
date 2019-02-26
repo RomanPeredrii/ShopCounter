@@ -1,52 +1,163 @@
+
 body {
-    padding: 50px;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  }
-  h1 {
-    text-align: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  overflow-y: auto; 
   }
 
-.UserData {
+h1 {
+  display: none;
+}
+
+.whole {
+  display: flex;
+  flex-direction: column;
+  max-height : 90%; 
+  overflow-y: auto; 
+}
+
+.forOptions, .userData {
+  outline: none;
+  text-align: left;
+  margin:0.5em;
+  padding: 0.5em;
+  font-size:14px;
+  color:#2d2d2d;
+  width: calc(100%-6em); 
+  height:auto;
+  border:1px solid #999;
+  border-radius: 0.5em;
+  background:#fff;
+  font-size: 14px;
+}
+
+input {
+  padding: 0.1em;
+  border:1px solid #dadada;
+  border-radius: 0.2em;
+}
+
+label {
+  padding: 0;
+  margin: 0.1em;
+}
+
+#connect {
+  margin: 0.5em, 0;
+}
+
+.view {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.viewDb, .viewTable {
+  max-height: 100em;
+  text-align: center;
   display: inline-block;
-  text-align: right;
-  border: solid 2px;
-  margin: 4em;
-  padding: 5em;
+  margin: 2em;
+  padding: 2em;
+  overflow-y: auto;  
   }
 
-.divDataForAttach {
-  text-align: right;
-  display: inline-block;
-  border: solid 2px;
-  margin: 4em;
-  padding: 5em;
-  }
-
-  .viewDb {
-    text-align: right;
-    display: inline-block;
-    border: solid 2px;
-    margin: 4em;
-    padding: 5em;
-    }
-
-#compositionDB:tbo {
+#compositionDB {
   border-collapse: collapse;
-    
-    margin-bottom: 20px;
-    width: fit-content;
-    max-height : 25%;
-    font-size: 12px;
-    color: #000000;
-    overflow-y: auto;  
+  text-align: left;
+  margin-bottom: 20px;
+  width: fit-content;
+  max-height : 25%;
+  font-size: 12px;
+  color: #000000;
+  overflow-y: auto;  
+}
+
+/* .viewTable {
+  text-align: right;
+  display: inline-block;
+  border: solid 2px;
+  margin: 4em;
+  padding: 5em;
+  border:1px solid #999;
+  border-radius: 0.5em;
+  overflow-y: auto;  
+  } */
+
+#compositionTable {
+  border-collapse: collapse;
+  text-align: left;
+  margin-bottom: 20px;
+  width: fit-content;
+  height : 200px;
+  font-size: 12px;
+  color: #000000;
+  overflow-y: auto;  
+}
+
+.term {
+  display: block;
+  position: relative;
+  padding: 0.1em;
+  border:1px solid #999;
+  border-radius: 0.5em;
+}
+
+#textar {
+  width: 100%;
+  margin: 0 0;
+  height: 50em;
+  max-height: 50em;
+  border: none;
+  outline: none;
+  overflow-y: none;
+}
+
+.term input {
+width: 100%;
+margin: 0, 0;
+border: none;
+outline: none;
+}
+
+tbody tr {
+  font-weight: normal;
+  background-color: #ffffff;
+  }
+tr th {
+  text-align: center;
 }
 tbody tr:hover {
   background-color: #e0e0e0;
-  }
-td {
-  text-align: left;
+}
+
+td, th {
   padding: 9px 10px;
+  border-left: #d7d7d7 1px solid;
   border-top: #d7d7d7 1px solid;
   border-bottom: #d7d7d7 1px solid;
   line-height: 20px;
+}
+
+tr td:first-child, tr th:first-child {
+  border-left:0;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+    background: #ffffff; 
   }
+::-webkit-scrollbar-thumb {
+    background: #888888; 
+    border-radius: 3px;
+  }
+::-webkit-scrollbar-thumb:hover {
+    background: #2e2e2e; 
+  }
+.options {
+  outline: none;
+}

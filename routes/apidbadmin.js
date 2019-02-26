@@ -6,8 +6,6 @@ const router = require('express').Router();
 const firebird = require('node-firebird');
 //const User = require('../models/user.js');
 
-
-
 // const response = {
 //     ok: 'here',
 //     admin: false,
@@ -18,25 +16,33 @@ const firebird = require('node-firebird');
 
 const scriptGETTABLES = " SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE (RDB$RELATION_TYPE = 0) AND (RDB$SYSTEM_FLAG IS DISTINCT FROM 1)";
 const scriptGETFILDS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = ";
-const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 5:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-8-1 8:0:0') AND SERIAL = '0309' ";
+const scriptGETDATA = " SELECT FIRST 10 * FROM ";
+//const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 9:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-7-31 11:0:0') AND SERIAL = '0309' ";
 
 router.post('/apidbadmin', async (req, res, next) => {
-    // log('**apiDBadmin router.post / ', req.body.options.options);
+    log('**apiDBadmin router.post / ', req.body);
 
-    if (req.body.request.tableName) {
-        //  log('**apiDBadmin router.post / "tableName" ', req.body.request);
-        res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
-                            .then(res => { return res })
-                            .catch(err => log(err))));
+    if (req.body.request.script) {
+        res.json(makeResponse(await makeQuery(req.body.request.options, req.body.request.script)
+            .then(res => { return res })
+            .catch(err => {log(err)})));
+    }
+    else if (req.body.request.tableName) {
+
+        //log('**apiDBadmin router.post / "tableName" ', req.body.request);
+
+        //res.json(makeFullResponse(await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
+        res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETDATA + req.body.request.tableName)
+            .then(res => { return res })
+            .catch(err => log(err))));
     }
     else if (req.body.request.db) {
         //  log('**apiDBadmin router.post / "options" ', req.body.request);
         res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETTABLES)
-                            .then(res => { return res })
-                            .catch(err => log(err))));
+            .then(res => { return res })
+            .catch(err => log(err))));
     };
 });
-
 
 async function makeQuery(options, script) {
     try {
@@ -44,14 +50,17 @@ async function makeQuery(options, script) {
             firebird.attach(options, async (err, db) => {
                 if (err) rej(err)
                 else {
+
+                    log('---------->', script);
+
                     var resQ = new Promise((res, rej) => {
                         db.query(script, (err, result) => {
-                            if (err) rej(err);
+                            if (err) {rej(err); log('SCRIPT ERROR',err)};
                             res(result);
                         });
                     });
-                    res(await resQ.then(res => { return res })
-                        .catch(err => log(err))
+                    res(await resQ.then(res => { log('res---------->', res); return res })
+                        .catch(err => { log('SCRIPT ERROR',err); return err} )
                         .finally(() => db.detach()));
                 };
             });
@@ -60,17 +69,29 @@ async function makeQuery(options, script) {
     catch (err) { ('makeQuery ERROR', log(err)) };
 };
 
+// function makeResponse(inputObj) {
+//     let outputArr = [];
+//     for (let fields in inputObj) {
+//         for (let data in inputObj[fields]) {
+//             outputArr.push(inputObj[fields][data].replace(/\s+/g, ''));
+//         };
+//     };
+//     return outputArr;
+// };
+
+
+
 function makeResponse(inputObj) {
-    //log(inputObj);
     let outputArr = [];
-    for (let RDB in inputObj) {
-        for (let name in inputObj[RDB]) {
-            outputArr.push(inputObj[RDB][name].replace(/\s+/g, ''));
-        };
+    for (let fields in inputObj) {
+        // log('type of inputObj:', typeof inputObj);
+        // log('type of inputObj[fields]:', typeof inputObj[fields]);
+        outputArr.push(Object.entries(inputObj[fields]));
     };
-    //log(outputArr);
+    log('outputArr', outputArr);
     return outputArr;
 };
+
 
 module.exports = router;
 
