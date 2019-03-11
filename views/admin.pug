@@ -27,17 +27,29 @@ block content
         table#compositionTable 
           tbody
     .userData
-      label Brand or Point:
-      input#brandUserData(type='text' value = '')
-      label Address:
-      input#adressUserData(pattern = 'text', value = '')
-      label User:
-      input#userUserData(type='text' value = '')
-      label Password:
-      input#passwordUserData(type='text' value = '')
-    .term
-      textarea#textar  
-      input#scriptInput(type="text", value = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = 'COUNTERDATA'")
+      .forPoint
+        label Brand or Point:
+        input#brandUserData(type='text' value = '')
+        label Address:
+        input#addressUserData(type = 'text', value = '')
+      .forNewUserOptions        
+        label User:
+        input.options#optionsUserNewUser(type='text' value = '')
+        label Password:
+        input.options#optionsPasswordNewUser(type='text' value = '')
+        label Role:
+        input.options#optionsRoleNewUser(type='text' value = '')
+      .forNewUserGeneralOptions
+        label Host:
+        input.options#optionsHostNewUser(type='text' value = '')
+        label Port:
+        input.options#optionsPortNewUser(pattern = "^[ 0-9]+$", value = '')
+        label Path:
+        input.options#optionsPathNewUser(type='text' value = '')
+        label Page Size:
+        input.options#optionsPageSizeNewUser(type='text' value = '')
+      button#addUser ADDUSER
+    
 
   link(rel='stylesheet', href='/css/adminStyle.css')
   script(src='/js/admin.js')

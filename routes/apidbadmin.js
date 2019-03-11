@@ -4,7 +4,8 @@ const log = console.log;
 const express = require('express');
 const router = require('express').Router();
 const firebird = require('node-firebird');
-//const User = require('../models/user.js');
+const User = require('../models/user.js');
+
 
 // const response = {
 //     ok: 'here',
@@ -23,30 +24,31 @@ router.post('/apidbadmin', async (req, res, next) => {
     log('**apiDBadmin router.post / ', req.body);
 
     if (req.body.request.script) {
-        res.json(makeResponse(await makeQuery(req.body.request.options, req.body.request.script)
+        res.json((await makeQuery(req.body.request.options, req.body.request.script)
             .then(res => { return res })
-            .catch(err => {log(err)})));
+            .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.tableName) {
 
         //log('**apiDBadmin router.post / "tableName" ', req.body.request);
 
         //res.json(makeFullResponse(await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
-        res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETDATA + req.body.request.tableName)
+        res.json((await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
             .then(res => { return res })
-            .catch(err => log(err))));
+            .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.db) {
         //  log('**apiDBadmin router.post / "options" ', req.body.request);
-        res.json(makeResponse(await makeQuery(req.body.request.options, scriptGETTABLES)
+        res.json((await makeQuery(req.body.request.options, scriptGETTABLES)
             .then(res => { return res })
-            .catch(err => log(err))));
+            .catch(err => { log('REJ ERROR', err); log(err) })));
     };
 });
 
 async function makeQuery(options, script) {
-    try {
-        return new Promise((res, rej) => {
+
+    return new Promise((res, rej) => {
+        try {
             firebird.attach(options, async (err, db) => {
                 if (err) rej(err)
                 else {
@@ -54,19 +56,24 @@ async function makeQuery(options, script) {
                     log('---------->', script);
 
                     var resQ = new Promise((res, rej) => {
-                        db.query(script, (err, result) => {
-                            if (err) {rej(err); log('SCRIPT ERROR',err)};
+                        db.execute(script, (err, result) => {
+                            if (err) rej(err);
                             res(result);
                         });
                     });
                     res(await resQ.then(res => { log('res---------->', res); return res })
-                        .catch(err => { log('SCRIPT ERROR',err); return err} )
+                        //.catch(err => { log('REJ ERROR', err) })
                         .finally(() => db.detach()));
                 };
             });
-        });
-    }
-    catch (err) { ('makeQuery ERROR', log(err)) };
+
+        }
+        catch (err) {
+            ('makeQuery ERROR', log(err))
+        };
+    });
+
+
 };
 
 // function makeResponse(inputObj) {
@@ -84,13 +91,13 @@ async function makeQuery(options, script) {
 function makeResponse(inputObj) {
     let outputArr = [];
     for (let fields in inputObj) {
-        // log('type of inputObj:', typeof inputObj);
-        // log('type of inputObj[fields]:', typeof inputObj[fields]);
         outputArr.push(Object.entries(inputObj[fields]));
     };
     log('outputArr', outputArr);
     return outputArr;
 };
+
+
 
 
 module.exports = router;
@@ -121,3 +128,6 @@ module.exports = router;
 //         error(e, req, res, 500, 'Cannot Delete Fee ')
 //     }
 // })
+
+//a = [...e, ...g]
+// let {one, t, ...rest} = {one: 2, sadfas: 11}

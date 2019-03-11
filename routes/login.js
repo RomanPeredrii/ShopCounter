@@ -27,13 +27,13 @@ router.post('/login', function (req, res, next) {
       result.logged = true;
     };
     res.json(result);
-  }).catch((err) => {log('getUser ERROR', err); result.error = true; res.json(result);});
-  
+  }).catch((err) => { log('getUser ERROR', err); result.error = true; res.json(result); });
+
 });
 
 async function getUser(UserLogInfo) {
   try {
-    //log('USER INCOME ODJECT', UserLogInfo)
+    //log('USER INCOME OBJECT', UserLogInfo)
     var tokenString = makeid();
     var user = await
       User.findOneAndUpdate(
@@ -45,7 +45,8 @@ async function getUser(UserLogInfo) {
           token: tokenString
         });
     //log('USER', user)
-    if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') } else {
+    if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') }
+    else {
       user.token = tokenString;
     };
     return user;

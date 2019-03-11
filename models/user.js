@@ -16,7 +16,35 @@ let User = mongoose.model('User', {
   },
   token: {
     type: String,
-  }
+    unique: true,
+  },
+  host: {
+    type: String,
+    required: true
+  },
+  role: {
+    type: String,
+    required: true
+  },
+  path: {
+    type: String,
+    required: true
+  },
+  port: {
+    type: String,
+    required: true
+  },
+  pageSize: {
+    type: String,
+    required: true
+  },
+  point: {
+    type: String,
+  },
+  address: {
+      type: String,
+  },
+  
 });
 
 module.exports = User;
