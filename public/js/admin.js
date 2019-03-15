@@ -9,25 +9,45 @@ const optionUserDBData = document.querySelector('#optionsUser');
 const optionRoleDBData = document.querySelector('#optionsRole');
 const optionPasswordDBData = document.querySelector('#optionsPassword');
 const optionPageSizeDBData = document.querySelector('#optionsPageSize');
+
 const compositionDB = document.querySelector('#compositionDB > tbody');
 const compositionTable = document.querySelector('#compositionTable > tbody');
-const termText = document.querySelector('#textar');
-const scriptInput = document.querySelector('#scriptInput');
+
+const adminGeneralOptions = document.querySelectorAll('.forAdminGeneralOptions > input');
+const userGeneralOptions = document.querySelectorAll('.forNewUserGeneralOptions > input');
+
+let options = {};
 
 // OPTION FOR ATTACH DB
-function getOptions() {
-    return {
-        options: {
-            host: optionHostDBData.value,
-            port: optionPortDBData.value,
-            database: optionPathDBData.value,
-            user: optionUserDBData.value,
-            password: optionPasswordDBData.value,
-            pageSize: optionPageSizeDBData.value,
-            role: optionRoleDBData.value
-        }
+const forOptions = document.querySelectorAll('.forOptions >*> input');
+log(forOptions);
 
-    };
+forOptions.forEach(opt => {
+// log(opt.title);
+// log(opt.value);
+options[opt.title] = opt.value;
+
+//log(opt.data);
+});
+
+
+
+
+function getOptions(options) {
+
+    return  options;
+//     return {
+//         options: {
+//             host: optionHostDBData.value,
+//             port: optionPortDBData.value,
+//             database: optionPathDBData.value,
+//             user: optionUserDBData.value,
+//             password: optionPasswordDBData.value,
+//             pageSize: optionPageSizeDBData.value,
+//             role: optionRoleDBData.value
+//         }
+
+//     };
 };
 
 const headers = {
@@ -35,10 +55,10 @@ const headers = {
     'Content-Type': 'application/json'
 };
 
-let request;
-
+let request = {};
+log(options);
 document.querySelector('#connect').addEventListener('click', async () => {
-    request = getOptions();
+    request.options = options;
     log(request.options);
     if (request.options) {
         try {
@@ -50,34 +70,46 @@ document.querySelector('#connect').addEventListener('click', async () => {
             else {
                 compositionDB.innerHTML = '';
                 showDB(compositionDB, result);
-                //connect.style.display = 'none';
             }
         }
         catch (err) { log(err) };
     } else alert('FiLL INPUT');
 });
 
-// SHOW TABLELIST
-async function wievDB(result) {
-    result.map(async (rowResult) => {
-        //log(typeof rowResult, rowResult);
-        showDB(compositionDB, rowResult)
-    });
-};
-
 
 async function getComposition(evt) {
-    // log(request);
-    log(evt.path[0].innerText);
+    log('getComposition request', request);
+    compositionTable.innerHTML = '';
+    //log(evt.path[0].innerText);
     request.tableName = evt.path[0].innerText;
     try {
-        request.db = true;
+        //request.db = true;
+        request.data = false;
         const result = await makeReq(request);
         if (result.unlogged) {
             window.location.replace('/');
         }
         else {
-            compositionTable.innerHTML = '';
+            log('getComposition result', result);
+            showHead(compositionTable, result);
+        };
+    }
+    catch (err) { log(err) };
+};
+
+async function getData(evt) {
+    log('getData request', request);
+    //log(evt.path[0].innerText);
+    //request.tableName = evt.path[0].innerText;
+    try {
+        request.data = true;
+        const result = await makeReq(request);
+        if (result.unlogged) {
+            window.location.replace('/');
+        }
+        else {
+            //compositionTable.innerHTML = '';
+            log('getData result', result);
             showTable(compositionTable, result);
         };
     }
@@ -85,10 +117,10 @@ async function getComposition(evt) {
 };
 
 function showDB(context, data) {
-    //log('DATA', data);
+    log('showDB', data);
     data.map((data) => {
         data.map((data) => {
-            log(data.replace(/\s+/g, ''));
+          //  log(data.replace(/\s+/g, ''));
             const tr = document.createElement('tr');
             const td = document.createElement('td');
             td.textContent = data.replace(/\s+/g, '');
@@ -99,28 +131,32 @@ function showDB(context, data) {
     });
 };
 
-function showTable(context, data) {
-    let hat;
+
+function showHead(context, data) {
+    log('showHead', data);
+    const tr = document.createElement('tr');
     data.map((data) => {
-        const trD = document.createElement('tr');
-        //const trH = document.createElement('tr');
-        // if (!hat) {
-        //     data.map((data) => {
-        //         const th = document.createElement('th');
-        //         th.textContent = data;
-        //         trH.appendChild(th);
-        //     });
-        //     context.appendChild(trH);
-        //     hat = 1;
-        // }
-        // else {
+        data.map((data) => {
+            //log(data.replace(/\s+/g, ''));
+            const th = document.createElement('th');
+            th.textContent = data.replace(/\s+/g, '');
+            th.addEventListener('click', getData);
+            tr.appendChild(th);
+            context.appendChild(tr);
+        });
+    });
+};
+
+function showTable(context, data) {
+    log('showTable', data);
+    data.map((data) => {
+        const tr = document.createElement('tr');
         data.map((data) => {
             const td = document.createElement('td');
             td.textContent = data;
-            trD.appendChild(td);
+            tr.appendChild(td);
         });
-        context.appendChild(trD);
-        // };
+        context.appendChild(tr);
     });
 };
 
@@ -153,15 +189,27 @@ let makeReq = async (request) => {
 
 const optionsData = document.querySelectorAll('.options');
 
-const optionHostDBDataNewUser = document.querySelector('#optionsHostNewUser');
-const optionPortDBDataNewUser = document.querySelector('#optionsPortNewUser');
-const optionPathDBDataNewUser = document.querySelector('#optionsPathNewUser');
-const optionUserDBDataNewUser = document.querySelector('#optionsUserNewUser');
-const optionRoleDBDataNewUser = document.querySelector('#optionsRoleNewUser');
-const optionPasswordDBDataNewUser = document.querySelector('#optionsPasswordNewUser');
-const optionPageSizeDBDataNewUser = document.querySelector('#optionsPageSizeNewUser');
-const brandNewUserData = document.querySelector('#brandUserData');
-const addressNewUserData = document.querySelector('#addressUserData');
+// const optionHostDBDataNewUser = document.querySelector('#optionsHostNewUser');
+// const optionPortDBDataNewUser = document.querySelector('#optionsPortNewUser');
+// const optionPathDBDataNewUser = document.querySelector('#optionsPathNewUser');
+// const optionUserDBDataNewUser = document.querySelector('#optionsUserNewUser');
+// const optionRoleDBDataNewUser = document.querySelector('#optionsRoleNewUser');
+// const optionPasswordDBDataNewUser = document.querySelector('#optionsPasswordNewUser');
+// const optionPageSizeDBDataNewUser = document.querySelector('#optionsPageSizeNewUser');
+// const brandNewUserData = document.querySelector('#brandUserData');
+// const addressNewUserData = document.querySelector('#addressUserData');
+
+let newUserData = {};
+
+['optionsHostNewUser', 'optionsPortNewUser', 'optionsPathNewUser',
+    'optionsUserNewUser', 'optionsRoleNewUser', 'optionsPasswordNewUser',
+    'optionsPageSizeNewUser', 'brandUserData', 'addressUserData']
+    .map(cont => {
+
+        newUserData[cont] = document.querySelector('#' + cont);
+    });
+
+//log(newUserData);
 
 
 ['click', 'change', 'keyup'].map(evt => {
@@ -169,32 +217,47 @@ const addressNewUserData = document.querySelector('#addressUserData');
 });
 
 function changeUserData() {
-    optionHostDBDataNewUser.value = optionHostDBData.value;
-    optionPortDBDataNewUser.value = optionPortDBData.value;
-    optionPathDBDataNewUser.value = optionPathDBData.value;
-    optionPageSizeDBDataNewUser.value = optionPageSizeDBData.value;
+
+    // for (let i = 0)
+    // optionHostDBDataNewUser.value = optionHostDBData.value;
+    // optionPortDBDataNewUser.value = optionPortDBData.value;
+    // optionPathDBDataNewUser.value = optionPathDBData.value;
+    // optionPageSizeDBDataNewUser.value = optionPageSizeDBData.value;
 };
 
+// from-to (value)
+// [
+//     [newUserData, newUserDatanewUserData]
+// ].map(x => {
 
+
+//     x.[2]value = x[2].value
+//     x.[1]value = x[1].value
+//     x.[0]value = x[0].value
+// })
+
+newUserData.value
 
 document.querySelector('#addUser').addEventListener('click', async () => {
     let options = {
         host: optionHostDBDataNewUser.value,
         port: optionPortDBDataNewUser.value,
         database: optionPathDBDataNewUser.value,
-        user: optionUserDBDataNewUser.value,
+        username: optionUserDBDataNewUser.value,
         password: optionPasswordDBDataNewUser.value,
         pageSize: optionPageSizeDBDataNewUser.value,
         role: optionRoleDBDataNewUser.value,
         point: brandNewUserData.value,
         address: addressNewUserData.value
     };
+
+    
     makeReqAddUser(options);
 });
 
 
 let makeReqAddUser = async (request) => {
-    log(request);
+    //log(request);
     try {
         const rawResponse = await fetch('http://localhost:3000/api/apidbusers', {
             method: 'POST',

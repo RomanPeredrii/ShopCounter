@@ -24,8 +24,14 @@ h1 {
 
 
 
-.forOptions, .userData, .forPoint, 
-.forNewUserOptions, .forNewUserGeneralOptions {
+
+.userData, 
+.forPoint, 
+.forOptions, 
+.forAdminGeneralOptions,
+.forAdminGeneralOptions,
+.forNewUserOptions, 
+.forNewUserGeneralOptions {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: wrap;

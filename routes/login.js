@@ -34,8 +34,8 @@ router.post('/login', function (req, res, next) {
 async function getUser(UserLogInfo) {
   try {
     //log('USER INCOME OBJECT', UserLogInfo)
-    var tokenString = makeid();
-    var user = await
+    let tokenString = makeid();
+    let user = await
       User.findOneAndUpdate(
         {
           username: UserLogInfo.userName,

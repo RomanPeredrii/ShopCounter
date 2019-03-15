@@ -24,7 +24,7 @@ router.all('/*', async (req, res, next) => {
 router.get('/', function (req, res, next) {
     res.render('index.pug', { title: 'YOU WELCOME', logged: false });
 });
-
+ 
 
 module.exports = router;
 

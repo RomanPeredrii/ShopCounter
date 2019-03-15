@@ -4,20 +4,22 @@ block content
   h1= title
   .whole
     .forOptions
-      label Host:
-      input.options#optionsHost(type='text' value = 'localhost')
-      label Port:
-      input.options#optionsPort(pattern = "^[ 0-9]+$", value = '3050')
-      label Path:
-      input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB')
-      label User:
-      input.options#optionsUser(type='text' value = 'SYSDBA')
-      label Password:
-      input.options#optionsPassword(type='text' value = 'a2vvczib')
-      label Page Size:
-      input.options#optionsPageSize(type='text' value = '4096')
-      label Role:
-      input.options#optionsRole(type='text' value = 'ADMIN')
+      .forAdminGeneralOptions
+        label Host:
+        input.options#optionsHost(type='text', value='localhost', title='host')
+        label Port:
+        input.options#optionsPort(pattern = "^[ 0-9]+$", value = '3050', title='port')
+        label Path:
+        input.options#optionsPath(type='text,' value = 'D:/JS/vvv/COUNTER.FDB', title='database')
+        label Page Size:
+        input.options#optionsPageSize(type='text' value = '4096' title='pageSize' )
+      .forAdminOptions
+        label User:
+        input.options#optionsUser(type='text' value = 'SYSDBA' title='user')
+        label Password:
+        input.options#optionsPassword(type='text' value = 'a2vvczib' title='password')
+        label Role:
+        input.options#optionsRole(type='text' value = 'ADMIN' title='role')
       button#connect CONNECT
     .view
       .viewDb
@@ -27,18 +29,6 @@ block content
         table#compositionTable 
           tbody
     .userData
-      .forPoint
-        label Brand or Point:
-        input#brandUserData(type='text' value = '')
-        label Address:
-        input#addressUserData(type = 'text', value = '')
-      .forNewUserOptions        
-        label User:
-        input.options#optionsUserNewUser(type='text' value = '')
-        label Password:
-        input.options#optionsPasswordNewUser(type='text' value = '')
-        label Role:
-        input.options#optionsRoleNewUser(type='text' value = '')
       .forNewUserGeneralOptions
         label Host:
         input.options#optionsHostNewUser(type='text' value = '')
@@ -48,6 +38,18 @@ block content
         input.options#optionsPathNewUser(type='text' value = '')
         label Page Size:
         input.options#optionsPageSizeNewUser(type='text' value = '')
+      .forNewUserOptions
+        label User:
+        input.options#optionsUserNewUser(type='text' value = '')
+        label Password:
+        input.options#optionsPasswordNewUser(type='text' value = '')
+        label Role:
+        input.options#optionsRoleNewUser(type='text' value = '')
+      .forPoint
+        label Brand or Point:
+        input#brandUserData(type='text' value = '')
+        label Address:
+        input#addressUserData(type = 'text', value = '')
       button#addUser ADDUSER
     
 

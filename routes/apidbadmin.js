@@ -21,24 +21,26 @@ const scriptGETDATA = " SELECT FIRST 10 * FROM ";
 //const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 9:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-7-31 11:0:0') AND SERIAL = '0309' ";
 
 router.post('/apidbadmin', async (req, res, next) => {
-    log('**apiDBadmin router.post / ', req.body);
+    //log('**apiDBadmin router.post / ', req.body);
 
-    if (req.body.request.script) {
-        res.json((await makeQuery(req.body.request.options, req.body.request.script)
+    if ((req.body.request.data) && (req.body.request.tableName)) {
+
+        log('**apiDBadmin router.post / "data" ', req.body.request);
+        log(scriptGETDATA + req.body.request.tableName);
+        res.json((await makeQuery(req.body.request.options, scriptGETDATA + req.body.request.tableName)
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.tableName) {
 
-        //log('**apiDBadmin router.post / "tableName" ', req.body.request);
-
-        //res.json(makeFullResponse(await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
+        log('**apiDBadmin router.post / "table" ', req.body.request);
+        log(scriptGETFILDS + "'" + req.body.request.tableName + "'");
         res.json((await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.db) {
-        //  log('**apiDBadmin router.post / "options" ', req.body.request);
+        log('**apiDBadmin router.post / "options" ', req.body.request);
         res.json((await makeQuery(req.body.request.options, scriptGETTABLES)
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
@@ -53,7 +55,7 @@ async function makeQuery(options, script) {
                 if (err) rej(err)
                 else {
 
-                    log('---------->', script);
+                    //log('---------->', script);
 
                     var resQ = new Promise((res, rej) => {
                         db.execute(script, (err, result) => {
@@ -61,31 +63,19 @@ async function makeQuery(options, script) {
                             res(result);
                         });
                     });
-                    res(await resQ.then(res => { log('res---------->', res); return res })
-                        //.catch(err => { log('REJ ERROR', err) })
+                    res(await resQ.then(res => {
+                        /*log('res---------->', res);*/
+                        return res
+                    })//.catch(err => { log('REJ ERROR', err) })
                         .finally(() => db.detach()));
                 };
             });
-
         }
         catch (err) {
             ('makeQuery ERROR', log(err))
         };
     });
-
-
 };
-
-// function makeResponse(inputObj) {
-//     let outputArr = [];
-//     for (let fields in inputObj) {
-//         for (let data in inputObj[fields]) {
-//             outputArr.push(inputObj[fields][data].replace(/\s+/g, ''));
-//         };
-//     };
-//     return outputArr;
-// };
-
 
 
 function makeResponse(inputObj) {

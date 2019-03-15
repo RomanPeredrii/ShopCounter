@@ -16,7 +16,6 @@ let User = mongoose.model('User', {
   },
   token: {
     type: String,
-    unique: true,
   },
   host: {
     type: String,
@@ -26,7 +25,7 @@ let User = mongoose.model('User', {
     type: String,
     required: true
   },
-  path: {
+  database: {
     type: String,
     required: true
   },
