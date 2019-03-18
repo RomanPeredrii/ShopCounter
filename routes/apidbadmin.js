@@ -17,17 +17,27 @@ const User = require('../models/user.js');
 
 const scriptGETTABLES = " SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE (RDB$RELATION_TYPE = 0) AND (RDB$SYSTEM_FLAG IS DISTINCT FROM 1)";
 const scriptGETFILDS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = ";
-const scriptGETDATA = " SELECT FIRST 10 * FROM ";
+let scriptGETDATA = (count) => { return ("SELECT FIRST " + count + " * FROM ") };
+let scriptADDUSER = (user, password) => { return ("CREATE USER " + user + " PASSWORD " + "'" + password + "'" + " GRANT ADMIN ROLE") };
 //const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 9:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-7-31 11:0:0') AND SERIAL = '0309' ";
 
 router.post('/apidbadmin', async (req, res, next) => {
-    //log('**apiDBadmin router.post / ', req.body);
+    log('**apiDBadmin router.post / ', req.body.request.addUser);
 
-    if ((req.body.request.data) && (req.body.request.tableName)) {
+    if (req.body.request.addUser) {
+        log('**apiDBadmin router.post / "addUser" ', req.body);
+
+        log(scriptADDUSER(req.body.request.username, req.body.request.password));
+
+        // res.json((await makeQuery(req.body.request.options, scriptADDUSER(req.body.request.options.username, req.body.request.options.password))
+        //     .then(res => { return res })
+        //     .catch(err => { log('REJ ERROR', err); log(err) })));
+    }
+    else if ((req.body.request.data) && (req.body.request.tableName)) {
 
         log('**apiDBadmin router.post / "data" ', req.body.request);
         log(scriptGETDATA + req.body.request.tableName);
-        res.json((await makeQuery(req.body.request.options, scriptGETDATA + req.body.request.tableName)
+        res.json((await makeQuery(req.body.request.options, scriptGETDATA(10) + req.body.request.tableName)
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }

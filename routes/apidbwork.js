@@ -1,19 +1,12 @@
 'use strict';
 
 const log = console.log;
-var express = require('express');
-var router = express.Router();
+// var express = require('express');
+// var router = express.Router();
 var firebird = require('node-firebird');
-var options = {};
+const router = require('express').Router();
+const User = require('../models/user.js');
 
-// OPTION FOR ATTACH DB
-options.host = 'localhost';
-options.port = 3050;
-options.database = 'D:/JS/vvv/COUNTER.FDB';
-options.user = 'SYSDBA';
-options.password = 'a2vvczib';
-options.pageSize = 4096;
-options.role = 'ADMIN';
 
 const result = {
     ok: false,
@@ -22,7 +15,32 @@ const result = {
     logged: true
 };
 
+// OPTION FOR ATTACH DB
+let getUserOptions = async (token) => {
+    try {
+        let user = await User.findOne({ token });
+
+        //log('getUserOptions ----> USER', user)
+        if (!user) { log('USER NOT EXIST') }
+        else {
+            var options = {
+                host: user.host,
+                port: user.port,
+                database: user.database,
+                user: user.username,
+                password: user.password,
+                pageSize: user.pageSize,
+                role: user.role
+            };
+        };
+        return options;
+    } catch (err) { log('\n USER ERROR', err) };
+};
+
 router.post('/apidbwork', async (req, res, next) => {
+
+    log(req.cookies.token);
+    getUserOptions(req.cookies.token).then((opt) => {log(opt)});
     //log('**apiDB router.post / ');
     selectionFromDB(req.body.TimeStamp);
 
@@ -42,7 +60,7 @@ router.post('/apidbwork', async (req, res, next) => {
             // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
             //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
 
-            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options).
+            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), getUserOptions(req.cookies.token)).
                 catch(err => log('CONNECTION TO DB ERROR ', err)));
 
             timePoints.timeFinish = timePoints.timeStart + timePoints.period;
@@ -60,7 +78,7 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
 
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
-            
+
             if (err) rej(err)
             else {
                 let arr = [timePointSart, timePointFinish];
@@ -106,5 +124,9 @@ function scriptGetSUM(timePointS, timePointF) {
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
         + "'" + timePointF + "'" + ") AND CH1 = CH2 AND SERIAL = '0001'");
 };
+
+
+
+
 
 module.exports = router;

@@ -10,16 +10,16 @@ block content
         label Port:
         input.options#optionsPort(pattern = "^[ 0-9]+$", value = '3050', title='port')
         label Path:
-        input.options#optionsPath(type='text,' value = 'D:/JS/vvv/COUNTER.FDB', title='database')
+        input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB', title='database')
         label Page Size:
-        input.options#optionsPageSize(type='text' value = '4096' title='pageSize' )
+        input.options#optionsPageSize(type='text', value = '4096', title='pageSize' )
       .forAdminOptions
         label User:
-        input.options#optionsUser(type='text' value = 'SYSDBA' title='user')
+        input.options#optionsUser(type='text', value = 'SYSDBA', title='user')
         label Password:
-        input.options#optionsPassword(type='text' value = 'a2vvczib' title='password')
+        input.options#optionsPassword(type='text', value = 'a2vvczib', title='password')
         label Role:
-        input.options#optionsRole(type='text' value = 'ADMIN' title='role')
+        input.options#optionsRole(type='text', value = 'ADMIN', title='role')
       button#connect CONNECT
     .view
       .viewDb
@@ -31,25 +31,25 @@ block content
     .userData
       .forNewUserGeneralOptions
         label Host:
-        input.options#optionsHostNewUser(type='text' value = '')
+        input.options#optionsHostNewUser(type='text', value = '', title='host')
         label Port:
-        input.options#optionsPortNewUser(pattern = "^[ 0-9]+$", value = '')
+        input.options#optionsPortNewUser(pattern = "^[ 0-9]+$", value = '', title='port')
         label Path:
-        input.options#optionsPathNewUser(type='text' value = '')
+        input.options#optionsPathNewUser(type='text', value = '', title='database')
         label Page Size:
-        input.options#optionsPageSizeNewUser(type='text' value = '')
+        input.options#optionsPageSizeNewUser(type='text', value = '', title='pageSize')
       .forNewUserOptions
         label User:
-        input.options#optionsUserNewUser(type='text' value = '')
+        input.options#optionsUserNewUser(type='text', value = '', title='username')
         label Password:
-        input.options#optionsPasswordNewUser(type='text' value = '')
+        input.options#optionsPasswordNewUser(type='text', value = '', title='password')
         label Role:
-        input.options#optionsRoleNewUser(type='text' value = '')
+        input.options#optionsRoleNewUser(type='text', value = '', title='role')
       .forPoint
         label Brand or Point:
-        input#brandUserData(type='text' value = '')
+        input#brandUserData(type='text', value = '', title='brand')
         label Address:
-        input#addressUserData(type = 'text', value = '')
+        input#addressUserData(type = 'text', value = '', title='address')
       button#addUser ADDUSER
     
 

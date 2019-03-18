@@ -17,7 +17,7 @@ router.post('/apidbusers', async (req, res, next) => {
 
   let user = new User(req.body.request);
   try {
-    let result = user.save() ;//async
+    //user.save() ;//async
 
     // let user = async () => await
     //   User.findOneAndUpdate(
@@ -25,8 +25,8 @@ router.post('/apidbusers', async (req, res, next) => {
     //        username: UserLogInfo.userName,
     //        password: UserLogInfo.pswd
     //      });
-    log('USER', user);
-    log('RESULT', result);
+    //log('USER', user);
+
   } 
   catch  (err) { log('SAVE', err) };
 });

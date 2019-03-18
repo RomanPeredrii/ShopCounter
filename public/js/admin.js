@@ -1,53 +1,18 @@
+// evt = event;
+// cont = context;
+// i = item;
+// opt = option;
+
 "use strict"
 
 const log = console.log;
 
-const optionHostDBData = document.querySelector('#optionsHost');
-const optionPortDBData = document.querySelector('#optionsPort');
-const optionPathDBData = document.querySelector('#optionsPath');
-const optionUserDBData = document.querySelector('#optionsUser');
-const optionRoleDBData = document.querySelector('#optionsRole');
-const optionPasswordDBData = document.querySelector('#optionsPassword');
-const optionPageSizeDBData = document.querySelector('#optionsPageSize');
+const dqs = (cont) => {
+    return document.querySelector(cont);
+};
 
-const compositionDB = document.querySelector('#compositionDB > tbody');
-const compositionTable = document.querySelector('#compositionTable > tbody');
-
-const adminGeneralOptions = document.querySelectorAll('.forAdminGeneralOptions > input');
-const userGeneralOptions = document.querySelectorAll('.forNewUserGeneralOptions > input');
-
-let options = {};
-
-// OPTION FOR ATTACH DB
-const forOptions = document.querySelectorAll('.forOptions >*> input');
-log(forOptions);
-
-forOptions.forEach(opt => {
-// log(opt.title);
-// log(opt.value);
-options[opt.title] = opt.value;
-
-//log(opt.data);
-});
-
-
-
-
-function getOptions(options) {
-
-    return  options;
-//     return {
-//         options: {
-//             host: optionHostDBData.value,
-//             port: optionPortDBData.value,
-//             database: optionPathDBData.value,
-//             user: optionUserDBData.value,
-//             password: optionPasswordDBData.value,
-//             pageSize: optionPageSizeDBData.value,
-//             role: optionRoleDBData.value
-//         }
-
-//     };
+const dqsA = (cont) => {
+    return document.querySelectorAll(cont);
 };
 
 const headers = {
@@ -55,11 +20,39 @@ const headers = {
     'Content-Type': 'application/json'
 };
 
+const adminGeneralOptions = dqsA('.forAdminGeneralOptions > input');
+const newUserGeneralOptions = dqsA('.forNewUserGeneralOptions > input');
+// let it easy
+['click', 'change', 'keyup'].map(evt => {
+    newUserGeneralOptions.forEach(cont => cont.addEventListener(evt, () => {
+        newUserGeneralOptions.forEach((cont, i) => {
+            cont.value = adminGeneralOptions[i].value;
+        });
+    }))
+});
+
+// OPTION FOR ATTACH DB
+
+let options = (cont) => {
+    let options = {};
+    cont.forEach(opt => {
+        options[opt.title] = opt.value;
+    });
+    return options;
+};
+
+const forOptions = dqsA('.forOptions >*> input');
+
 let request = {};
-log(options);
-document.querySelector('#connect').addEventListener('click', async () => {
-    request.options = options;
-    log(request.options);
+
+const compositionDB = dqs('#compositionDB > tbody');
+const compositionTable = dqs('#compositionTable > tbody');
+
+//log(options(forOptions));
+
+dqs('#connect').addEventListener('click', async () => {
+    request.options = options(forOptions);
+    // log(request.options);
     if (request.options) {
         try {
             request.db = true;
@@ -78,7 +71,7 @@ document.querySelector('#connect').addEventListener('click', async () => {
 
 
 async function getComposition(evt) {
-    log('getComposition request', request);
+    //log('getComposition request', request);
     compositionTable.innerHTML = '';
     //log(evt.path[0].innerText);
     request.tableName = evt.path[0].innerText;
@@ -90,17 +83,14 @@ async function getComposition(evt) {
             window.location.replace('/');
         }
         else {
-            log('getComposition result', result);
+            //log('getComposition result', result);
             showHead(compositionTable, result);
         };
     }
     catch (err) { log(err) };
 };
 
-async function getData(evt) {
-    log('getData request', request);
-    //log(evt.path[0].innerText);
-    //request.tableName = evt.path[0].innerText;
+async function getData() {
     try {
         request.data = true;
         const result = await makeReq(request);
@@ -109,7 +99,7 @@ async function getData(evt) {
         }
         else {
             //compositionTable.innerHTML = '';
-            log('getData result', result);
+            //log('getData result', result);
             showTable(compositionTable, result);
         };
     }
@@ -117,10 +107,10 @@ async function getData(evt) {
 };
 
 function showDB(context, data) {
-    log('showDB', data);
+    //log('showDB', data);
     data.map((data) => {
         data.map((data) => {
-          //  log(data.replace(/\s+/g, ''));
+            //  log(data.replace(/\s+/g, ''));
             const tr = document.createElement('tr');
             const td = document.createElement('td');
             td.textContent = data.replace(/\s+/g, '');
@@ -133,7 +123,7 @@ function showDB(context, data) {
 
 
 function showHead(context, data) {
-    log('showHead', data);
+    //log('showHead', data);
     const tr = document.createElement('tr');
     data.map((data) => {
         data.map((data) => {
@@ -148,7 +138,7 @@ function showHead(context, data) {
 };
 
 function showTable(context, data) {
-    log('showTable', data);
+    // log('showTable', data);
     data.map((data) => {
         const tr = document.createElement('tr');
         data.map((data) => {
@@ -174,85 +164,13 @@ let makeReq = async (request) => {
     catch (err) { 'fetch ERROR', log(err) };
 };
 
-// scriptInput.addEventListener('keydown',async  function (evt) {
-//     if (evt.key === 'Enter') {
-//         termText.textContent += this.value + '\n';
 
-//         request.script = this.value;
+dqs('#addUser').addEventListener('click', async () => {
+    let newUserData = options(dqsA('.userData >*> input'));
 
-//         let result = await makeReq(request); log(request);
-//         termText.textContent += result;
-//         showTable(compositionTable, result);
-//         //this.value = '';
-//     };
-// }.bind(scriptInput), false);
-
-const optionsData = document.querySelectorAll('.options');
-
-// const optionHostDBDataNewUser = document.querySelector('#optionsHostNewUser');
-// const optionPortDBDataNewUser = document.querySelector('#optionsPortNewUser');
-// const optionPathDBDataNewUser = document.querySelector('#optionsPathNewUser');
-// const optionUserDBDataNewUser = document.querySelector('#optionsUserNewUser');
-// const optionRoleDBDataNewUser = document.querySelector('#optionsRoleNewUser');
-// const optionPasswordDBDataNewUser = document.querySelector('#optionsPasswordNewUser');
-// const optionPageSizeDBDataNewUser = document.querySelector('#optionsPageSizeNewUser');
-// const brandNewUserData = document.querySelector('#brandUserData');
-// const addressNewUserData = document.querySelector('#addressUserData');
-
-let newUserData = {};
-
-['optionsHostNewUser', 'optionsPortNewUser', 'optionsPathNewUser',
-    'optionsUserNewUser', 'optionsRoleNewUser', 'optionsPasswordNewUser',
-    'optionsPageSizeNewUser', 'brandUserData', 'addressUserData']
-    .map(cont => {
-
-        newUserData[cont] = document.querySelector('#' + cont);
-    });
-
-//log(newUserData);
-
-
-['click', 'change', 'keyup'].map(evt => {
-    optionsData.forEach(cont => cont.addEventListener(evt, changeUserData))
-});
-
-function changeUserData() {
-
-    // for (let i = 0)
-    // optionHostDBDataNewUser.value = optionHostDBData.value;
-    // optionPortDBDataNewUser.value = optionPortDBData.value;
-    // optionPathDBDataNewUser.value = optionPathDBData.value;
-    // optionPageSizeDBDataNewUser.value = optionPageSizeDBData.value;
-};
-
-// from-to (value)
-// [
-//     [newUserData, newUserDatanewUserData]
-// ].map(x => {
-
-
-//     x.[2]value = x[2].value
-//     x.[1]value = x[1].value
-//     x.[0]value = x[0].value
-// })
-
-newUserData.value
-
-document.querySelector('#addUser').addEventListener('click', async () => {
-    let options = {
-        host: optionHostDBDataNewUser.value,
-        port: optionPortDBDataNewUser.value,
-        database: optionPathDBDataNewUser.value,
-        username: optionUserDBDataNewUser.value,
-        password: optionPasswordDBDataNewUser.value,
-        pageSize: optionPageSizeDBDataNewUser.value,
-        role: optionRoleDBDataNewUser.value,
-        point: brandNewUserData.value,
-        address: addressNewUserData.value
-    };
-
-    
-    makeReqAddUser(options);
+    // log('userData', newUserData)
+    makeReqAddUser(newUserData);
+    // makeReqAddUserToFirebird(options);
 });
 
 
@@ -269,4 +187,7 @@ let makeReqAddUser = async (request) => {
         return result;
     }
     catch (err) { 'fetch ERROR', log(err) };
+    request.addUser = true;
+    makeReq(request);
+
 };
