@@ -8,16 +8,16 @@ const User = require('../models/user.js');
 
 
 router.post('/apidbusers', async (req, res, next) => {
-  log('**apiDBusers router.post / ', req.body.request);
+ log('**apiDBusers router.post / ', req.body.request);
 
   for (let opt in req.body.request) {
     if ((!req.body.request[opt]) && (opt !== 'address') && (opt !== 'point')) log('EMPTY PROPERTY:', opt);
 
   };
 
-  let user = new User(req.body.request);
+  let user = new User(req.body.request.options);
   try {
-    //user.save() ;//async
+    user.save() ;//async
 
     // let user = async () => await
     //   User.findOneAndUpdate(

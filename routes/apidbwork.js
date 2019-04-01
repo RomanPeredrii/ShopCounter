@@ -60,7 +60,7 @@ router.post('/apidbwork', async (req, res, next) => {
             // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
             //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
 
-            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), getUserOptions(req.cookies.token)).
+            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(req.cookies.token)).
                 catch(err => log('CONNECTION TO DB ERROR ', err)));
 
             timePoints.timeFinish = timePoints.timeStart + timePoints.period;
@@ -75,11 +75,10 @@ router.post('/apidbwork', async (req, res, next) => {
 
 
 async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
-
+    log('accessOptions', accessOptions);
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
-
-            if (err) rej(err)
+            if (err) { log(err); rej(err) }
             else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish), db)
@@ -97,9 +96,11 @@ function queryToDB(script, db) {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            //log('--> func! getDataFomDb', script, result[0].SUM);
+            log('--> func! getDataFomDb', script, result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
             res(Math.round(result[0].SUM));
+             log(result)
+            // res(result);
         });
     });
 };
@@ -122,7 +123,7 @@ function makeDateString(dateVal) {
 function scriptGetSUM(timePointS, timePointF) {
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-        + "'" + timePointF + "'" + ") AND CH1 = CH2 AND SERIAL = '0001'");
+        + "'" + timePointF + "'" + ") AND CH1 = CH2 ");
 };
 
 

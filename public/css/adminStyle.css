@@ -40,15 +40,13 @@ h1 {
   text-align: left;
   margin:0.5em;
   padding: 0.5em;
-  font-size:14px;
   color:#2d2d2d;
   width: calc(100%-6em); 
   height:auto;
   border:1px solid #999;
   border-radius: 0.5em;
   background:#fff;
-  font-size: 14px;
-}
+ }
 
 input {
   padding: 0.1em;
@@ -66,78 +64,103 @@ label {
 }
 
 .view {
+  /* border: 1px solid #999;
+  border-radius: 0.5em; */
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: flex-start;
 }
 
-.viewDb, .viewTable {
-  max-height: 100em;
-  text-align: center;
-  display: inline-block;
-  margin: 2em;
-  padding: 2em;
-  overflow-y: auto;  
+.viewDB {
+ 
+}
+
+.viewHead {
+  height: auto;
+  width: 80%;
+  margin-top: -3px;
+  border: 1px solid #999999;
+  border-bottom: 0;
+  border-top-right-radius: 0.5em;
+  text-align: left;  
+  margin-left: 0.14em; 
+  display: none;
   }
 
-#compositionDB {
-  border-collapse: collapse;
-  text-align: left;
-  margin-bottom: 20px;
-  width: fit-content;
-  max-height : 25%;
-  font-size: 12px;
-  color: #000000;
-  overflow-y: auto;  
-}
-
-/* .viewTable {
-  text-align: right;
-  display: inline-block;
+.viewTable {
+  width: 80%;
+  height: 30em;
+  text-align: center;
+  display: none;
   border: solid 2px;
-  margin: 4em;
-  padding: 5em;
-  border:1px solid #999;
-  border-radius: 0.5em;
+  padding-left: 1em;
+  margin-left: 0.14em; 
+  border:1px solid #999999;
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  border-top: 0;
   overflow-y: auto;  
-  } */
+  } 
 
-#compositionTable {
-  border-collapse: collapse;
-  text-align: left;
-  margin-bottom: 20px;
-  width: fit-content;
-  height : 200px;
+
+
+  #compositionDB td {
+  width: 100%;
+  background: #f1eded;
+  border-collapse:separate; 
+  border-radius: 0.2em 0.2em 0 0;
+  -webkit-border-radius: 10px 10px 0 0;
+  -moz-border-radius: 10px 10px 0 0; 
+  -khtml-border-radius: 10px 10px 0 0; 
+  border: 1px solid #999999; 
+  padding: 0.5em;
+  
+}
+
+#compositionDB {
+  position: relative;
+  z-index: 5;
+  border-collapse: separate;
+  border-bottom: 0;
+}​
+
+
+
+ 
+ #compositionTable {
+  font-size: 12px;
+  text-align: center;
+  width: 80%;
   font-size: 12px;
   color: #000000;
   overflow-y: auto;  
-}
+}  
 
-.term {
-  display: block;
-  position: relative;
-  padding: 0.1em;
-  border:1px solid #999;
-  border-radius: 0.5em;
-}
+#compositionTable tbody tr td:nth-child(2) {
+  text-align: left;
+}  
 
-#textar {
-  width: 100%;
-  margin: 0 0;
-  height: 10em;
-  max-height: 50em;
-  border: none;
-  outline: none;
-  overflow-y: none;
+ button {
+  color: #fff;
+  background-color: #0275d8;
+  border-color: #0275d8;
+  font-weight: normal;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  font-size: 16px;
+  border-radius: 0.25rem;
 }
+ 
 
-.term input {
-width: 100%;
-margin: 0, 0;
-border: none;
-outline: none;
-}
+
 
 tbody tr {
   font-weight: normal;
@@ -146,11 +169,11 @@ tbody tr {
 tr th {
   text-align: center;
 }
-tbody tr:hover {
+#compositionTable tbody tr:hover {
   background-color: #e0e0e0;
 }
 
-td, th {
+td {
   padding: 9px 10px;
   border-left: #d7d7d7 1px solid;
   border-top: #d7d7d7 1px solid;
@@ -161,6 +184,8 @@ td, th {
 tr td:first-child, tr th:first-child {
   border-left:0;
 }
+
+
 
 ::-webkit-scrollbar {
   width: 3px;
@@ -183,3 +208,44 @@ tr td:first-child, tr th:first-child {
 input:focus{
     background-color:#fafabf;
 }
+
+
+#compositionDB tbody tr :hover {
+  font-size:15px;
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+#compositionHeadTable tr th {
+  font-size: 12px;
+  color: #000000;
+  border-left: #d7d7d7 1px solid;
+  border-bottom: #d7d7d7 1px solid;
+  padding: 9px 10px;
+  
+}
+#compositionHeadTable tr :first-child{
+  border-left: 0;
+}
+
+#compositionHeadTable {
+  margin-left: 1em;
+}
+
+.userData {
+  display: none;
+  /* display: inline-flex; */
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  outline: none;
+  text-align: left;
+  margin:0.5em;
+  padding: 0.5em;
+  color:#2d2d2d;
+  width: calc(100%-6em); 
+  height:auto;
+  border:1px solid #999;
+  border-radius: 0.5em;
+  background:#fff;
+ }

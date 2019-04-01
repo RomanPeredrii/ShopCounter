@@ -18,55 +18,87 @@ const User = require('../models/user.js');
 const scriptGETTABLES = " SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE (RDB$RELATION_TYPE = 0) AND (RDB$SYSTEM_FLAG IS DISTINCT FROM 1)";
 const scriptGETFILDS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = ";
 let scriptGETDATA = (count) => { return ("SELECT FIRST " + count + " * FROM ") };
-let scriptADDUSER = (user, password) => { return ("CREATE USER " + user + " PASSWORD " + "'" + password + "'" + " GRANT ADMIN ROLE") };
+let scriptADDUSER = (user, password) => { return ("CREATE USER " + user + " PASSWORD " + "'" + password + "'") };
+let scriptADDUSERPRIV = (user) => { return (" GRANT SELECT ON TABLE COUNTERDATA TO USER " + user) };
 //const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 9:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-7-31 11:0:0') AND SERIAL = '0309' ";
 
 router.post('/apidbadmin', async (req, res, next) => {
-    log('**apiDBadmin router.post / ', req.body.request.addUser);
+    //    log('**apiDBadmin router.post / ', req.body.request.addUser);
 
     if (req.body.request.addUser) {
-        log('**apiDBadmin router.post / "addUser" ', req.body);
+        // log('**apiDBadmin router.post / "addUser" options', req.body.request.options);
+        // log('**apiDBadmin router.post / "addUser" adminOptions', req.body.request.adminOptions);
 
-        log(scriptADDUSER(req.body.request.username, req.body.request.password));
+        // log(scriptADDUSER(req.body.request.options.username, req.body.request.options.password));
+        // log(scriptADDUSERROLE(req.body.request.options.username, req.body.request.options.password));
+        res.json((await makeQuery(req.body.request.adminOptions, scriptADDUSER(req.body.request.options.username, req.body.request.options.password))
+            .then(res => { return res })
+            .catch(err => { log('REJ ERROR', err); log(err) })));
 
-        // res.json((await makeQuery(req.body.request.options, scriptADDUSER(req.body.request.options.username, req.body.request.options.password))
-        //     .then(res => { return res })
-        //     .catch(err => { log('REJ ERROR', err); log(err) })));
+        res.json((await makeQuery(req.body.request.adminOptions, scriptADDUSERPRIV(req.body.request.options.username))
+            .then(res => { return res })
+            .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if ((req.body.request.data) && (req.body.request.tableName)) {
 
-        log('**apiDBadmin router.post / "data" ', req.body.request);
-        log(scriptGETDATA + req.body.request.tableName);
-        res.json((await makeQuery(req.body.request.options, scriptGETDATA(10) + req.body.request.tableName)
+        // log('**apiDBadmin router.post / "data" ', req.body.request);
+        // log(scriptGETDATA + req.body.request.tableName);
+        res.json((await makeQuery(req.body.request.options, scriptGETDATA(100) + req.body.request.tableName)
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.tableName) {
 
-        log('**apiDBadmin router.post / "table" ', req.body.request);
-        log(scriptGETFILDS + "'" + req.body.request.tableName + "'");
+        // log('**apiDBadmin router.post / "table" ', req.body.request);
+        // log(scriptGETFILDS + "'" + req.body.request.tableName + "'");
         res.json((await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
             .then(res => { return res })
-            .catch(err => { log('REJ ERROR', err); log(err) })));
+            .catch(err => { log(err) })));
     }
     else if (req.body.request.db) {
-        log('**apiDBadmin router.post / "options" ', req.body.request);
+        // log('**apiDBadmin router.post / "options" ', req.body.request);
         res.json((await makeQuery(req.body.request.options, scriptGETTABLES)
-            .then(res => { return res })
-            .catch(err => { log('REJ ERROR', err); log(err) })));
+            .then(res => res)
+            .catch(err => err.message)));
     };
 });
 
+
+
+
+// let query = (db, script) => {
+//     return (new Promise((res, rej) => {
+//         db.execute(script, (err, result) => {
+//             if (err) rej(err);
+//             res(result);
+//         });
+//     }));
+// };
+
+
+// let scriptGETSUM = "SELECT SUM(CH1) FROM COUNTERDATA";
+// firebird.attach(options, (err, db) => {
+//     try {
+//         if (err) throw err
+//         else {
+//             query(db, scriptGETSUM)
+//                 .then(res => log(res))
+//                 .catch(err => log('makeQuery ERROR ------>', err.message))
+//                 .finally(db.detach());
+//         };
+//     }
+//     catch (err) { log('attachDB ERROR ------>', (err.message)) };
+// });
+
+//2 === 2 && alert() || gsdgsd
+
 async function makeQuery(options, script) {
-
     return new Promise((res, rej) => {
-        try {
+/*??????*/ try {
             firebird.attach(options, async (err, db) => {
-                if (err) rej(err)
+                if (err) { log('ERR', err); rej(err) }
                 else {
-
                     //log('---------->', script);
-
                     var resQ = new Promise((res, rej) => {
                         db.execute(script, (err, result) => {
                             if (err) rej(err);
@@ -76,8 +108,8 @@ async function makeQuery(options, script) {
                     res(await resQ.then(res => {
                         /*log('res---------->', res);*/
                         return res
-                    })//.catch(err => { log('REJ ERROR', err) })
-                        .finally(() => db.detach()));
+                    }).catch(err => { log('REJ ERROR', err) })
+                        .finally(db.detach()));
                 };
             });
         }
