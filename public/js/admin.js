@@ -19,9 +19,10 @@ const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
 };
-
+const compositionTableMenu = dqs('.compositionTableMenu');
 const adminGeneralOptions = dqsA('.forAdminGeneralOptions > input');
 const newUserGeneralOptions = dqsA('.forNewUserGeneralOptions > input');
+const doubleSlider = dqs('.dSlider');
 // let it easy
 ['click', 'change', 'keyup'].map(evt => {
     newUserGeneralOptions.forEach(cont => cont.addEventListener(evt, () => {
@@ -31,6 +32,9 @@ const newUserGeneralOptions = dqsA('.forNewUserGeneralOptions > input');
     }))
 });
 
+let dsr = null;
+
+//log(adminGeneralOptions);
 // let request = {
 //         db : false,
 //         data: false,
@@ -48,9 +52,14 @@ let options = (cont) => {
 };
 
 const forOptions = dqsA('.forOptions >*> input');
-let request = {};
+let request = {
+
+
+};
 const compositionDB = dqs('#compositionDB > tbody');
 const compositionTable = dqs('#compositionTable > tbody');
+
+
 
 dqs('#connect').addEventListener('click', async () => {
     request.options = options(forOptions);
@@ -68,6 +77,7 @@ dqs('#connect').addEventListener('click', async () => {
         }
         catch (err) { log(err) };
     } else alert('FiLL INPUT');
+
 });
 
 
@@ -96,7 +106,7 @@ async function getComposition(evt) {
     catch (err) { log(err) };
 };
 
-async function getData() {
+async function getData(evt) {
     try {
         request.data = true;
         const result = await makeReq(request);
@@ -104,11 +114,47 @@ async function getData() {
             window.location.replace('/');
         }
         else {
+
             showTable(compositionTable, result);
         };
     }
     catch (err) { log(err) };
+
+    log(evt);
+    if (evt.target.childNodes[0].data === 'TIMEPOINT') {
+        compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
+        ${evt.clientY}px - 20px); display: inline-block; border: 1px solid #999; background : #f1eded; `);
+    };
+    // else {
+    //     doubleSlider.setAttribute('style', `position: absolute; display: flex;
+    // left: ${evt.clientX}px; top: calc(${evt.clientY}px - 20px); display: inline-block; z-index: 11`);
+
+    //     log(makeReqGetMaxCount(evt));
+    //     dsr = new Dslider('.dSlider', '5em', 0, 100, 1);
+
+
+    // };
+
+
+
+
+    // else if (evt.target.childNodes[0].data === ('SERIAL' || 'CH1' || 'CH2' || 'TIMECALC' || 'TIMEOFF')) {
+
+    //     compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
+    //         ${evt.clientY}px - 20px); display: inline-block; border: 1px solid #999; background : #f1eded; `);
+    //         compositionTableMenu.innerHTML = '';
+    //     let inp = document.createElement('input');
+    //     inp.type = 'range';
+    //     //inp.innerHTML = ``;
+    //     compositionTableMenu.appendChild(inp);
+    // };
 };
+
+let view = dqs('.view');
+view.addEventListener('mouseover', () => {
+    //log(this);
+    compositionTableMenu.style.display = 'none'
+});
 
 function showDB(context, data) {
     compositionTable.innerHTML = '';
@@ -131,7 +177,7 @@ function showHead(context, data) {
         data.map((data) => {
             const th = document.createElement('th');
             th.textContent = data.replace(/\s+/g, '');
-            th.addEventListener('click', getData);
+            th.addEventListener('click', /* makeReqGetMaxCount */ getData);
             tr.appendChild(th);
             context.appendChild(tr);
         });
@@ -139,9 +185,7 @@ function showHead(context, data) {
 };
 
 function showTable(context, data) {
-
     compositionTable.innerHTML = '';
-
     data.map((data) => {
         const tr = document.createElement('tr');
         data.map((data) => {
@@ -154,18 +198,13 @@ function showTable(context, data) {
 
     let linksOnCompositionTableTd = dqsA('#compositionTable > tbody > tr:nth-child(1) > td');
     let linksOnCompositionHeadTableTd = dqsA('#compositionHeadTable > tr > th');
-
-    // for (let t = 0; t < linksOnCompositionTableTd.length; t++) {
-    linksOnCompositionTableTd.forEach( (td, i) => {
+    linksOnCompositionTableTd.forEach((td, i) => {
         let thWidth = window.getComputedStyle(linksOnCompositionHeadTableTd[i], null).width.replace('px', '');
         let tdWidth = window.getComputedStyle(td, null).width.replace('px', '');
         let width = (+tdWidth > +thWidth) ? tdWidth : thWidth;
-        td.setAttribute('style', ' width : ' + width + 'px');
-        linksOnCompositionHeadTableTd[i].setAttribute('style', ' width : ' + width + 'px');
+        td.setAttribute('style', `width : ${width}px`);
+        linksOnCompositionHeadTableTd[i].setAttribute('style', `width : ${width}px`);
     })
-
-
-    //};
 };
 
 let makeReq = async (request) => {
@@ -191,6 +230,8 @@ dqs('#addUser').addEventListener('click', async () => {
 });
 
 
+
+
 let makeReqAddUser = async (newUserData) => {
     request.options = newUserData;
     request.addUser = true;
@@ -209,3 +250,145 @@ let makeReqAddUser = async (newUserData) => {
     }
     catch (err) { 'fetch ERROR', log(err) };
 };
+
+request.tableField = false;
+
+
+
+
+let makeReqGetMaxCount = async (evt) => {
+    log(dsr);
+
+    if (!dsr) {
+        request.tableField = evt.target.childNodes[0].data;
+        request.addUser = false;
+        request.db = false;
+        request.options = false;
+        request.adminOptions = options(forOptions);
+        doubleSlider.setAttribute('style', `position: absolute; display: flex;
+    left: ${evt.clientX + 10}px; top: calc(${evt.clientY - 10}px - 20px); display: inline-block; z-index: 11`);
+        dsr = new Dslider('.dSlider', '5em', 0, (await (makeReq(request)))[0][0], 1);
+    }
+    else if (dsr) {
+        log(+dsr.minValue, +dsr.maxValue);
+        log(dsr.base);
+        dsr.base.remove();
+        dsr = null;
+        getData(evt);
+    }
+
+};
+
+
+dqs('.dSlider').addEventListener('click', () => {
+    // getData(evt);
+    // log(+dsr.minValue, +dsr.maxValue);
+})
+let drList;
+let drListWithCheck;
+let arrPRODID = [];
+const dList = dqs('.drList');
+
+const productsUserData = dqs('#productsUserData');
+const departmentUserData = dqs('#departmentUserData');
+const countersUserData = dqs('#countersUserData');
+
+productsUserData.addEventListener('click', async (evt) => {
+    request.tableName = 'PRODUCTS';
+    request.products = true;
+    request.addUser = false;
+    request.db = false;
+    request.options = false;
+    request.adminOptions = options(forOptions);
+    try {
+        request.data = true;
+        const result = await makeReq(request);
+        if (result.unlogged) {
+            window.location.replace('/');
+        }
+        else {
+            dList.style.display = 'inline-block';
+            drList = new DropList(evt.target, result);
+        };
+    }
+    catch (err) { log(err) };
+});
+// productsUserData.addEventListener('blur', (evt) => {
+//     // arrPRODID = productsUserData.value.replace('\s').split(',');
+//     // arrPRODID.pop();
+//     log(evt.target.value);
+// });
+
+departmentUserData.addEventListener('click', async (evt) => {
+    if (productsUserData.value) {
+        request.tableName = 'COUNTERLIST';
+        request.products = productsUserData.value;
+        request.addUser = false;
+        request.db = false;
+        request.options = false;
+        request.adminOptions = options(forOptions);
+        try {
+            request.data = true;
+            const result = await makeReq(request);
+            if (result.unlogged) {
+                window.location.replace('/');
+            }
+            else {
+                log(result);
+                dList.style.display = 'inline-block';
+                drListWithCheck = new DropListWithCheck(evt.target, result);
+                evt = null;
+            };
+        }
+        catch (err) { log(err) };
+    }
+    else {
+        alert("PRODUCTS FIRST");
+    };
+});
+
+countersUserData.addEventListener('click', async (evt) => {
+    if (departmentUserData.value) {
+        log(departmentUserData.value);
+         request.tableName = 'DEPARTMENT';
+         request.department = departmentUserData.value;
+         request.addUser = false;
+         request.db = false;
+         request.options = false;
+         request.adminOptions = options(forOptions);
+        try {
+             request.data = true;
+             const result = await makeReq(request);
+             if (result.unlogged) {
+                 window.location.replace('/');
+             }
+             else {
+                  log(result);
+                //  dList.style.display = 'inline-block';
+                //  drListWithCheck = new DropListWithCheck(evt.target, result);
+                //  evt = null;
+            };
+        }
+        catch (err) { log(err) };
+    }
+    else {
+        alert("PRODUCTS => DEPARTMENT => COUNTERLIST");
+    };
+});
+
+departmentUserData.addEventListener('blur', () => {
+    // arrPRODID = productsUserData.value.replace('\s').split(',');
+    // arrPRODID.pop();
+    // // this.outputArray = outputArray;
+    // log(arrPRODID);
+});
+
+
+// let lastParent = (cont) => {
+
+
+//     const all = document.querySelectorAll('body');
+//     log(all);
+//     };
+
+// lastParent("#compositionDB");

@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  link(rel='stylesheet', href='/css/adminStyle.css')
   h1= title
   .whole
     .forOptions
@@ -8,7 +9,7 @@ block content
         label Host:
         input.options#optionsHost(type='text', value='localhost', title='host')
         label Port:
-        input.options#optionsPort(pattern = "^[ 0-9]+$", value = '3050', title='port')
+        input.options#optionsPort(pattern = '^[ 0-9]+$', value = '3050', title='port')
         label Path:
         input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB', title='database')
         label Page Size:
@@ -31,6 +32,7 @@ block content
       .viewTable
         table#compositionTable 
           tbody
+      .dSlider
     .userData
       .forNewUserGeneralOptions
         label Host:
@@ -49,12 +51,24 @@ block content
         label Role:
         input.options#optionsRoleNewUser(type='text', value = '', title='role')
       .forPoint
-        label Brand or Point:
-        input#brandUserData(type='text', value = '', title='brand')
-        label Address:
-        input#addressUserData(type = 'text', value = '', title='address')
+        label Products:
+        input#productsUserData(type='text', value = '', title='Products')
+        label Department:
+        input#departmentUserData(type = 'text', value = '', title='Department')
+        label Counters:
+        input#countersUserData(type = 'text', value = '', title='Counters')
       button#addUser ADDUSER
-    
-
-  link(rel='stylesheet', href='/css/adminStyle.css')
+      .drList
+  .compositionTableMenu
+      label from:
+      input#brandUserDataZZZ(type='date', value = '')
+      label to:
+      input#addressUserDataZZZ(type = 'date', value = '') 
+      //- input#quantityOfStringRange(type = 'range')
+      input#quantityOfStringRangeNumber(type= 'number')
+      input#listForFilter(type="text")
+  
+  script(src="/js/doubleslider.js")
   script(src='/js/admin.js')
+  script(src="/js/droplist.js")
+  script(src="/js/dropListWithCheck.js")

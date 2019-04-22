@@ -8,7 +8,7 @@ body {
   }
 
 h1 {
-  display: none;
+ display: none;
 }
 
 
@@ -23,13 +23,15 @@ h1 {
 
 
 
-
+.drList {
+  /* display: none; */
+}
 
 .userData, 
 .forPoint, 
 .forOptions, 
 .forAdminGeneralOptions,
-.forAdminGeneralOptions,
+.forAdminOptions,
 .forNewUserOptions, 
 .forNewUserGeneralOptions {
   display: inline-flex;
@@ -73,7 +75,6 @@ label {
 }
 
 .viewDB {
- 
 }
 
 .viewHead {
@@ -100,10 +101,19 @@ label {
   border-bottom-left-radius: 0.5em;
   border-bottom-right-radius: 0.5em;
   border-top: 0;
-  overflow-y: auto;  
+  /* z-index: 1;
+  position: relative; */
+  overflow: hidden;  
+  overflow-y: auto;
   } 
 
-
+  .dSlider {
+    z-index: 12;
+    display: none;
+    flex-direction: row;
+    width: 50%;
+    border: 0;
+  }
 
   #compositionDB td {
   width: 100%;
@@ -187,17 +197,23 @@ tr td:first-child, tr th:first-child {
 
 
 
-::-webkit-scrollbar {
+::-webkit-scrollbar, 
+::-moz-scrollbar {
+  position: relative;
+  z-index: 0;
   width: 3px;
 }
-::-webkit-scrollbar-track {
+::-webkit-scrollbar-track, 
+::-moz-scrollbar-track {
     background: #ffffff; 
   }
-::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb, 
+::-moz-scrollbar-thumb {
     background: #888888; 
     border-radius: 3px;
   }
-::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover,
+::-moz-scrollbar-thumb:hover {
     background: #2e2e2e; 
   }
 .options {
@@ -233,7 +249,7 @@ input:focus{
 }
 
 .userData {
-  display: none;
+
   /* display: inline-flex; */
   flex-direction: row;
   flex-wrap: wrap;
@@ -248,4 +264,10 @@ input:focus{
   border:1px solid #999;
   border-radius: 0.5em;
   background:#fff;
+ }
+
+ .compositionTableMenu {
+   display: none;
+   z-index: 10;
+
  }

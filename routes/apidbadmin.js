@@ -20,12 +20,71 @@ const scriptGETFILDS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB
 let scriptGETDATA = (count) => { return ("SELECT FIRST " + count + " * FROM ") };
 let scriptADDUSER = (user, password) => { return ("CREATE USER " + user + " PASSWORD " + "'" + password + "'") };
 let scriptADDUSERPRIV = (user) => { return (" GRANT SELECT ON TABLE COUNTERDATA TO USER " + user) };
-//const scriptGETDATA = " SELECT * FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= '2018-7-31 9:0:0') AND (CAST(TIMEPOINT AS TIMESTAMP)  <= '2018-7-31 11:0:0') AND SERIAL = '0309' ";
+let scriptGETCOUNT = (table) => { return ("SELECT COUNT(*) FROM " + table) };
+let scriptGETPRODUCTS = (table) => { return ("SELECT DISTINCT PRODDESCR FROM " + table) };
 
+let scriptGETPRODID = (condition, field) => {
+    let arrID = condition.split(',');
+    arrID.pop();
+    let scriptCondition = getID("SELECT PRODID FROM PRODUCTS WHERE ", arrID, field)
+    return (scriptCondition);
+};
+let scriptGETDEPID = (condition, field) => {
+    let scriptCondition = getIDdep("SELECT DEPID FROM COUNTERLIST WHERE ", condition, field)
+    return (scriptCondition);
+};
+let scriptGETDEPDESCR = (condition, field) => {
+    let scriptCondition = getDEPDESCR("SELECT DEPDESCR FROM DEPARTMENT WHERE ", condition, field)
+    return (scriptCondition);
+};
+// -----------------------------------------------------
+let scriptGETDEPARTMENTID = (condition, field) => {
+    let arrID = condition.split(',');
+    arrID.pop();
+    let scriptCondition = getTDEPARTMENTID("SELECT DEPID FROM DEPARTMENT WHERE ", arrID, field)
+    return (scriptCondition);
+};
+//-----------------------------------------------------------
 router.post('/apidbadmin', async (req, res, next) => {
     //    log('**apiDBadmin router.post / ', req.body.request.addUser);
+    log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request);
 
-    if (req.body.request.addUser) {
+    if ((req.body.request.department) && (req.body.request.tableName === 'DEPARTMENT')) {
+        let valDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPARTMENTID(req.body.request.department, 'DEPDESCR'))
+        .then(res => { return res })
+        .catch(err => { log('REJ ERROR', err); log(err) }));
+
+    }    
+    else if ((req.body.request.products) && (req.body.request.tableName === 'COUNTERLIST')) {
+
+        let arrPRODID = (await makeQuery(req.body.request.adminOptions, scriptGETPRODID(req.body.request.products, 'PRODDESCR'))
+            .then(res => { return res })
+            .catch(err => { log('REJ ERROR', err); log(err) }));
+
+        let arrDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPID(arrPRODID, 'PRODID'))
+            .then(res => { return res })
+            .catch(err => { log('REJ ERROR', err); log(err) }));
+
+        res.json((await makeQuery(req.body.request.adminOptions, scriptGETDEPDESCR(arrDEPID, 'DEPID'))
+            .then(res => { return res })
+            .catch(err => { log('REJ ERROR', err); log(err) })));
+    }
+    else if (req.body.request.products) {
+        res.json((await makeQuery(req.body.request.adminOptions, scriptGETPRODUCTS(req.body.request.tableName))
+            .then(res => { log(res); return res })
+            .catch(err => { log('REJ ERROR', err); log(err) })));
+    }
+
+    else if (req.body.request.tableField) {
+
+        log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request.tableField);
+
+        res.json((await makeQuery(req.body.request.adminOptions, scriptGETCOUNT(req.body.request.tableName))
+            .then(res => { log(res); return res })
+            .catch(err => { log('REJ ERROR', err); log(err) })));
+    }
+
+    else if (req.body.request.addUser) {
         // log('**apiDBadmin router.post / "addUser" options', req.body.request.options);
         // log('**apiDBadmin router.post / "addUser" adminOptions', req.body.request.adminOptions);
 
@@ -129,9 +188,53 @@ function makeResponse(inputObj) {
     return outputArr;
 };
 
+let getID = (scriptCondition, arrCondition, field) => {
+    for (let i = 0; i < arrCondition.length; i++) {
+        if (i === (arrCondition.length - 1)) {
+            scriptCondition += field + " = " + "'" + arrCondition[i].replace(/\s/g, "") + "'";
+        }
+        else scriptCondition += field + " = " + "'" + arrCondition[i].replace(/\s/g, "") + "'" + " OR ";
+    };
+    log(scriptCondition);
+    return (scriptCondition);
+}
 
+let getIDdep = (scriptCondition, arrCondition, field) => {
+    for (let i = 0; i < arrCondition.length; i++) {
+        if (i === (arrCondition.length - 1)) {
+            scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'";
+        }
+        else scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'" + " OR ";
+    };
+    log(scriptCondition);
+    return (scriptCondition);
+}
 
+let getDEPDESCR = (scriptCondition, arrCondition, field) => {
+    for (let i = 0; i < arrCondition.length; i++) {
+        if (i === (arrCondition.length - 1)) {
+            scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'";
+        }
+        else scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'" + " OR ";
+    };
+    log(scriptCondition);
+    return (scriptCondition);
+}
+//----------------------------------------------------------------
+let getTDEPARTMENTID = (scriptCondition, arrCondition, field) => {
+    
+    for (let i = 0; i < arrCondition.length; i++) {
+        if (i === (arrCondition.length - 1)) {
+            scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'";
+        }
+        else scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'" + " OR ";
+    };
+    log(scriptCondition);
+    return (scriptCondition);
 
+};
+
+//--------------------------------------------------------
 module.exports = router;
 
 
