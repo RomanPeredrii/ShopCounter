@@ -30,7 +30,8 @@ let getUserOptions = async (token) => {
                 user: user.username,
                 password: user.password,
                 pageSize: user.pageSize,
-                role: user.role
+                role: user.role,
+                counters: user.counters
             };
         };
         return options;
@@ -39,7 +40,10 @@ let getUserOptions = async (token) => {
 
 router.post('/apidbwork', async (req, res, next) => {
 
+    serial(getUserOptions(req.cookies).then((opt) => {log(opt)}));
     log(req.cookies.token);
+
+    
     getUserOptions(req.cookies.token).then((opt) => {log(opt)});
     //log('**apiDB router.post / ');
     selectionFromDB(req.body.TimeStamp);
@@ -120,11 +124,17 @@ function makeDateString(dateVal) {
         dateVal.getUTCMinutes() + ':' + dateVal.getUTCSeconds());
 };
 
+async function serial(serial) {
+    log(serial);
+};
+
 function scriptGetSUM(timePointS, timePointF) {
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-        + "'" + timePointF + "'" + ") AND CH1 = CH2 ");
+        + "'" + timePointF + "'" + ") AND CH1 = CH2 "); // put counters conditions here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 };
+
+
 
 
 

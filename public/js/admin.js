@@ -150,8 +150,7 @@ async function getData(evt) {
     // };
 };
 
-let view = dqs('.view');
-view.addEventListener('mouseover', () => {
+dqs('.view').addEventListener('mouseover', () => {
     //log(this);
     compositionTableMenu.style.display = 'none'
 });
@@ -224,9 +223,9 @@ let makeReq = async (request) => {
 dqs('#addUser').addEventListener('click', async () => {
     let newUserData = options(dqsA('.userData >*> input'));
 
-    // log('userData', newUserData)
+    log('userData', newUserData);
     makeReqAddUser(newUserData);
-    // makeReqAddUserToFirebird(options);
+    //makeReqAddUserToFirebird(options);
 });
 
 
@@ -313,11 +312,6 @@ productsUserData.addEventListener('click', async (evt) => {
     }
     catch (err) { log(err) };
 });
-// productsUserData.addEventListener('blur', (evt) => {
-//     // arrPRODID = productsUserData.value.replace('\s').split(',');
-//     // arrPRODID.pop();
-//     log(evt.target.value);
-// });
 
 departmentUserData.addEventListener('click', async (evt) => {
     if (productsUserData.value) {
@@ -334,7 +328,6 @@ departmentUserData.addEventListener('click', async (evt) => {
                 window.location.replace('/');
             }
             else {
-                log(result);
                 dList.style.display = 'inline-block';
                 drListWithCheck = new DropListWithCheck(evt.target, result);
                 evt = null;
@@ -349,24 +342,26 @@ departmentUserData.addEventListener('click', async (evt) => {
 
 countersUserData.addEventListener('click', async (evt) => {
     if (departmentUserData.value) {
-        log(departmentUserData.value);
-         request.tableName = 'DEPARTMENT';
-         request.department = departmentUserData.value;
-         request.addUser = false;
-         request.db = false;
-         request.options = false;
-         request.adminOptions = options(forOptions);
+        request.tableName = 'DEPARTMENT';
+        request.department = departmentUserData.value;
+        request.addUser = false;
+        request.db = false;
+        request.options = false;
+        request.adminOptions = options(forOptions);
         try {
-             request.data = true;
-             const result = await makeReq(request);
-             if (result.unlogged) {
-                 window.location.replace('/');
-             }
-             else {
-                  log(result);
-                //  dList.style.display = 'inline-block';
-                //  drListWithCheck = new DropListWithCheck(evt.target, result);
-                //  evt = null;
+            request.data = true;
+            const result = await makeReq(request);
+            if (result.unlogged) {
+                window.location.replace('/');
+            }
+            else {
+                result.forEach((res) => {
+                    if (countersUserData.value.indexOf(res[0].replace(/\s+/g, ';'), 0) === -1) {
+                        log(countersUserData.value.indexOf(res[0], 0));
+                        countersUserData.value += res[0].replace(/\s+/g, ';')
+                    };
+
+                });
             };
         }
         catch (err) { log(err) };
@@ -376,19 +371,3 @@ countersUserData.addEventListener('click', async (evt) => {
     };
 });
 
-departmentUserData.addEventListener('blur', () => {
-    // arrPRODID = productsUserData.value.replace('\s').split(',');
-    // arrPRODID.pop();
-    // // this.outputArray = outputArray;
-    // log(arrPRODID);
-});
-
-
-// let lastParent = (cont) => {
-
-
-//     const all = document.querySelectorAll('body');
-//     log(all);
-//     };
-
-// lastParent("#compositionDB");

@@ -30,29 +30,47 @@ let scriptGETPRODID = (condition, field) => {
     return (scriptCondition);
 };
 let scriptGETDEPID = (condition, field) => {
-    let scriptCondition = getIDdep("SELECT DEPID FROM COUNTERLIST WHERE ", condition, field)
+    let scriptCondition = getTDEPARTMENTID("SELECT DEPID FROM COUNTERLIST WHERE ", condition, field)
+    return (scriptCondition);
+};
+
+let scriptGETPRODUCTSID = (condition, field) => {
+    let scriptCondition = getTDEPARTMENTID("SELECT PRODID FROM COUNTERLIST WHERE ", condition, field)
     return (scriptCondition);
 };
 let scriptGETDEPDESCR = (condition, field) => {
     let scriptCondition = getDEPDESCR("SELECT DEPDESCR FROM DEPARTMENT WHERE ", condition, field)
     return (scriptCondition);
 };
-// -----------------------------------------------------
+
 let scriptGETDEPARTMENTID = (condition, field) => {
-    let arrID = condition.split(',');
+    let arrID = condition.split(';');
     arrID.pop();
     let scriptCondition = getTDEPARTMENTID("SELECT DEPID FROM DEPARTMENT WHERE ", arrID, field)
     return (scriptCondition);
 };
-//-----------------------------------------------------------
+
+let scriptGETSERIAL = (conditionDEP, fieldDEP, conditionPROD, fieldPROD) => {
+    let scriptCondition = getDEPDESCR("SELECT SERIAL FROM COUNTERLIST WHERE (", conditionDEP, fieldDEP) +") AND " + getDEPDESCR("(", conditionPROD, fieldPROD)+")";
+    return (scriptCondition);
+};
+
 router.post('/apidbadmin', async (req, res, next) => {
-    //    log('**apiDBadmin router.post / ', req.body.request.addUser);
-    log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request);
+
+    //log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request);
 
     if ((req.body.request.department) && (req.body.request.tableName === 'DEPARTMENT')) {
-        let valDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPARTMENTID(req.body.request.department, 'DEPDESCR'))
+        let arrDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPARTMENTID(req.body.request.department, 'DEPDESCR'))
         .then(res => { return res })
         .catch(err => { log('REJ ERROR', err); log(err) }));
+
+        let arrPRODID = (await makeQuery(req.body.request.adminOptions, scriptGETPRODUCTSID(arrDEPID, 'DEPID'))
+        .then(res => { return res })
+        .catch(err => { log('REJ ERROR', err); log(err) }));
+
+        res.json((await makeQuery(req.body.request.adminOptions, scriptGETSERIAL(arrDEPID, 'DEPID', arrPRODID, 'PRODID' ))
+        .then(res => { return res })
+        .catch(err => { log('REJ ERROR', err); log(err) })));
 
     }    
     else if ((req.body.request.products) && (req.body.request.tableName === 'COUNTERLIST')) {
@@ -75,21 +93,18 @@ router.post('/apidbadmin', async (req, res, next) => {
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
-    else if (req.body.request.tableField) {
+    // else if (req.body.request.tableField) {
 
-        log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request.tableField);
+    //     log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request.tableField);
 
-        res.json((await makeQuery(req.body.request.adminOptions, scriptGETCOUNT(req.body.request.tableName))
-            .then(res => { log(res); return res })
-            .catch(err => { log('REJ ERROR', err); log(err) })));
-    }
+    //     res.json((await makeQuery(req.body.request.adminOptions, scriptGETCOUNT(req.body.request.tableName))
+    //         .then(res => { log(res); return res })
+    //         .catch(err => { log('REJ ERROR', err); log(err) })));
+    // }
 
     else if (req.body.request.addUser) {
-        // log('**apiDBadmin router.post / "addUser" options', req.body.request.options);
-        // log('**apiDBadmin router.post / "addUser" adminOptions', req.body.request.adminOptions);
 
-        // log(scriptADDUSER(req.body.request.options.username, req.body.request.options.password));
-        // log(scriptADDUSERROLE(req.body.request.options.username, req.body.request.options.password));
+log(scriptADDUSER(req.body.request.options.username, req.body.request.options.password));
         res.json((await makeQuery(req.body.request.adminOptions, scriptADDUSER(req.body.request.options.username, req.body.request.options.password))
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
@@ -100,22 +115,19 @@ router.post('/apidbadmin', async (req, res, next) => {
     }
     else if ((req.body.request.data) && (req.body.request.tableName)) {
 
-        // log('**apiDBadmin router.post / "data" ', req.body.request);
-        // log(scriptGETDATA + req.body.request.tableName);
         res.json((await makeQuery(req.body.request.options, scriptGETDATA(100) + req.body.request.tableName)
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.tableName) {
 
-        // log('**apiDBadmin router.post / "table" ', req.body.request);
-        // log(scriptGETFILDS + "'" + req.body.request.tableName + "'");
+
         res.json((await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
             .then(res => { return res })
             .catch(err => { log(err) })));
     }
     else if (req.body.request.db) {
-        // log('**apiDBadmin router.post / "options" ', req.body.request);
+
         res.json((await makeQuery(req.body.request.options, scriptGETTABLES)
             .then(res => res)
             .catch(err => err.message)));
@@ -195,18 +207,7 @@ let getID = (scriptCondition, arrCondition, field) => {
         }
         else scriptCondition += field + " = " + "'" + arrCondition[i].replace(/\s/g, "") + "'" + " OR ";
     };
-    log(scriptCondition);
-    return (scriptCondition);
-}
 
-let getIDdep = (scriptCondition, arrCondition, field) => {
-    for (let i = 0; i < arrCondition.length; i++) {
-        if (i === (arrCondition.length - 1)) {
-            scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'";
-        }
-        else scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'" + " OR ";
-    };
-    log(scriptCondition);
     return (scriptCondition);
 }
 
@@ -217,52 +218,22 @@ let getDEPDESCR = (scriptCondition, arrCondition, field) => {
         }
         else scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'" + " OR ";
     };
-    log(scriptCondition);
     return (scriptCondition);
 }
-//----------------------------------------------------------------
+
 let getTDEPARTMENTID = (scriptCondition, arrCondition, field) => {
     
     for (let i = 0; i < arrCondition.length; i++) {
         if (i === (arrCondition.length - 1)) {
-            scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'";
+            scriptCondition += field + " = " + "'" + arrCondition[i] + "'";
         }
-        else scriptCondition += field + " = " + "'" + arrCondition[i][0] + "'" + " OR ";
+        else scriptCondition += field + " = " + "'" + arrCondition[i] + "'" + " OR ";
     };
-    log(scriptCondition);
     return (scriptCondition);
 
 };
 
-//--------------------------------------------------------
+
 module.exports = router;
 
 
-
-// // del fee
-// router.post('/app-settings-fee-del', async (req, res) => {
-//     try {
-//         // var-s
-//         let user_id = req.body.currentUser._id
-//         let i = req.body.i
-//         // Get Admin & Barriers
-//         let Admin = await getAdminSAFE(user_id, req, res)
-//         // Get settings - mean: (list of fee)
-//         let state = await App.findOne({ name: 'settings' })
-//         // take a list
-//         let fee_list = state.fee
-//         // remove one fee
-//         fee_list.splice(i, 1)
-//         // save settings - mean: (new list of fee)
-//         let result = await App.findOneAndUpdate({ name: 'settings' }, {
-//             fee: fee_list
-//         })
-//         // send 'ok'
-//         send('ok', req, res)
-//     } catch (e) {
-//         error(e, req, res, 500, 'Cannot Delete Fee ')
-//     }
-// })
-
-//a = [...e, ...g]
-// let {one, t, ...rest} = {one: 2, sadfas: 11}

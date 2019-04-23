@@ -58,7 +58,7 @@ class DropListWithCheck {
                     if (check.checked) {
                         if (this.input.value.indexOf(item, 0) === -1) {
                             //log(this.input.value.indexOf(item, 1));
-                            this.input.value += item + ', ';
+                            this.input.value += item + ';';
                         };
                     }
                     else {

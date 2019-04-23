@@ -37,13 +37,15 @@ let User = mongoose.model('User', {
     type: String,
     required: true
   },
-  point: {
+  counters: {
     type: String,
   },
-  address: {
+  department: {
       type: String,
   },
-  
+  products: {
+    type: String,
+}
 });
 
 module.exports = User;
