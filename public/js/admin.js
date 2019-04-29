@@ -233,8 +233,10 @@ dqs('#addUser').addEventListener('click', async () => {
 
 let makeReqAddUser = async (newUserData) => {
     request.options = newUserData;
+    request.tableName = false;
     request.addUser = true;
     request.db = false;
+    request.products = false;
     request.adminOptions = options(forOptions);
     log('makeReqAddUser REQUEST', request);
     makeReq(request);

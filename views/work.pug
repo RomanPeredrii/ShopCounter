@@ -4,24 +4,25 @@ block content
   h1= title
   .whole
     .left
+      .counters
       .period
         label.choosePeriod CHOOSE PERIOD
         .forDateChoise
           .divStart
             label.date start date
             br
-            input.timeStamp#timeStampS(type='date' value = '2018-07-31')
+            input.timeStamp#timeStampS(type='date' value = '')
           .divFinish 
             label.date finish date
             br
-            input.timeStamp#timeStampF(type='date' value = '2018-08-01')
+            input.timeStamp#timeStampF(type='date' value = '')
         br
       .dinamic
         div#periodSet
         .divSendReq
           button#sendReq REQUEST
       br
-      .dataFromDB  
+      .dataFromDB 
         table#dataFromDB 
           tbody
     .right

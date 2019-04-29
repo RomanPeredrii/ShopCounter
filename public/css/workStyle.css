@@ -101,6 +101,14 @@ canvas {
   border-radius: 0.25rem;
 }
 
+.counters {
+  padding: 0.5em;
+  margin: 0.5em;
+  border: #d7d7d7 1px solid;
+  border-radius: 0.25rem;
+}
+
+
 
 input:focus
 {

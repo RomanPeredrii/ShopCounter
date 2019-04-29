@@ -31,7 +31,9 @@ let getUserOptions = async (token) => {
                 password: user.password,
                 pageSize: user.pageSize,
                 role: user.role,
-                counters: user.counters
+                counters: user.counters,
+                department: user.department,
+                products: user.products
             };
         };
         return options;
@@ -39,54 +41,39 @@ let getUserOptions = async (token) => {
 };
 
 router.post('/apidbwork', async (req, res, next) => {
+    log('request', req.body.request);
+    log('request', req.body.request.serial);
+    if (req.body.request.startValue) {
+        log(1);
+        let userOptions = await getUserOptions(req.cookies.token);
+        res.json((await makeQuery(userOptions, "SELECT MIN (TIMEPOINT) FROM COUNTERDATA")
+            .then(res => { res.push(userOptions); /*log('startValue',res);*/ return res })
+            .catch(err => { log('REJ ERROR', err); log(err) })));
 
-    serial(getUserOptions(req.cookies).then((opt) => {log(opt)}));
-    log(req.cookies.token);
-
-    
-    getUserOptions(req.cookies.token).then((opt) => {log(opt)});
-    //log('**apiDB router.post / ');
-    selectionFromDB(req.body.TimeStamp);
-
-    // ДУРКА!!!! ЯК ВОНА Є
-    async function selectionFromDB(timePoints) {
-
-        let dateStart = new Date(timePoints.timeStart);
-        let dateFinish = new Date(timePoints.timeFinish + 86400000);
-        let step = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
-        let arrRes = [];
-        for (let i = 0; i < step; i++) {
-
-            timePoints.timeFinish = timePoints.timeStart + timePoints.period;
-            dateFinish = new Date(timePoints.timeFinish);
-            dateStart = new Date(timePoints.timeStart);
-
-            // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
-            //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
-
-            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(req.cookies.token)).
-                catch(err => log('CONNECTION TO DB ERROR ', err)));
-
-            timePoints.timeFinish = timePoints.timeStart + timePoints.period;
-            timePoints.timeStart += timePoints.period;
+        // getUserOptions(req.cookies.token).then((opt) => { log(opt) });
+        // log('**apiDB router.post / request:', req.body.request);
+    }
+    else
+        if (req.body.request.timeStamp) {
+            log(2);
+            log('selectionFromDB---->', await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
+            res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
         };
+    // ДУРКА!!!! ЯК ВОНА Є
 
-        //    result.data = arrRes;
-        //    log('**arrRes', result.data);       
-        res.json((arrRes));
-    };
 });
 
 
-async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
-    log('accessOptions', accessOptions);
+// !! - getDataFomDb according to client conditions from request body
+async function getDataFomDb(timePointSart, timePointFinish, accessOptions, serials) {
+    log('accessOptions', serials);
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
             if (err) { log(err); rej(err) }
             else {
                 let arr = [timePointSart, timePointFinish];
-                arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish), db)
-                    .catch(err => log('SQL SCRIPT ERROR!', err))); //log(arr);
+                arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
+                    .catch(err => log('SQL SCRIPT ERROR!', err))); //log('getDataFomDb--->', arr);
                 res(arr);
             };
         });
@@ -94,16 +81,76 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions) {
 };
 
 
+// !! - request to firebird
+async function makeQuery(options, script) {
+    return new Promise((res, rej) => {
+/*??????*/ try {
+            firebird.attach(options, async (err, db) => {
+                if (err) { log('ERR', err); rej(err) }
+                else {
+                    //log('---------->', script);
+                    var resQ = new Promise((res, rej) => {
+                        db.execute(script, (err, result) => {
+                            if (err) rej(err);
+                            res(result);
+                        });
+                    });
+                    res(await resQ.then(res => {
+                        /*log('res---------->', res);*/
+                        return res
+                    }).catch(err => { log('REJ ERROR', err) })
+                        .finally(db.detach()));
+                };
+            });
+        }
+        catch (err) {
+            ('makeQuery ERROR', log(err))
+        };
+    });
+};
+
+
+// !! - make clients 
+async function selectionFromDB(timePoints, token, serials) {
+    let dateStart = new Date(timePoints.timeStart);
+    let dateFinish = new Date(timePoints.timeFinish + 86400000);
+    let step = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
+    let arrRes = [];
+
+    log('step', step);
+    for (let i = 0; i < step; i++) {
+
+        timePoints.timeFinish = timePoints.timeStart + timePoints.period;
+        dateFinish = new Date(timePoints.timeFinish);
+        dateStart = new Date(timePoints.timeStart);
+
+        // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
+        //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
+        log('selectionFromDB', serials);
+
+        arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serials).
+            catch(err => log('CONNECTION TO DB ERROR ', err)));
+
+        timePoints.timeFinish = timePoints.timeStart + timePoints.period;
+        timePoints.timeStart += timePoints.period;
+    };
+
+    //    result.data = arrRes;
+    //    log('**arrRes', result.data);       
+    return (arrRes);
+};
 
 function queryToDB(script, db) {
+
+    log(script);
     return new Promise((res, rej) => {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            log('--> func! getDataFomDb', script, result[0].SUM);
+            //log('--> func! getDataFomDb', script, result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
             res(Math.round(result[0].SUM));
-             log(result)
+            //log(result)
             // res(result);
         });
     });
@@ -124,14 +171,28 @@ function makeDateString(dateVal) {
         dateVal.getUTCMinutes() + ':' + dateVal.getUTCSeconds());
 };
 
-async function serial(serial) {
-    log(serial);
-};
+// function serial(serial) {
+//     log(serial);
+//     let arrSerial = serial.split(';');
+//     //arrID.pop();
+//     for (let i = 0; i < arrSerial.length; i++) {
+//         if (i === (arrSerial.length - 1)) {
+//             scriptCondition += field + " = " + "'" + arrCondition[i] + "'";
+//         }
+//         else scriptCondition += field + " = " + "'" + arrCondition[i] + "'" + " OR ";
+//     };
+//     return (scriptCondition);
+// };
 
-function scriptGetSUM(timePointS, timePointF) {
+function scriptGetSUM(timePointS, timePointF, serials) {
+    let scriptCondition = '';
+    for (let i = 0; i < serials.length; i++) {
+        if (i === (serials.length - 1)) scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'"
+        else scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'" + " OR ";
+    };
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-        + "'" + timePointF + "'" + ") AND CH1 = CH2 "); // put counters conditions here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
 };
 
 

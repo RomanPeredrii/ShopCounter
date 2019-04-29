@@ -57,9 +57,12 @@ let scriptGETSERIAL = (conditionDEP, fieldDEP, conditionPROD, fieldPROD) => {
 
 router.post('/apidbadmin', async (req, res, next) => {
 
-    //log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request);
+
 
     if ((req.body.request.department) && (req.body.request.tableName === 'DEPARTMENT')) {
+
+log(1);
+
         let arrDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPARTMENTID(req.body.request.department, 'DEPDESCR'))
         .then(res => { return res })
         .catch(err => { log('REJ ERROR', err); log(err) }));
@@ -74,6 +77,7 @@ router.post('/apidbadmin', async (req, res, next) => {
 
     }    
     else if ((req.body.request.products) && (req.body.request.tableName === 'COUNTERLIST')) {
+log(2);
 
         let arrPRODID = (await makeQuery(req.body.request.adminOptions, scriptGETPRODID(req.body.request.products, 'PRODDESCR'))
             .then(res => { return res })
@@ -88,8 +92,10 @@ router.post('/apidbadmin', async (req, res, next) => {
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
     else if (req.body.request.products) {
+
+log(3);
         res.json((await makeQuery(req.body.request.adminOptions, scriptGETPRODUCTS(req.body.request.tableName))
-            .then(res => { log(res); return res })
+            .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
@@ -104,7 +110,8 @@ router.post('/apidbadmin', async (req, res, next) => {
 
     else if (req.body.request.addUser) {
 
-log(scriptADDUSER(req.body.request.options.username, req.body.request.options.password));
+log(4);
+
         res.json((await makeQuery(req.body.request.adminOptions, scriptADDUSER(req.body.request.options.username, req.body.request.options.password))
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
@@ -113,7 +120,11 @@ log(scriptADDUSER(req.body.request.options.username, req.body.request.options.pa
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
+
+
     else if ((req.body.request.data) && (req.body.request.tableName)) {
+
+log(5);
 
         res.json((await makeQuery(req.body.request.options, scriptGETDATA(100) + req.body.request.tableName)
             .then(res => { return res })
@@ -121,12 +132,15 @@ log(scriptADDUSER(req.body.request.options.username, req.body.request.options.pa
     }
     else if (req.body.request.tableName) {
 
+log(6);
 
         res.json((await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
             .then(res => { return res })
             .catch(err => { log(err) })));
     }
     else if (req.body.request.db) {
+
+log(7);
 
         res.json((await makeQuery(req.body.request.options, scriptGETTABLES)
             .then(res => res)
