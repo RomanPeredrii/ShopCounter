@@ -7,10 +7,10 @@
 
 const log = console.log;
 
+// let it easy
 const dqs = (cont) => {
     return document.querySelector(cont);
 };
-
 const dqsA = (cont) => {
     return document.querySelectorAll(cont);
 };
@@ -23,10 +23,13 @@ const compositionTableMenu = dqs('.compositionTableMenu');
 const adminGeneralOptions = dqsA('.forAdminGeneralOptions > input');
 const newUserGeneralOptions = dqsA('.forNewUserGeneralOptions > input');
 const doubleSlider = dqs('.dSlider');
-// let it easy
+
+
+// !! - hung up array of event listeners
 ['click', 'change', 'keyup'].map(evt => {
     newUserGeneralOptions.forEach(cont => cont.addEventListener(evt, () => {
         newUserGeneralOptions.forEach((cont, i) => {
+            // !! - trow options from admin into newUser div
             cont.value = adminGeneralOptions[i].value;
         });
     }))
@@ -43,6 +46,7 @@ let dsr = null;
 
 // OPTION FOR ATTACH DB
 
+// !! - collect options 
 let options = (cont) => {
     let options = {};
     cont.forEach(opt => {
@@ -52,25 +56,28 @@ let options = (cont) => {
 };
 
 const forOptions = dqsA('.forOptions >*> input');
+
+// !! - request map have to be filled for default options
 let request = {
-
-
 };
+
 const compositionDB = dqs('#compositionDB > tbody');
 const compositionTable = dqs('#compositionTable > tbody');
 
 
-
+// !! - check connection to db
 dqs('#connect').addEventListener('click', async () => {
     request.options = options(forOptions);
     if (request.options) {
         try {
             request.db = true;
             const result = await makeReq(request);
+// !! - relocate if token 
             if (result.unlogged) {
                 window.location.replace('/');
             }
             else {
+//!! - get list of tables
                 compositionDB.innerHTML = '';
                 showDB(compositionDB, result);
             }
@@ -80,7 +87,7 @@ dqs('#connect').addEventListener('click', async () => {
 
 });
 
-
+// !! - get head of table
 async function getComposition(evt) {
     dqs('.viewHead ').style.display = 'inline-block';
     dqs('.viewTable ').style.display = 'inline-block';
@@ -89,7 +96,6 @@ async function getComposition(evt) {
     dqsA('#compositionDB > tbody > tr > td')
         .forEach(td => td.setAttribute('style', 'border = 1px solid #999; background : #f1eded;'));
     evt.target.style.background = '#ffffff';
-
     evt.target.setAttribute('style', ' border-bottom : 0; background : #ffffff;');
     request.tableName = evt.target.childNodes[0].data;
     try {
@@ -105,7 +111,7 @@ async function getComposition(evt) {
     }
     catch (err) { log(err) };
 };
-
+// !! - get data of table 
 async function getData(evt) {
     try {
         request.data = true;
@@ -120,24 +126,17 @@ async function getData(evt) {
     }
     catch (err) { log(err) };
 
-    log(evt);
-    if (evt.target.childNodes[0].data === 'TIMEPOINT') {
-        compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
-        ${evt.clientY}px - 20px); display: inline-block; border: 1px solid #999; background : #f1eded; `);
-    };
+    // if (evt.target.childNodes[0].data === 'TIMEPOINT') {
+    //     compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
+    //     ${evt.clientY}px - 20px); display: inline-block; border: 1px solid #999; background : #f1eded; `);
+    // };
     // else {
     //     doubleSlider.setAttribute('style', `position: absolute; display: flex;
     // left: ${evt.clientX}px; top: calc(${evt.clientY}px - 20px); display: inline-block; z-index: 11`);
 
     //     log(makeReqGetMaxCount(evt));
     //     dsr = new Dslider('.dSlider', '5em', 0, 100, 1);
-
-
     // };
-
-
-
-
     // else if (evt.target.childNodes[0].data === ('SERIAL' || 'CH1' || 'CH2' || 'TIMECALC' || 'TIMEOFF')) {
 
     //     compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
@@ -150,16 +149,16 @@ async function getData(evt) {
     // };
 };
 
-dqs('.view').addEventListener('mouseover', () => {
-    //log(this);
-    compositionTableMenu.style.display = 'none'
-});
+// dqs('.view').addEventListener('mouseover', () => {
+//     compositionTableMenu.style.display = 'none'
+// });
 
+
+// !! - build table list
 function showDB(context, data) {
     compositionTable.innerHTML = '';
     const tr = document.createElement('tr');
     context.appendChild(tr);
-
     data.map((data) => {
         data.map((data) => {
             const td = document.createElement('td');
@@ -170,6 +169,7 @@ function showDB(context, data) {
     });
 };
 
+// !! - build head
 function showHead(context, data) {
     const tr = document.createElement('tr');
     data.map((data) => {
@@ -183,6 +183,7 @@ function showHead(context, data) {
     });
 };
 
+// !! - build data table 
 function showTable(context, data) {
     compositionTable.innerHTML = '';
     data.map((data) => {
@@ -206,6 +207,7 @@ function showTable(context, data) {
     })
 };
 
+// !! - request to firebird
 let makeReq = async (request) => {
     try {
         const rawResponse = await fetch('http://localhost:3000/api/apidbadmin', {
@@ -219,18 +221,14 @@ let makeReq = async (request) => {
     catch (err) { 'fetch ERROR', log(err) };
 };
 
-
+ // !! - make new user
 dqs('#addUser').addEventListener('click', async () => {
     let newUserData = options(dqsA('.userData >*> input'));
-
-    log('userData', newUserData);
     makeReqAddUser(newUserData);
-    //makeReqAddUserToFirebird(options);
 });
 
 
-
-
+// !! - request add user to mongo & firebird
 let makeReqAddUser = async (newUserData) => {
     request.options = newUserData;
     request.tableName = false;
@@ -251,40 +249,34 @@ let makeReqAddUser = async (newUserData) => {
     }
     catch (err) { 'fetch ERROR', log(err) };
 };
-
 request.tableField = false;
 
 
+// !! - double slider build & get dada 
+// let makeReqGetMaxCount = async (evt) => {
+//     log(dsr);
+
+//     if (!dsr) {
+//         request.tableField = evt.target.childNodes[0].data;
+//         request.addUser = false;
+//         request.db = false;
+//         request.options = false;
+//         request.adminOptions = options(forOptions);
+//         doubleSlider.setAttribute('style', `position: absolute; display: flex;
+//     left: ${evt.clientX + 10}px; top: calc(${evt.clientY - 10}px - 20px); display: inline-block; z-index: 11`);
+//         dsr = new Dslider('.dSlider', '5em', 0, (await (makeReq(request)))[0][0], 1);
+//     }
+//     else if (dsr) {
+//         log(+dsr.minValue, +dsr.maxValue);
+//         log(dsr.base);
+//         dsr.base.remove();
+//         dsr = null;
+//         getData(evt);
+//     };
+// };
 
 
-let makeReqGetMaxCount = async (evt) => {
-    log(dsr);
-
-    if (!dsr) {
-        request.tableField = evt.target.childNodes[0].data;
-        request.addUser = false;
-        request.db = false;
-        request.options = false;
-        request.adminOptions = options(forOptions);
-        doubleSlider.setAttribute('style', `position: absolute; display: flex;
-    left: ${evt.clientX + 10}px; top: calc(${evt.clientY - 10}px - 20px); display: inline-block; z-index: 11`);
-        dsr = new Dslider('.dSlider', '5em', 0, (await (makeReq(request)))[0][0], 1);
-    }
-    else if (dsr) {
-        log(+dsr.minValue, +dsr.maxValue);
-        log(dsr.base);
-        dsr.base.remove();
-        dsr = null;
-        getData(evt);
-    }
-
-};
-
-
-dqs('.dSlider').addEventListener('click', () => {
-    // getData(evt);
-    // log(+dsr.minValue, +dsr.maxValue);
-})
+// 
 let drList;
 let drListWithCheck;
 let arrPRODID = [];
@@ -294,6 +286,9 @@ const productsUserData = dqs('#productsUserData');
 const departmentUserData = dqs('#departmentUserData');
 const countersUserData = dqs('#countersUserData');
 
+
+
+// !! - 
 productsUserData.addEventListener('click', async (evt) => {
     request.tableName = 'PRODUCTS';
     request.products = true;
@@ -315,6 +310,7 @@ productsUserData.addEventListener('click', async (evt) => {
     catch (err) { log(err) };
 });
 
+// !! - built drop list & get products
 departmentUserData.addEventListener('click', async (evt) => {
     if (productsUserData.value) {
         request.tableName = 'COUNTERLIST';
@@ -342,6 +338,8 @@ departmentUserData.addEventListener('click', async (evt) => {
     };
 });
 
+
+// !! - built drop list with check  & get departments
 countersUserData.addEventListener('click', async (evt) => {
     if (departmentUserData.value) {
         request.tableName = 'DEPARTMENT';

@@ -15,6 +15,8 @@ const User = require('../models/user.js');
 //     connected: false
 // };
 
+
+// !! - set of scripts to firebird below (see name)
 const scriptGETTABLES = " SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE (RDB$RELATION_TYPE = 0) AND (RDB$SYSTEM_FLAG IS DISTINCT FROM 1)";
 const scriptGETFILDS = "SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_NAME = ";
 let scriptGETDATA = (count) => { return ("SELECT FIRST " + count + " * FROM ") };
@@ -57,12 +59,9 @@ let scriptGETSERIAL = (conditionDEP, fieldDEP, conditionPROD, fieldPROD) => {
 
 router.post('/apidbadmin', async (req, res, next) => {
 
-
-
+    // !! - get department
     if ((req.body.request.department) && (req.body.request.tableName === 'DEPARTMENT')) {
-
 log(1);
-
         let arrDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPARTMENTID(req.body.request.department, 'DEPDESCR'))
         .then(res => { return res })
         .catch(err => { log('REJ ERROR', err); log(err) }));
@@ -76,9 +75,10 @@ log(1);
         .catch(err => { log('REJ ERROR', err); log(err) })));
 
     }    
+
+    // !! - get serials of department list
     else if ((req.body.request.products) && (req.body.request.tableName === 'COUNTERLIST')) {
 log(2);
-
         let arrPRODID = (await makeQuery(req.body.request.adminOptions, scriptGETPRODID(req.body.request.products, 'PRODDESCR'))
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) }));
@@ -91,8 +91,9 @@ log(2);
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
-    else if (req.body.request.products) {
 
+    // !! - get products
+    else if (req.body.request.products) {
 log(3);
         res.json((await makeQuery(req.body.request.adminOptions, scriptGETPRODUCTS(req.body.request.tableName))
             .then(res => { return res })
@@ -100,18 +101,16 @@ log(3);
     }
 
     // else if (req.body.request.tableField) {
-
     //     log('**apiDBadmin router.post / "makeReqGetMaxCount" ', req.body.request.tableField);
-
     //     res.json((await makeQuery(req.body.request.adminOptions, scriptGETCOUNT(req.body.request.tableName))
     //         .then(res => { log(res); return res })
     //         .catch(err => { log('REJ ERROR', err); log(err) })));
     // }
 
+
+    // !! - add new user 
     else if (req.body.request.addUser) {
-
 log(4);
-
         res.json((await makeQuery(req.body.request.adminOptions, scriptADDUSER(req.body.request.options.username, req.body.request.options.password))
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
@@ -121,27 +120,25 @@ log(4);
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
-
+// !! - get strings from COUNTERDATA according to count (double slider fo choice count doesn't use now (default 100))
     else if ((req.body.request.data) && (req.body.request.tableName)) {
-
 log(5);
-
         res.json((await makeQuery(req.body.request.options, scriptGETDATA(100) + req.body.request.tableName)
             .then(res => { return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
+
+// !! - get fields of table
     else if (req.body.request.tableName) {
-
 log(6);
-
         res.json((await makeQuery(req.body.request.options, scriptGETFILDS + "'" + req.body.request.tableName + "'")
             .then(res => { return res })
             .catch(err => { log(err) })));
     }
+
+    // !! - get tables of db
     else if (req.body.request.db) {
-
 log(7);
-
         res.json((await makeQuery(req.body.request.options, scriptGETTABLES)
             .then(res => res)
             .catch(err => err.message)));
@@ -149,34 +146,7 @@ log(7);
 });
 
 
-
-
-// let query = (db, script) => {
-//     return (new Promise((res, rej) => {
-//         db.execute(script, (err, result) => {
-//             if (err) rej(err);
-//             res(result);
-//         });
-//     }));
-// };
-
-
-// let scriptGETSUM = "SELECT SUM(CH1) FROM COUNTERDATA";
-// firebird.attach(options, (err, db) => {
-//     try {
-//         if (err) throw err
-//         else {
-//             query(db, scriptGETSUM)
-//                 .then(res => log(res))
-//                 .catch(err => log('makeQuery ERROR ------>', err.message))
-//                 .finally(db.detach());
-//         };
-//     }
-//     catch (err) { log('attachDB ERROR ------>', (err.message)) };
-// });
-
-//2 === 2 && alert() || gsdgsd
-
+// !! - make request to firebird
 async function makeQuery(options, script) {
     return new Promise((res, rej) => {
 /*??????*/ try {
@@ -204,16 +174,17 @@ async function makeQuery(options, script) {
     });
 };
 
+// !! - convert response object to arr (doesn't use now)
+// function makeResponse(inputObj) {
+//     let outputArr = [];
+//     for (let fields in inputObj) {
+//         outputArr.push(Object.entries(inputObj[fields]));
+//     };
+//     log('outputArr', outputArr);
+//     return outputArr;
+// };
 
-function makeResponse(inputObj) {
-    let outputArr = [];
-    for (let fields in inputObj) {
-        outputArr.push(Object.entries(inputObj[fields]));
-    };
-    log('outputArr', outputArr);
-    return outputArr;
-};
-
+// !! - forming string for script (see name) 
 let getID = (scriptCondition, arrCondition, field) => {
     for (let i = 0; i < arrCondition.length; i++) {
         if (i === (arrCondition.length - 1)) {
@@ -235,8 +206,7 @@ let getDEPDESCR = (scriptCondition, arrCondition, field) => {
     return (scriptCondition);
 }
 
-let getTDEPARTMENTID = (scriptCondition, arrCondition, field) => {
-    
+let getTDEPARTMENTID = (scriptCondition, arrCondition, field) => {    
     for (let i = 0; i < arrCondition.length; i++) {
         if (i === (arrCondition.length - 1)) {
             scriptCondition += field + " = " + "'" + arrCondition[i] + "'";
@@ -244,7 +214,6 @@ let getTDEPARTMENTID = (scriptCondition, arrCondition, field) => {
         else scriptCondition += field + " = " + "'" + arrCondition[i] + "'" + " OR ";
     };
     return (scriptCondition);
-
 };
 
 

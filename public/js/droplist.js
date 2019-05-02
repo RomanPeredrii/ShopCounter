@@ -1,3 +1,5 @@
+// !! - build fully functional custom "drop list" 
+
 class DropList {
     constructor(input, itemlist) {
         this.input = input;
@@ -54,11 +56,8 @@ class DropList {
                 td.addEventListener('click', () => {
                     this.dropList.parentNode.removeChild(this.dropList);
                     if (this.input.value.indexOf(item, 0) === -1) {
-                        // log(this.input.value.indexOf(item, 1));
                         this.input.value += item + ', ';
                     };
-                    // log(this.input.value);
-
                 });
                 tr.appendChild(td);
                 list.appendChild(tr);

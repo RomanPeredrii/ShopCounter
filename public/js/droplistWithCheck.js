@@ -1,3 +1,5 @@
+// !! - build fully functional custom "drop list" with "input type = check" 
+
 class DropListWithCheck {
     constructor(input, itemlist) {
         this.input = input;
@@ -57,7 +59,6 @@ class DropListWithCheck {
                 check.addEventListener('change', () => {
                     if (check.checked) {
                         if (this.input.value.indexOf(item, 0) === -1) {
-                            //log(this.input.value.indexOf(item, 1));
                             this.input.value += item + ';';
                         };
                     }

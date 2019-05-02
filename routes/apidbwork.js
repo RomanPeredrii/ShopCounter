@@ -15,7 +15,7 @@ const result = {
     logged: true
 };
 
-// OPTION FOR ATTACH DB
+// !! - OPTION FOR ATTACH DB
 let getUserOptions = async (token) => {
     try {
         let user = await User.findOne({ token });
@@ -40,23 +40,26 @@ let getUserOptions = async (token) => {
     } catch (err) { log('\n USER ERROR', err) };
 };
 
+// !! - the main router
 router.post('/apidbwork', async (req, res, next) => {
     log('request', req.body.request);
     log('request', req.body.request.serial);
+
+
+    // !! - send start date of COUNTERDATA 
     if (req.body.request.startValue) {
         log(1);
         let userOptions = await getUserOptions(req.cookies.token);
         res.json((await makeQuery(userOptions, "SELECT MIN (TIMEPOINT) FROM COUNTERDATA")
             .then(res => { res.push(userOptions); /*log('startValue',res);*/ return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
-
-        // getUserOptions(req.cookies.token).then((opt) => { log(opt) });
-        // log('**apiDB router.post / request:', req.body.request);
     }
+
+    // !! - send data according to user's request 
     else
         if (req.body.request.timeStamp) {
             log(2);
-            log('selectionFromDB---->', await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
+            //log('selectionFromDB---->', await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
             res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
         };
     // ДУРКА!!!! ЯК ВОНА Є
@@ -81,7 +84,7 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions, seria
 };
 
 
-// !! - request to firebird
+// !! - request to firebird must be refactored & united with queryToDB
 async function makeQuery(options, script) {
     return new Promise((res, rej) => {
 /*??????*/ try {
@@ -109,8 +112,8 @@ async function makeQuery(options, script) {
     });
 };
 
+// !! - make time stamps for requests to firebird according to clients requst
 
-// !! - make clients 
 async function selectionFromDB(timePoints, token, serials) {
     let dateStart = new Date(timePoints.timeStart);
     let dateFinish = new Date(timePoints.timeFinish + 86400000);
@@ -124,66 +127,50 @@ async function selectionFromDB(timePoints, token, serials) {
         dateFinish = new Date(timePoints.timeFinish);
         dateStart = new Date(timePoints.timeStart);
 
-        // await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), options)
-        //     .then((result) => arrRes.push(result)).catch(err => log('CONNECTION TO DB ERROR ', err));
         log('selectionFromDB', serials);
-
+        // !! - make response array
         arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serials).
             catch(err => log('CONNECTION TO DB ERROR ', err)));
 
         timePoints.timeFinish = timePoints.timeStart + timePoints.period;
         timePoints.timeStart += timePoints.period;
     };
-
-    //    result.data = arrRes;
-    //    log('**arrRes', result.data);       
     return (arrRes);
 };
 
-function queryToDB(script, db) {
 
-    log(script);
+// !! - request to firebird must be refactored 
+function queryToDB(script, db) {
+    // log(script);
     return new Promise((res, rej) => {
         db.query(script, (err, result) => {
             if (err) rej(err);
             db.detach();
-            //log('--> func! getDataFomDb', script, result[0].SUM);
             if (!result[0].SUM) result[0].SUM = 0;
             res(Math.round(result[0].SUM));
-            //log(result)
-            // res(result);
         });
     });
 };
 
-function dateToUTC(date) {
-    let dateArr = date.replace((/-|:|\s/g), ", ").split(',');
-    for (let i = 0; i < dateArr.length; i++) {
-        if (i === 1)--dateArr[i];
-        if (i === 2)++dateArr[i];
-    };
-    return Date.UTC(...dateArr);
-};
+// !! - unusable function
+// function dateToUTC(date) {
+//     let dateArr = date.replace((/-|:|\s/g), ", ").split(',');
+//     for (let i = 0; i < dateArr.length; i++) {
+//         if (i === 1)--dateArr[i];
+//         if (i === 2)++dateArr[i];
+//     };
+//     return Date.UTC(...dateArr);
+// };
 
+// !! - make date for script
 function makeDateString(dateVal) {
     return (dateVal.getUTCFullYear() + '-' + (dateVal.getUTCMonth() + 1) + '-' +
         dateVal.getUTCDate() + ' ' + dateVal.getUTCHours() + ':' +
         dateVal.getUTCMinutes() + ':' + dateVal.getUTCSeconds());
 };
 
-// function serial(serial) {
-//     log(serial);
-//     let arrSerial = serial.split(';');
-//     //arrID.pop();
-//     for (let i = 0; i < arrSerial.length; i++) {
-//         if (i === (arrSerial.length - 1)) {
-//             scriptCondition += field + " = " + "'" + arrCondition[i] + "'";
-//         }
-//         else scriptCondition += field + " = " + "'" + arrCondition[i] + "'" + " OR ";
-//     };
-//     return (scriptCondition);
-// };
 
+// !! - make scriptGetSUM according to request
 function scriptGetSUM(timePointS, timePointF, serials) {
     let scriptCondition = '';
     for (let i = 0; i < serials.length; i++) {
@@ -194,11 +181,6 @@ function scriptGetSUM(timePointS, timePointF, serials) {
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
         + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
 };
-
-
-
-
-
 
 
 module.exports = router;

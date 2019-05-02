@@ -1,5 +1,5 @@
 extends layout
-
+//- values&labels just for check must be deleted||replaced!!!
 block content
   link(rel='stylesheet', href='/css/adminStyle.css')
   h1= title
@@ -11,7 +11,7 @@ block content
         label Port:
         input.options#optionsPort(pattern = '^[ 0-9]+$', value = '3050', title='port')
         label Path:
-        input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB', title='database')
+        input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB', title='database')   
         label Page Size:
         input.options#optionsPageSize(type='text', value = '4096', title='pageSize' )
       .forAdminOptions
@@ -59,14 +59,14 @@ block content
         input#countersUserData(type = 'text', value = '', title='counters')
       button#addUser ADDUSER
       .drList
-  .compositionTableMenu
-      label from:
-      input#brandUserDataZZZ(type='date', value = '')
-      label to:
-      input#addressUserDataZZZ(type = 'date', value = '') 
-      //- input#quantityOfStringRange(type = 'range')
-      input#quantityOfStringRangeNumber(type= 'number')
-      input#listForFilter(type="text")
+  //- .compositionTableMenu
+  //-     label from:
+  //-     input#brandUserDataZZZ(type='date', value = '')
+  //-     label to:
+  //-     input#addressUserDataZZZ(type = 'date', value = '') 
+  //-     //- input#quantityOfStringRange(type = 'range')
+  //-     input#quantityOfStringRangeNumber(type= 'number')
+  //-     input#listForFilter(type="text")
   
   script(src="/js/doubleslider.js")
   script(src='/js/admin.js')

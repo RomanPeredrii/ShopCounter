@@ -2,7 +2,6 @@ var log = console.log;
 var router = require('express').Router();
 const User = require('../models/user.js');
 
-
 router.post('/login', function (req, res, next) {
   const result = {
     ok: false,
@@ -11,6 +10,8 @@ router.post('/login', function (req, res, next) {
     unlogged: false
   };
   let user = req.body.UserLogInfo;
+
+  // !! - get session 
   getUser(user).then((user) => {
     if (!user) /*{
       log('!USER', user);
@@ -28,9 +29,9 @@ router.post('/login', function (req, res, next) {
     };
     res.json(result);
   }).catch((err) => { log('getUser ERROR', err); result.error = true; res.json(result); });
-
 });
 
+// !! - get user from mongo
 async function getUser(UserLogInfo) {
   try {
     //log('USER INCOME OBJECT', UserLogInfo)
@@ -53,6 +54,8 @@ async function getUser(UserLogInfo) {
   } catch (err) { log('\n ERROR', err) };
 };
 
+
+// !! - make token
 function makeid() {
   let text = "";
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -42,7 +42,7 @@ let getCheckedSerials = () => {
 document.addEventListener('DOMContentLoaded', async (request) => {
     request.startValue = true;
     const result = await makeReq(request);
-
+log('result 49', result);
 
     // !! - creating&rendering checkbox for choice of department according to data from mongo
     const counters = document.querySelector('.counters');
@@ -196,7 +196,7 @@ reqButton.addEventListener('click', async () => {
                     window.location.replace('/');
                 }
                 else if (result) {
-
+                    log('RESULT:', result);
                     // !! - creating table for rendering requested data from firebird
                     dataTable.innerHTML = '';
                     result.map((rowResult) => {
@@ -228,7 +228,6 @@ reqButton.addEventListener('click', async () => {
 
                     bildChart(result.map(arr => arr[2]),
                         result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'bar');
-
                 } else throw err;
             }
             catch (err) { log(err) };

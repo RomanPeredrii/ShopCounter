@@ -1,3 +1,5 @@
+// !! - build custom "double slider" 
+
 class Dslider {
   constructor(parent, width, startValue, finishValue, step) {
     this.parent = document.querySelector(parent);
