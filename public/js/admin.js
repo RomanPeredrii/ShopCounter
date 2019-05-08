@@ -210,7 +210,7 @@ function showTable(context, data) {
 // !! - request to firebird
 let makeReq = async (request) => {
     try {
-        const rawResponse = await fetch('http://localhost:3000/api/apidbadmin', {
+        const rawResponse = await fetch('/api/apidbadmin', {
             method: 'POST',
             headers,
             body: JSON.stringify({ request })
@@ -239,7 +239,7 @@ let makeReqAddUser = async (newUserData) => {
     log('makeReqAddUser REQUEST', request);
     makeReq(request);
     try {
-        const rawResponse = await fetch('http://localhost:3000/api/apidbusers', {
+        const rawResponse = await fetch('/api/apidbusers', {
             method: 'POST',
             headers,
             body: JSON.stringify({ request })

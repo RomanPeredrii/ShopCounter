@@ -19,7 +19,6 @@ const result = {
 let getUserOptions = async (token) => {
     try {
         let user = await User.findOne({ token });
-
         //log('getUserOptions ----> USER', user)
         if (!user) { log('USER NOT EXIST') }
         else {
@@ -40,27 +39,28 @@ let getUserOptions = async (token) => {
     } catch (err) { log('\n USER ERROR', err) };
 };
 
+
+
 // !! - the main router
 router.post('/apidbwork', async (req, res, next) => {
-    log('request', req.body.request);
-    log('request', req.body.request.serial);
-
-
+    let userOptions = await getUserOptions(req.cookies.token);
     // !! - send start date of COUNTERDATA 
     if (req.body.request.startValue) {
         log(1);
-        let userOptions = await getUserOptions(req.cookies.token);
         res.json((await makeQuery(userOptions, "SELECT MIN (TIMEPOINT) FROM COUNTERDATA")
-            .then(res => { res.push(userOptions); /*log('startValue',res);*/ return res })
+            .then(res => { res.push(userOptions); return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
-    // !! - send data according to user's request 
+    // !! - send data according to user's request (with sql injection defense)
     else
         if (req.body.request.timeStamp) {
             log(2);
-            //log('selectionFromDB---->', await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
-            res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, req.body.request.serial));
+            let countersArr = userOptions.counters.split(';');
+            countersArr.pop();
+            let serialArr = [];
+            req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+            res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
         };
     // ДУРКА!!!! ЯК ВОНА Є
 
@@ -69,14 +69,14 @@ router.post('/apidbwork', async (req, res, next) => {
 
 // !! - getDataFomDb according to client conditions from request body
 async function getDataFomDb(timePointSart, timePointFinish, accessOptions, serials) {
-    log('accessOptions', serials);
+    //log('accessOptions', serials);
     return new Promise((res, rej) => {
         firebird.attach(accessOptions, async (err, db) => {
             if (err) { log(err); rej(err) }
             else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
-                    .catch(err => log('SQL SCRIPT ERROR!', err))); //log('getDataFomDb--->', arr);
+                    .catch(err => log('SQL SCRIPT ERROR!', err))); 
                 res(arr);
             };
         });
@@ -120,14 +120,14 @@ async function selectionFromDB(timePoints, token, serials) {
     let step = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
     let arrRes = [];
 
-    log('step', step);
+    //log('step', step);
     for (let i = 0; i < step; i++) {
 
         timePoints.timeFinish = timePoints.timeStart + timePoints.period;
         dateFinish = new Date(timePoints.timeFinish);
         dateStart = new Date(timePoints.timeStart);
 
-        log('selectionFromDB', serials);
+        //log('selectionFromDB', serials);
         // !! - make response array
         arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serials).
             catch(err => log('CONNECTION TO DB ERROR ', err)));
