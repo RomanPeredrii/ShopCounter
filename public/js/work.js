@@ -14,7 +14,8 @@ const forDateChoise = document.querySelector('.forDateChoise');
 let request = {
     startValue: false,
     timeStamp: false,
-    serial: false
+    serial: false,
+    pieChart: false
 };
 
 const headers = {
@@ -33,7 +34,7 @@ let getCheckedDepartments = () => {
     let serialsArr = [];
     let serials = document.querySelectorAll('.counters>input');
     serials.forEach((serial, i) => {
-        if (serial.checked) serialsArr.push(i);        
+        if (serial.checked) serialsArr.push(i);
     });
     log(serialsArr);
     return serialsArr;
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async (request) => {
     };
 
     // !! - just checking!!! for next idea 
-    document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
+    // document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
 
 });
 
@@ -184,9 +185,10 @@ reqButton.addEventListener('click', async () => {
                     timeFinish: Date.parse(timeStampF.value),
                     period: getChoicePeriod(periodChoice)
                 };
+                request.pieChart = false;
                 request.timeStamp = TimeStamp;
                 request.serial = getCheckedDepartments();
-                log(request);
+                // log(request);
                 const result = await makeReq(request);
 
                 // !! - checking session
@@ -226,18 +228,72 @@ reqButton.addEventListener('click', async () => {
 });
 
 // !! - building different kind of charts
+let builtPieChat = () => {
+document.querySelector('#pie')
+.addEventListener('click', async () => {
+    if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
+    else {
+        const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
+        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
+        else {
+            try {
+                let TimeStamp = {
+                    timeStart: Date.parse(timeStampS.value),
+                    timeFinish: Date.parse(timeStampF.value),
+                    period: getChoicePeriod(periodChoice)
+                };
+                request.timeStamp = TimeStamp;
+                request.serial = getCheckedDepartments();
+                // log(request);
+                request.pieChart = true;
+                const result = await makeReq(request);
 
-var barChart = document.querySelector('#bar')
-barChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), barChart.value));
+                // !! - checking session
+                if (result.unlogged) {
+                    log('RESULT:', result);
+                    window.location.replace('/');
+                }
+                else if (result) {
+                    log('RESULT:', result);
+                    // !! - creating table for rendering requested data from firebird
+                    dataTable.innerHTML = '';
+                    result.map((rowResult) => {
+                        const tr = document.createElement('tr');
+                        const td0 = document.createElement('td');
+                        const td1 = document.createElement('td');
+                        const td2 = document.createElement('td');
+                        td0.textContent = makeDateForPerfomance(rowResult[0], getChoicePeriod(periodChoice));
+                        td1.textContent = makeDateForPerfomance(rowResult[1], getChoicePeriod(periodChoice));
+                        td2.textContent = rowResult[2];
+                        [td0, td1, td2].map(td => tr.appendChild(td));
+                        tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(periodChoice));
+                        dataTable.appendChild(tr);
+                    });
 
-var lineChart = document.querySelector('#line')
-lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
 
-var pieChart = document.querySelector('#pie')
-pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
+
+                    bildChart(result.map(arr => arr[2]),
+                        result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'pie');
+                } else throw err;
+            }
+            catch (err) { log(err) };
+        };
+        document.querySelector('.guide').style.display = 'none';
+        const typeOfChart = document.querySelector('.typeOfChart');
+        typeOfChart.style.display = 'block';
+    };
+
+});
+};
+builtPieChat();
+
+// var lineChart = document.querySelector('#line')
+// lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+//     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
+
+// var pieChart = document.querySelector('#pie')
+// pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+//     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
 
 
 // !! - build chart with Cartjs module

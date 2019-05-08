@@ -52,16 +52,26 @@ router.post('/apidbwork', async (req, res, next) => {
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
-    // !! - send data according to user's request (with sql injection defense)
-    else
-        if (req.body.request.timeStamp) {
-            log(2);
-            let countersArr = userOptions.counters.split(';');
-            countersArr.pop();
-            let serialArr = [];
-            req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
-            res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
-        };
+    // !! - send data according to user's request for bar chart (with sql injection defense)
+    else if ((req.body.request.timeStamp) && (!req.body.request.pieChart)) {
+        log(2);
+        let countersArr = userOptions.counters.split(';');
+        countersArr.pop();
+        let serialArr = [];
+        req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+        res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
+    }
+
+    // !! - send data according to user's request for pie chart (with sql injection defense)
+    else if ((req.body.request.timeStamp) && (req.body.request.pieChart)) {
+        log(3);
+        let countersArr = userOptions.counters.split(';');
+        countersArr.pop();
+        let serialArr = [];
+        req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+        res.json(await selectionFromDBforPieChart(req.body.request.timeStamp, req.cookies.token, serialArr));
+    }
+
     // ДУРКА!!!! ЯК ВОНА Є
 
 });
@@ -76,7 +86,7 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions, seria
             else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
-                    .catch(err => log('SQL SCRIPT ERROR!', err))); 
+                    .catch(err => log('SQL SCRIPT ERROR!', err)));
                 res(arr);
             };
         });
@@ -112,7 +122,7 @@ async function makeQuery(options, script) {
     });
 };
 
-// !! - make time stamps for requests to firebird according to clients requst
+// !! - make time stamps for requests to firebird according to clients requst bar chart
 
 async function selectionFromDB(timePoints, token, serials) {
     let dateStart = new Date(timePoints.timeStart);
@@ -138,6 +148,26 @@ async function selectionFromDB(timePoints, token, serials) {
     return (arrRes);
 };
 
+async function selectionFromDBforPieChart(timePoints, token, serials) {
+    let dateStart = new Date(timePoints.timeStart);
+    let dateFinish = new Date(timePoints.timeFinish + 86400000);
+    let arrRes = [];
+
+    log('dateStart', dateStart);
+    log('dateFinish', dateFinish);
+        log('selectionFromDBforPieChart', serials);
+        // !! - make response array
+        serials.map(async (serialNum) => {
+            let serial = [serialNum];
+        arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
+            catch(err => log('CONNECTION TO DB ERROR ', err)));
+             let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial));
+            log(rawData[2]);
+            arrRes.push(rawData[2]);
+        });
+   log("arrRes", arrRes);
+    return (arrRes);
+};
 
 // !! - request to firebird must be refactored 
 function queryToDB(script, db) {
@@ -177,6 +207,9 @@ function scriptGetSUM(timePointS, timePointF, serials) {
         if (i === (serials.length - 1)) scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'"
         else scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'" + " OR ";
     };
+    log((" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
+    + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
+    + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )"));
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
         + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
