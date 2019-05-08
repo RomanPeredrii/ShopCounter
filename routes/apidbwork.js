@@ -52,6 +52,7 @@ router.post('/apidbwork', async (req, res, next) => {
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
+<<<<<<< HEAD
     // !! - send data according to user's request for bar chart (with sql injection defense)
     else if ((req.body.request.timeStamp) && (!req.body.request.pieChart)) {
         log(2);
@@ -72,6 +73,18 @@ router.post('/apidbwork', async (req, res, next) => {
         res.json(await selectionFromDBforPieChart(req.body.request.timeStamp, req.cookies.token, serialArr));
     }
 
+=======
+    // !! - send data according to user's request (with sql injection defense)
+    else
+        if (req.body.request.timeStamp) {
+            log(2);
+            let countersArr = userOptions.counters.split(';');
+            countersArr.pop();
+            let serialArr = [];
+            req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+            res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
+        };
+>>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
     // ДУРКА!!!! ЯК ВОНА Є
 
 });
@@ -86,7 +99,11 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions, seria
             else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
+<<<<<<< HEAD
                     .catch(err => log('SQL SCRIPT ERROR!', err)));
+=======
+                    .catch(err => log('SQL SCRIPT ERROR!', err))); 
+>>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
                 res(arr);
             };
         });

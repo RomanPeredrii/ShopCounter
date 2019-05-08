@@ -34,7 +34,11 @@ let getCheckedDepartments = () => {
     let serialsArr = [];
     let serials = document.querySelectorAll('.counters>input');
     serials.forEach((serial, i) => {
+<<<<<<< HEAD
         if (serial.checked) serialsArr.push(i);
+=======
+        if (serial.checked) serialsArr.push(i);        
+>>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
     });
     log(serialsArr);
     return serialsArr;
@@ -88,7 +92,11 @@ document.addEventListener('DOMContentLoaded', async (request) => {
     };
 
     // !! - just checking!!! for next idea 
+<<<<<<< HEAD
     // document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
+=======
+    document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
+>>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
 
 });
 
@@ -188,7 +196,11 @@ reqButton.addEventListener('click', async () => {
                 request.pieChart = false;
                 request.timeStamp = TimeStamp;
                 request.serial = getCheckedDepartments();
+<<<<<<< HEAD
                 // log(request);
+=======
+                log(request);
+>>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
                 const result = await makeReq(request);
 
                 // !! - checking session
@@ -228,6 +240,7 @@ reqButton.addEventListener('click', async () => {
 });
 
 // !! - building different kind of charts
+<<<<<<< HEAD
 let builtPieChat = () => {
 document.querySelector('#pie')
 .addEventListener('click', async () => {
@@ -294,6 +307,20 @@ builtPieChat();
 // var pieChart = document.querySelector('#pie')
 // pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
 //     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
+=======
+
+var barChart = document.querySelector('#bar')
+barChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), barChart.value));
+
+var lineChart = document.querySelector('#line')
+lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
+
+var pieChart = document.querySelector('#pie')
+pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
+>>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
 
 
 // !! - build chart with Cartjs module
