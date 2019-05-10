@@ -31,17 +31,12 @@ const hour = 3600000;
 
 // !!! - getCheckedDepartments method for specification user`s request according to department
 let getCheckedDepartments = () => {
-    let serialsArr = [];
+    let serialsArrNumber = [];
     let serials = document.querySelectorAll('.counters>input');
     serials.forEach((serial, i) => {
-<<<<<<< HEAD
-        if (serial.checked) serialsArr.push(i);
-=======
-        if (serial.checked) serialsArr.push(i);        
->>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
+        if (serial.checked) serialsArrNumber.push(i);
     });
-    log(serialsArr);
-    return serialsArr;
+    return serialsArrNumber;
 };
 
 // !! - make first request for getting user object from mongo & start date from firebird 
@@ -92,11 +87,8 @@ document.addEventListener('DOMContentLoaded', async (request) => {
     };
 
     // !! - just checking!!! for next idea 
-<<<<<<< HEAD
     // document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
-=======
     document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
->>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
 
 });
 
@@ -196,11 +188,7 @@ reqButton.addEventListener('click', async () => {
                 request.pieChart = false;
                 request.timeStamp = TimeStamp;
                 request.serial = getCheckedDepartments();
-<<<<<<< HEAD
-                // log(request);
-=======
                 log(request);
->>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
                 const result = await makeReq(request);
 
                 // !! - checking session
@@ -212,7 +200,7 @@ reqButton.addEventListener('click', async () => {
                     log('RESULT:', result);
                     // !! - creating table for rendering requested data from firebird
                     dataTable.innerHTML = '';
-                    result.map((rowResult) => {
+                    result.map((rowResult, i) => {
                         const tr = document.createElement('tr');
                         const td0 = document.createElement('td');
                         const td1 = document.createElement('td');
@@ -224,8 +212,6 @@ reqButton.addEventListener('click', async () => {
                         tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(periodChoice));
                         dataTable.appendChild(tr);
                     });
-
-
 
                     bildChart(result.map(arr => arr[2]),
                         result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'bar');
@@ -240,7 +226,6 @@ reqButton.addEventListener('click', async () => {
 });
 
 // !! - building different kind of charts
-<<<<<<< HEAD
 let builtPieChat = () => {
 document.querySelector('#pie')
 .addEventListener('click', async () => {
@@ -275,14 +260,18 @@ document.querySelector('#pie')
                         const td0 = document.createElement('td');
                         const td1 = document.createElement('td');
                         const td2 = document.createElement('td');
+                        const td3 = document.createElement('td');
                         td0.textContent = makeDateForPerfomance(rowResult[0], getChoicePeriod(periodChoice));
                         td1.textContent = makeDateForPerfomance(rowResult[1], getChoicePeriod(periodChoice));
                         td2.textContent = rowResult[2];
-                        [td0, td1, td2].map(td => tr.appendChild(td));
+                        td3.textContent = rowResult[3];
+                        [td0, td1, td2, td3].map(td => tr.appendChild(td));
                         tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(periodChoice));
                         dataTable.appendChild(tr);
                     });
+                    const departmentLabels = document.querySelectorAll('.counters > label');
 
+// !!!   log(departmentLabels[i].textContent);
 
 
                     bildChart(result.map(arr => arr[2]),
@@ -307,7 +296,6 @@ builtPieChat();
 // var pieChart = document.querySelector('#pie')
 // pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
 //     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
-=======
 
 var barChart = document.querySelector('#bar')
 barChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
@@ -317,10 +305,9 @@ var lineChart = document.querySelector('#line')
 lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
 
-var pieChart = document.querySelector('#pie')
-pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-    result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
->>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
+// var pieChart = document.querySelector('#pie')
+// pieChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
+//     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), pieChart.value));
 
 
 // !! - build chart with Cartjs module

@@ -52,7 +52,6 @@ router.post('/apidbwork', async (req, res, next) => {
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
-<<<<<<< HEAD
     // !! - send data according to user's request for bar chart (with sql injection defense)
     else if ((req.body.request.timeStamp) && (!req.body.request.pieChart)) {
         log(2);
@@ -73,7 +72,6 @@ router.post('/apidbwork', async (req, res, next) => {
         res.json(await selectionFromDBforPieChart(req.body.request.timeStamp, req.cookies.token, serialArr));
     }
 
-=======
     // !! - send data according to user's request (with sql injection defense)
     else
         if (req.body.request.timeStamp) {
@@ -84,7 +82,6 @@ router.post('/apidbwork', async (req, res, next) => {
             req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
             res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
         };
->>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
     // ДУРКА!!!! ЯК ВОНА Є
 
 });
@@ -99,11 +96,7 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions, seria
             else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
-<<<<<<< HEAD
                     .catch(err => log('SQL SCRIPT ERROR!', err)));
-=======
-                    .catch(err => log('SQL SCRIPT ERROR!', err))); 
->>>>>>> f44fcdc2c3ff52ba6a1fccd01fd2ed4ce3f94a7e
                 res(arr);
             };
         });
@@ -172,17 +165,19 @@ async function selectionFromDBforPieChart(timePoints, token, serials) {
 
     log('dateStart', dateStart);
     log('dateFinish', dateFinish);
-        log('selectionFromDBforPieChart', serials);
-        // !! - make response array
-        serials.map(async (serialNum) => {
-            let serial = [serialNum];
-        arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
+    log('selectionFromDBforPieChart', serials);
+    // !! - make response array
+
+
+    for (let i = 0; i < serials.length; i++) {
+        let serial = [serials[i]];
+        let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
             catch(err => log('CONNECTION TO DB ERROR ', err)));
-             let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial));
-            log(rawData[2]);
-            arrRes.push(rawData[2]);
-        });
-   log("arrRes", arrRes);
+        rawData.push(serials[i]);
+        arrRes.push(rawData);
+       // log("arrRes->>", arrRes);
+    };
+    log("arrRes", arrRes);
     return (arrRes);
 };
 
@@ -225,8 +220,8 @@ function scriptGetSUM(timePointS, timePointF, serials) {
         else scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'" + " OR ";
     };
     log((" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
-    + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-    + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )"));
+        + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
+        + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )"));
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
         + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
