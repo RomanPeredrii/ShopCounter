@@ -219,9 +219,9 @@ function scriptGetSUM(timePointS, timePointF, serials) {
         if (i === (serials.length - 1)) scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'"
         else scriptCondition += 'SERIAL' + " = " + "'" + serials[i] + "'" + " OR ";
     };
-    log((" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
-        + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-        + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )"));
+    // log((" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
+    //     + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
+    //     + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )"));
     return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
         + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
         + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
