@@ -44,6 +44,7 @@ let getUserOptions = async (token) => {
 // !! - the main router
 router.post('/apidbwork', async (req, res, next) => {
     let userOptions = await getUserOptions(req.cookies.token);
+    log(req.body.request.timeStamp);
     // !! - send start date of COUNTERDATA 
     if (req.body.request.startValue) {
         log(1);
@@ -53,13 +54,13 @@ router.post('/apidbwork', async (req, res, next) => {
     }
 
     // !! - send data according to user's request for bar chart (with sql injection defense)
-    else if ((req.body.request.timeStamp) && (!req.body.request.pieChart)) {
+    else if ((req.body.request.timeStamp) && (req.body.request.barChat)) {
         log(2);
         let countersArr = userOptions.counters.split(';');
         countersArr.pop();
         let serialArr = [];
         req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
-        res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
+        res.json(await selectionFromDBforBarChart(req.body.request.timeStamp, req.cookies.token, serialArr));
     }
 
     // !! - send data according to user's request for pie chart (with sql injection defense)
@@ -73,15 +74,14 @@ router.post('/apidbwork', async (req, res, next) => {
     }
 
     // !! - send data according to user's request (with sql injection defense)
-    else
-        if (req.body.request.timeStamp) {
-            log(2);
-            let countersArr = userOptions.counters.split(';');
-            countersArr.pop();
-            let serialArr = [];
-            req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
-            res.json(await selectionFromDB(req.body.request.timeStamp, req.cookies.token, serialArr));
-        };
+    else if ((req.body.request.timeStamp) && (req.body.request.lineGraph)) {
+        log(4);
+        let countersArr = userOptions.counters.split(';');
+        countersArr.pop();
+        let serialArr = [];
+        req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+        res.json(await selectionFromDBforLineGraph(req.body.request.timeStamp, req.cookies.token, serialArr));
+    };
     // ДУРКА!!!! ЯК ВОНА Є
 
 });
@@ -132,9 +132,10 @@ async function makeQuery(options, script) {
     });
 };
 
-// !! - make time stamps for requests to firebird according to clients requst bar chart
+// !! - make time stamps for requests to firebird according to clients request bar chart
 
-async function selectionFromDB(timePoints, token, serials) {
+let selectionFromDBforBarChart = async (timePoints, token, serials) => {
+
     let dateStart = new Date(timePoints.timeStart);
     let dateFinish = new Date(timePoints.timeFinish + 86400000);
     let step = ((timePoints.timeFinish + 86400000 - timePoints.timeStart) / timePoints.period);
@@ -163,22 +164,43 @@ async function selectionFromDBforPieChart(timePoints, token, serials) {
     let dateFinish = new Date(timePoints.timeFinish + 86400000);
     let arrRes = [];
 
-    log('dateStart', dateStart);
-    log('dateFinish', dateFinish);
-    log('selectionFromDBforPieChart', serials);
     // !! - make response array
-
-
     for (let i = 0; i < serials.length; i++) {
         let serial = [serials[i]];
         let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
             catch(err => log('CONNECTION TO DB ERROR ', err)));
         rawData.push(serials[i]);
         arrRes.push(rawData);
-       // log("arrRes->>", arrRes);
+        // log("arrRes->>", arrRes);
     };
     log("arrRes", arrRes);
     return (arrRes);
+};
+
+let selectionFromDBforLineGraph = async (tPoints, token, serials) => {
+    let rawData = [];
+    for (let j = 0; j < serials.length; j++) {
+        let timeStart = tPoints.timeStart;
+        let timeFinish = tPoints.timeFinish;
+        const period = tPoints.period;
+        let dateStart = new Date(timeStart);
+        let dateFinish = new Date(timeFinish + 86400000);
+        let step = ((timeFinish + 86400000 - timeStart) / period);
+        let serial = [serials[j]];
+        let arrRes = [];
+        for (let i = 0; i < step; i++) {
+            timeFinish = timeStart + period;
+            dateFinish = new Date(timeFinish);
+            dateStart = new Date(timeStart);
+            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
+                catch(err => log('CONNECTION TO DB ERROR ', err)));
+            timeFinish = timeStart + period;
+            timeStart += period;
+        };
+        rawData.push(arrRes);
+    };
+    log("rawData", rawData);
+    return (rawData);
 };
 
 // !! - request to firebird must be refactored 

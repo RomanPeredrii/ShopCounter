@@ -11,11 +11,17 @@ const timeStampF = document.querySelector('#timeStampF');
 const dataTable = document.querySelector('#dataFromDB > tbody');
 const divPeriodSet = document.querySelector('#periodSet');
 const forDateChoise = document.querySelector('.forDateChoise');
-let request = {
-    startValue: false,
-    timeStamp: false,
-    serial: false,
-    pieChart: false
+let request;
+//!! just for locking default values
+let defRequest = () => {
+    return request = {
+        startValue: false,
+        timeStamp: false,
+        serial: false,
+        pieChart: false,
+        lineGraph: false,
+        barChat: false
+    };
 };
 
 const headers = {
@@ -38,6 +44,7 @@ let getCheckedDepartments = () => {
     });
     return serialsArrNumber;
 };
+
 
 // !! - make first request for getting user object from mongo & start date from firebird 
 document.addEventListener('DOMContentLoaded', async (request) => {
@@ -129,6 +136,14 @@ divPeriodSet.addEventListener('click', () => divSendReq.style.display = 'inline-
 forDateChoise.addEventListener('change', periodValidator);
 forDateChoise.addEventListener('click', periodValidator);
 
+let TimeStamp = (timeStampS, timeStampF, periodChoice) => {
+    return {
+        timeStart: Date.parse(timeStampS.value),
+        timeFinish: Date.parse(timeStampF.value),
+        period: getChoicePeriod(periodChoice)
+    };
+};
+
 
 // !! - get chosen period for user`s request to firebird
 function getChoicePeriod(periodCheck) {
@@ -197,15 +212,12 @@ let builtBarChat = async () => {
         if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
         else {
             try {
-                let TimeStamp = {
-                    timeStart: Date.parse(timeStampS.value),
-                    timeFinish: Date.parse(timeStampF.value),
-                    period: getChoicePeriod(periodChoice)
-                };
-                request.pieChart = false;
-                request.timeStamp = TimeStamp;
+
+                let request = defRequest();
+                request.barChat = true;
+                request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
                 request.serial = getCheckedDepartments();
-                log(request);
+                // log(request);
                 const result = await makeReq(request);
 
                 // !! - checking session
@@ -214,7 +226,7 @@ let builtBarChat = async () => {
                     window.location.replace('/');
                 }
                 else if (result) {
-                    log('RESULT:', result);
+                    //log('RESULT:', result);
                     makeTable(dataTable, result, periodChoice);
 
                     // !!! necessary to add useful labels & legends
@@ -245,12 +257,8 @@ let builtPieChat = async () => {
         if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
         else {
             try {
-                let TimeStamp = {
-                    timeStart: Date.parse(timeStampS.value),
-                    timeFinish: Date.parse(timeStampF.value),
-                    period: getChoicePeriod(periodChoice)
-                };
-                request.timeStamp = TimeStamp;
+                let request = defRequest();
+                request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
                 request.serial = getCheckedDepartments();
                 request.pieChart = true;
                 const result = await makeReq(request);
@@ -261,7 +269,7 @@ let builtPieChat = async () => {
                     window.location.replace('/');
                 }
                 else if (result) {
-                    log('RESULT:', result);
+                    //log('RESULT:', result);
                     makeTable(dataTable, result, periodChoice);
 
 
@@ -289,30 +297,55 @@ let builtLineGraph = async () => {
         if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
         else {
             try {
-                let TimeStamp = {
-                    timeStart: Date.parse(timeStampS.value),
-                    timeFinish: Date.parse(timeStampF.value),
-                    period: getChoicePeriod(periodChoice)
-                };
-                request.pieChart = false;
-                request.timeStamp = TimeStamp;
+                let request = defRequest();;
+                request.lineGraph = true;
+                request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
                 request.serial = getCheckedDepartments();
-                log(request);
+                // log(request);
                 const result = await makeReq(request);
 
                 // !! - checking session
                 if (result.unlogged) {
-                    log('RESULT:', result);
+                    //log('RESULT:', result);
                     window.location.replace('/');
                 }
                 else if (result) {
-                    log('RESULT:', result);
+                    //log('RESULT:', result);
                     makeTable(dataTable, result, periodChoice);
 
                     // !!! necessary to add useful labels & legends
+                    let dataArr = (result) => {
+                        let retDataArr = [];
+                        for (let i = 0; i < result.length; i++) {
+                           // log(result[i]);
+                            retDataArr.push({
+                                //label: dataFromDB,
+                                data: result[i],
+                                fill: false,
+                                backgroundColor: '#298096',
+                                borderColor: '#202000',
+                                borderWidth: 1
+                            });
+                        };
+                        return retDataArr;
+                    };
 
+                    let labelArr = (result) => {
+                        let retLabelArr = [];
+                        for (let i = 0; i < result.length; i++) {
+                          retLabelArr.push(result[i]);
+                        };
+                        return retLabelArr;
+                    };
+                    dataArr(result);
+                    let row = result.map(arr => arr.map(arr => arr[0]));
 
-                    bildChart(result.map(arr => arr[2]), result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'bar');
+                    log('result.map(arr => arr.map(arr => arr[0]))', result.map(arr => arr.map(arr => arr[0])));
+                    //log('result.map(arr => arr.map(arr => arr[0]))', result.map(arr => arr.map(arr => arr[0])));
+                    log('labelArr', labelArr(result.map(arr => arr.map(arr => arr[0]))));
+
+                    bildLineChart(dataArr(result.map(arr => arr.map(arr => arr[2]))),
+                    labelArr(result.map(arr => arr.map(arr => arr[0])))[0].map(arr => makeDateForPerfomance(arr), getChoicePeriod(periodChoice)), 'line');
                 } else throw err;
             }
             catch (err) { log(err) };
@@ -331,38 +364,51 @@ document.querySelector('#bar')
 document.querySelector('#line')
     .addEventListener('click', builtLineGraph);
 
-// var lineChart = document.querySelector('#line')
-// lineChart.addEventListener('click', () => bildChart(result.map(arr => arr[2]),
-//     result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), lineChart.value));
-
-
-
-
-
-
-
 
 // !! - build chart with Cartjs module
 function bildChart(dataFromDB, dateLabel, typeOfChart) {
+    log(dataFromDB);
+    // log(typeof dataFromDB);
 
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
-
-    var chartCanvas = document.querySelector('#chartFromDB').getContext('2d');
-
-    window.chartDB = new Chart(chartCanvas, {
-
+    window.chartDB = new Chart(document.querySelector('#chartFromDB').getContext('2d'), {
         type: typeOfChart,
-
         data: {
             labels: dateLabel,
-            datasets: [{
-                //label: dataFromDB,
-                data: dataFromDB,
-                fill: false,
-                backgroundColor: '#298096',
-                borderColor: '#202000',
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    //label: dataFromDB,
+                    data: dataFromDB,
+                    fill: false,
+                    backgroundColor: '#298096',
+                    borderColor: '#202000',
+                    borderWidth: 1
+                }]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        },
+    });
+    //log(delete window.chartDB.data.datasets[0].label)
+};
+
+function bildLineChart(dataFromDB, dateLabel, typeOfChart) {
+    log(dataFromDB);
+    if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
+    window.chartDB = new Chart(document.querySelector('#chartFromDB').getContext('2d'), {
+        type: typeOfChart,
+        data: {
+            labels: dateLabel,
+            datasets: dataFromDB,
         },
         options: {
             legend: {
