@@ -19,8 +19,11 @@ block content
         br
       .dinamic
         div#periodSet
-        .divSendReq
-          button#sendReq REQUEST
+      .divSendReq
+        button#pie(value = 'pie')
+        button#bar(value = 'bar')
+        button#line(value = 'line')
+        //- button#sendReq REQUEST
       br
       .dataFromDB 
         table#dataFromDB 
@@ -36,10 +39,10 @@ block content
             li push "REQUEST" button for get data from DB
       .canv
         canvas#chartFromDB
-      .typeOfChart
-          button#pie(value = 'pie')
-          button#bar(value = 'bar')
-          button#line(value = 'line')
+      //- .typeOfChart
+      //-     button#pie(value = 'pie')
+      //-     button#bar(value = 'bar')
+      //-     button#line(value = 'line')
 
   link(rel='stylesheet', href='/css/workStyle.css')
   script(src='/libs/ChartBundle.js')

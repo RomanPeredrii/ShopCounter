@@ -22,7 +22,7 @@ const headers = {
 const compositionTableMenu = dqs('.compositionTableMenu');
 const adminGeneralOptions = dqsA('.forAdminGeneralOptions > input');
 const newUserGeneralOptions = dqsA('.forNewUserGeneralOptions > input');
-const doubleSlider = dqs('.dSlider');
+//const doubleSlider = dqs('.dSlider');
 
 
 // !! - hung up array of event listeners
@@ -37,12 +37,7 @@ const doubleSlider = dqs('.dSlider');
 
 let dsr = null;
 
-//log(adminGeneralOptions);
-// let request = {
-//         db : false,
-//         data: false,
-//         tableName: false,    
-// };
+
 
 // OPTION FOR ATTACH DB
 
@@ -72,140 +67,15 @@ dqs('#connect').addEventListener('click', async () => {
         try {
             request.db = true;
             const result = await makeReq(request);
-// !! - relocate if token 
+            // !! - relocate if token 
             if (result.unlogged) {
                 window.location.replace('/');
-            }
-            else {
-//!! - get list of tables
-                compositionDB.innerHTML = '';
-                showDB(compositionDB, result);
             }
         }
         catch (err) { log(err) };
     } else alert('FiLL INPUT');
 
 });
-
-// !! - get head of table
-async function getComposition(evt) {
-    dqs('.viewHead ').style.display = 'inline-block';
-    dqs('.viewTable ').style.display = 'inline-block';
-    compositionHeadTable.innerHTML = '';
-    compositionTable.innerHTML = '';
-    dqsA('#compositionDB > tbody > tr > td')
-        .forEach(td => td.setAttribute('style', 'border = 1px solid #999; background : #f1eded;'));
-    evt.target.style.background = '#ffffff';
-    evt.target.setAttribute('style', ' border-bottom : 0; background : #ffffff;');
-    request.tableName = evt.target.childNodes[0].data;
-    try {
-        //request.db = true;
-        request.data = false;
-        const result = await makeReq(request);
-        if (result.unlogged) {
-            window.location.replace('/');
-        }
-        else {
-            showHead(compositionHeadTable, result);
-        };
-    }
-    catch (err) { log(err) };
-};
-// !! - get data of table 
-async function getData(evt) {
-    try {
-        request.data = true;
-        const result = await makeReq(request);
-        if (result.unlogged) {
-            window.location.replace('/');
-        }
-        else {
-
-            showTable(compositionTable, result);
-        };
-    }
-    catch (err) { log(err) };
-
-    // if (evt.target.childNodes[0].data === 'TIMEPOINT') {
-    //     compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
-    //     ${evt.clientY}px - 20px); display: inline-block; border: 1px solid #999; background : #f1eded; `);
-    // };
-    // else {
-    //     doubleSlider.setAttribute('style', `position: absolute; display: flex;
-    // left: ${evt.clientX}px; top: calc(${evt.clientY}px - 20px); display: inline-block; z-index: 11`);
-
-    //     log(makeReqGetMaxCount(evt));
-    //     dsr = new Dslider('.dSlider', '5em', 0, 100, 1);
-    // };
-    // else if (evt.target.childNodes[0].data === ('SERIAL' || 'CH1' || 'CH2' || 'TIMECALC' || 'TIMEOFF')) {
-
-    //     compositionTableMenu.setAttribute('style', `position: fixed; left: ${evt.clientX}px; top: calc(
-    //         ${evt.clientY}px - 20px); display: inline-block; border: 1px solid #999; background : #f1eded; `);
-    //         compositionTableMenu.innerHTML = '';
-    //     let inp = document.createElement('input');
-    //     inp.type = 'range';
-    //     //inp.innerHTML = ``;
-    //     compositionTableMenu.appendChild(inp);
-    // };
-};
-
-// dqs('.view').addEventListener('mouseover', () => {
-//     compositionTableMenu.style.display = 'none'
-// });
-
-
-// !! - build table list
-function showDB(context, data) {
-    compositionTable.innerHTML = '';
-    const tr = document.createElement('tr');
-    context.appendChild(tr);
-    data.map((data) => {
-        data.map((data) => {
-            const td = document.createElement('td');
-            td.textContent = data.replace(/\s+/g, '');
-            td.addEventListener('click', getComposition);
-            tr.appendChild(td);
-        });
-    });
-};
-
-// !! - build head
-function showHead(context, data) {
-    const tr = document.createElement('tr');
-    data.map((data) => {
-        data.map((data) => {
-            const th = document.createElement('th');
-            th.textContent = data.replace(/\s+/g, '');
-            th.addEventListener('click', /* makeReqGetMaxCount */ getData);
-            tr.appendChild(th);
-            context.appendChild(tr);
-        });
-    });
-};
-
-// !! - build data table 
-function showTable(context, data) {
-    compositionTable.innerHTML = '';
-    data.map((data) => {
-        const tr = document.createElement('tr');
-        data.map((data) => {
-            const td = document.createElement('td');
-            td.textContent = data;
-            tr.appendChild(td);
-        });
-        context.appendChild(tr);
-    });
-
-    let linksOnCompositionTableTd = dqsA('#compositionTable > tbody > tr:nth-child(1) > td');
-    let linksOnCompositionHeadTableTd = dqsA('#compositionHeadTable > tr > th');
-    linksOnCompositionTableTd.forEach((td, i) => {
-        let thWidth = window.getComputedStyle(linksOnCompositionHeadTableTd[i], null).width.replace('px', '');
-        let tdWidth = window.getComputedStyle(td, null).width.replace('px', '');
-        let width = (+tdWidth > +thWidth) ? tdWidth : thWidth;
-        td.setAttribute('style', `width : ${width}px`);
-        linksOnCompositionHeadTableTd[i].setAttribute('style', `width : ${width}px`);
-    })
-};
 
 // !! - request to firebird
 let makeReq = async (request) => {
@@ -218,13 +88,31 @@ let makeReq = async (request) => {
         const result = await rawResponse.json();
         return result;
     }
-    catch (err) { 'fetch ERROR', log(err) };
+    catch (err) { log('fetch ERROR', err) };
 };
 
- // !! - make new user
+// !! - make new user
 dqs('#addUser').addEventListener('click', async () => {
     let newUserData = options(dqsA('.userData >*> input'));
-    makeReqAddUser(newUserData);
+
+    const filledNewUserDataInputs = await new Promise((res, rej) => {
+
+        dqsA('.userData >*> input').forEach((input) => {
+            if (input.value.length < 2) {
+                res = false; log('1', input.value.length, res);
+            }
+            else
+                res = true; log('2', input.value.length, res);
+        })
+    });
+    
+    // if (!filledNewUserDataInputs) {
+    //     alert('YOU HAVE TO FILL ALL FIELDS');
+    //     //makeReqAddUser(newUserData);
+    // } else {
+
+    // }
+    log(typeof filledNewUserDataInputs, filledNewUserDataInputs);
 });
 
 
@@ -250,30 +138,6 @@ let makeReqAddUser = async (newUserData) => {
     catch (err) { 'fetch ERROR', log(err) };
 };
 request.tableField = false;
-
-
-// !! - double slider build & get dada 
-// let makeReqGetMaxCount = async (evt) => {
-//     log(dsr);
-
-//     if (!dsr) {
-//         request.tableField = evt.target.childNodes[0].data;
-//         request.addUser = false;
-//         request.db = false;
-//         request.options = false;
-//         request.adminOptions = options(forOptions);
-//         doubleSlider.setAttribute('style', `position: absolute; display: flex;
-//     left: ${evt.clientX + 10}px; top: calc(${evt.clientY - 10}px - 20px); display: inline-block; z-index: 11`);
-//         dsr = new Dslider('.dSlider', '5em', 0, (await (makeReq(request)))[0][0], 1);
-//     }
-//     else if (dsr) {
-//         log(+dsr.minValue, +dsr.maxValue);
-//         log(dsr.base);
-//         dsr.base.remove();
-//         dsr = null;
-//         getData(evt);
-//     };
-// };
 
 
 // 

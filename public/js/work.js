@@ -227,6 +227,7 @@ let builtBarChat = async () => {
                 }
                 else if (result) {
                     //log('RESULT:', result);
+                    dataTable.style.display = 'block';
                     makeTable(dataTable, result, periodChoice);
 
                     // !!! necessary to add useful labels & legends
@@ -238,14 +239,14 @@ let builtBarChat = async () => {
             catch (err) { log(err) };
         };
         document.querySelector('.guide').style.display = 'none';
-        const typeOfChart = document.querySelector('.typeOfChart');
-        typeOfChart.style.display = 'block';
+        // const typeOfChart = document.querySelector('.typeOfChart');
+        // typeOfChart.style.display = 'block';
     };
 };
 //===============================================================================
 //!!! WILL BE CUT OFF
 // !! - make main request for getting data from firebird according to user`s conditions
-reqButton.addEventListener('click', builtBarChat);
+//reqButton.addEventListener('click', builtBarChat);
 //================================================================================
 
 
@@ -270,6 +271,7 @@ let builtPieChat = async () => {
                 }
                 else if (result) {
                     //log('RESULT:', result);
+                    dataTable.style.display = 'block';
                     makeTable(dataTable, result, periodChoice);
 
 
@@ -284,8 +286,8 @@ let builtPieChat = async () => {
             catch (err) { log(err) };
         };
         document.querySelector('.guide').style.display = 'none';
-        const typeOfChart = document.querySelector('.typeOfChart');
-        typeOfChart.style.display = 'block';
+        // const typeOfChart = document.querySelector('.typeOfChart');
+        // typeOfChart.style.display = 'block';
     };
 };
 
@@ -311,13 +313,13 @@ let builtLineGraph = async () => {
                 }
                 else if (result) {
                     //log('RESULT:', result);
-                    makeTable(dataTable, result, periodChoice);
+                    dataTable.style.display = 'none';
 
                     // !!! necessary to add useful labels & legends
                     let dataArr = (result) => {
                         let retDataArr = [];
                         for (let i = 0; i < result.length; i++) {
-                           // log(result[i]);
+                            // log(result[i]);
                             retDataArr.push({
                                 //label: dataFromDB,
                                 data: result[i],
@@ -333,7 +335,7 @@ let builtLineGraph = async () => {
                     let labelArr = (result) => {
                         let retLabelArr = [];
                         for (let i = 0; i < result.length; i++) {
-                          retLabelArr.push(result[i]);
+                            retLabelArr.push(result[i]);
                         };
                         return retLabelArr;
                     };
@@ -345,14 +347,14 @@ let builtLineGraph = async () => {
                     log('labelArr', labelArr(result.map(arr => arr.map(arr => arr[0]))));
 
                     bildLineChart(dataArr(result.map(arr => arr.map(arr => arr[2]))),
-                    labelArr(result.map(arr => arr.map(arr => arr[0])))[0].map(arr => makeDateForPerfomance(arr), getChoicePeriod(periodChoice)), 'line');
+                        labelArr(result.map(arr => arr.map(arr => arr[0])))[0].map(arr => makeDateForPerfomance(arr), getChoicePeriod(periodChoice)), 'line');
                 } else throw err;
             }
             catch (err) { log(err) };
         };
         document.querySelector('.guide').style.display = 'none';
-        const typeOfChart = document.querySelector('.typeOfChart');
-        typeOfChart.style.display = 'block';
+        // const typeOfChart = document.querySelector('.typeOfChart');
+        // typeOfChart.style.display = 'block';
     };
 };
 
