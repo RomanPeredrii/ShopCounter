@@ -9,8 +9,8 @@ router.post('/login', function (req, res, next) {
     error: false,
     unlogged: false
   };
-  let user = req.body.UserLogInfo;
-
+  let user = req.body;
+  log(req.body);
   // !! - get session 
   getUser(user).then((user) => {
     if (!user) /*{
@@ -34,7 +34,7 @@ router.post('/login', function (req, res, next) {
 // !! - get user from mongo
 async function getUser(UserLogInfo) {
   try {
-    //log('USER INCOME OBJECT', UserLogInfo)
+    log('37 USER INCOME OBJECT', UserLogInfo)
     let tokenString = makeid();
     let user = await
       User.findOneAndUpdate(
@@ -45,7 +45,7 @@ async function getUser(UserLogInfo) {
         {
           token: tokenString
         });
-    //log('USER', user)
+    log('USER', user)
     if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') }
     else {
       user.token = tokenString;
@@ -65,5 +65,6 @@ function makeid() {
   //log('GENERATE TOKEN', text);
   return text;
 };
+
 
 module.exports = router;

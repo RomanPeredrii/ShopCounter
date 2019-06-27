@@ -177,6 +177,8 @@ async function selectionFromDBforPieChart(timePoints, token, serials) {
     return (arrRes);
 };
 
+
+
 let selectionFromDBforLineGraph = async (tPoints, token, serials) => {
     let rawData = [];
     for (let j = 0; j < serials.length; j++) {

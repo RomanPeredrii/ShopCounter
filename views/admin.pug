@@ -36,39 +36,31 @@ block content
     .userData
       .forNewUserGeneralOptions
         label Host:
-        input.options#optionsHostNewUser(type='text', value = '', title='host')
+        input.options#optionsHostNewUser(type='text', value = '', title='host', checked)
         label Port:
-        input.options#optionsPortNewUser(pattern = "^[ 0-9]+$", value = '', title='port')
+        input.options#optionsPortNewUser(pattern = "^[ 0-9]+$", value = '', title='port', checked)
         label Path:
-        input.options#optionsPathNewUser(type='text', value = '', title='database')
+        input.options#optionsPathNewUser(type='text', value = '', title='database', checked)
         label Page Size:
-        input.options#optionsPageSizeNewUser(type='text', value = '', title='pageSize')
+        input.options#optionsPageSizeNewUser(type='text', value = '', title='pageSize', checked)
       .forNewUserOptions
         label User:
-        input.options#optionsUserNewUser(type='text', value = '', title='username')
+        input.options#optionsUserNewUser(type='text', value = '', title='username', checked)
         label Password:
-        input.options#optionsPasswordNewUser(type='text', value = '', title='password')
+        input.options#optionsPasswordNewUser(type='text', value = '', title='password', checked)
         label Role:
-        input.options#optionsRoleNewUser(type='text', value = '', title='role')
+        input.options#optionsRoleNewUser(type='text', value = '', title='role', checked)
       .forPoint
         label Products:
-        input#productsUserData(type='text', value = '', title='products')
+        input#productsUserData(type='text', value = '', title='products', checked)
         label Department:
-        input#departmentUserData(type = 'text', value = '', title='department')
+        input#departmentUserData(type = 'text', value = '', title='department', checked)
         label Counters:
-        input#countersUserData(type = 'text', value = '', title='counters')
+        input#countersUserData(type = 'text', value = '', title='counters', checked)
       button#addUser ADDUSER
       .drList
-  //- .compositionTableMenu
-  //-     label from:
-  //-     input#brandUserDataZZZ(type='date', value = '')
-  //-     label to:
-  //-     input#addressUserDataZZZ(type = 'date', value = '') 
-  //-     //- input#quantityOfStringRange(type = 'range')
-  //-     input#quantityOfStringRangeNumber(type= 'number')
-  //-     input#listForFilter(type="text")
   
   script(src="/js/doubleslider.js")
-  script(src='/js/admin.js')
+  script(src='/js/admin.js' type= 'module')
   script(src="/js/droplist.js")
   script(src="/js/dropListWithCheck.js")

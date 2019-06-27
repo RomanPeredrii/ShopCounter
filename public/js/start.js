@@ -1,35 +1,21 @@
-const log = console.log;
-const submitButton = document.querySelector('#submitButton');
-const inlineFormInput = document.querySelector('#inlineFormInput');
-const inlineFormInputGroup = document.querySelector('#inlineFormInputGroup');
-
-const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-};
+import {log, dqs, dqsA} from '../my_modules/stuff.js';
+import Gather from '../my_modules/gather.js';
+import Request from '../my_modules/request.js';
 
 // !! - make query for get next page according to name&pswd
-submitButton.addEventListener('click', async () => {    
-    if (!document.querySelector('#accept').checked) alert("DON'T YOU AGREE LEGAL TERMS?")
+dqs('#submitButton').addEventListener('click', async () => {
+    const gather = new Gather('main');
+    if (!dqs('#accept').checked) alert("DON'T YOU AGREE LEGAL TERMS?")
     else {
-    try {
-        let UserLogInfo = {
-            userName: inlineFormInput.value,
-            pswd: inlineFormInputGroup.value
-        };
-        const rawResponse = await fetch('/api/login', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ UserLogInfo })
-        });
-// !! - relocate according to name&pswd
-        const result = await rawResponse.json();
-        if (result.error) alert('USER OR PASSWORD INCORRECT');
-        else if (result.admin) window.location.replace('/pages/admin');
-        else if (result.ok) window.location.replace('/pages/work');
-    }
-    catch (err) { log(err) };
-};
+        try {
+            const request = new Request();
+            const result = await request.makeRequest(gather.getValues());
+            if (result.error) alert('USER OR PASSWORD INCORRECT');
+            else if (result.admin) window.location.replace('/pages/admin');
+            else if (result.ok) window.location.replace('/pages/work');
+        }
+        catch (err) { log(err) };
+    };
 });
 
 

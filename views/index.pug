@@ -2,7 +2,6 @@ doctype html
 
 html
   head
-    
     link(rel='stylesheet', href='/libs/bootstrap/css/bootstrap.css')
     link(rel='stylesheet', href='/css/index.css')
   body
@@ -10,18 +9,20 @@ html
       .startform
         h1= title
         form.form-inline
-          input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Login', value='Admin')
-          input#inlineFormInputGroup.form-control(type='password', placeholder='Password', value='Admin')
+          input#inlineFormInput.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', name='userName', placeholder='Login', checked)
+          input#inlineFormInputGroup.form-control(type='password', name='pswd', placeholder='Password', checked)
           button#submitButton.btn.btn-primary(type='submit') Submit
       .information
         p various crap such as legal information or other rubbish which you have to 
-          input#accept.accept(type='checkbox', checked=true)
+          input#accept.accept(type='checkbox', name='accept', checked)
           label(for='accept') accept
-    footer produced by group "НАШИ РУКИ НЕ ДЛЯ СКУКИ" consisting of me and set of my psychological disorders
+    footer produced by roman.peredrii
+    //- footer produced by group "НАШИ РУКИ НЕ ДЛЯ СКУКИ" consisting of me and set of my psychological disorders
     script(src='/libs/tether/dist/js/tether.min.js')
     script(src='/libs/jquery.js')
     script(src='/libs/moment.js')
     script(src='/libs/bootstrap/js/bootstrap.min.js')
     script(src='/libs/ChartBundle.js')
-    script(src='/js/start.js')
+    script(src='/js/start.js' type= 'module')
     script(src='/js/index.js')
+

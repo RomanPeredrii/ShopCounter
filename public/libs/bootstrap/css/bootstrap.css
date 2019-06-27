@@ -2681,30 +2681,30 @@ fieldset[disabled] a.btn {
   pointer-events: none;
 }
 
-.btn-primary {
+.button {
   color: #fff;
   background-color: #0275d8;
   border-color: #0275d8;
+  margin: 0.5em;
 }
 
-.btn-primary:hover {
+.button:hover {
   color: #fff;
   background-color: #025aa5;
   border-color: #01549b;
 }
 
-.btn-primary:focus, .btn-primary.focus {
+.button:focus {
   -webkit-box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.5);
           box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.5);
 }
 
-.btn-primary.disabled, .btn-primary:disabled {
+.button.disabled, .button:disabled {
   background-color: #0275d8;
   border-color: #0275d8;
 }
 
-.btn-primary:active, .btn-primary.active,
-.show > .btn-primary.dropdown-toggle {
+.button:active, .button.active {
   color: #fff;
   background-color: #025aa5;
   background-image: none;

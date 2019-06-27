@@ -6,6 +6,7 @@
 "use strict"
 
 const log = console.log;
+import Gather from '../my_modules/gather.js';
 
 // let it easy
 const dqs = (cont) => {
@@ -53,11 +54,10 @@ let options = (cont) => {
 const forOptions = dqsA('.forOptions >*> input');
 
 // !! - request map have to be filled for default options
-let request = {
-};
+let request = {};
 
-const compositionDB = dqs('#compositionDB > tbody');
-const compositionTable = dqs('#compositionTable > tbody');
+//const compositionDB = dqs('#compositionDB > tbody');
+//const compositionTable = dqs('#compositionTable > tbody');
 
 
 // !! - check connection to db
@@ -93,26 +93,28 @@ let makeReq = async (request) => {
 
 // !! - make new user
 dqs('#addUser').addEventListener('click', async () => {
-    let newUserData = options(dqsA('.userData >*> input'));
+    const gather = new Gather('.userData',{});
+//     let newUserData = options(dqsA('.userData >*> input'));
 
-    const filledNewUserDataInputs = await new Promise((res, rej) => {
+//     const filledNewUserDataInputs = await new Promise((res, rej) => {
+// // check input value
 
-        dqsA('.userData >*> input').forEach((input) => {
-            if (input.value.length < 2) {
-                res = false; log('1', input.value.length, res);
-            }
-            else
-                res = true; log('2', input.value.length, res);
-        })
-    });
+//         dqsA('.userData >*> input').forEach((input) => {
+//             if (input.value.length < 2) {
+//                 res = false; log('1', input.value.length, res);
+//             }
+//             else
+//                 res = true; log('2', input.value.length, res);
+//         })
+//     });
     
-    // if (!filledNewUserDataInputs) {
-    //     alert('YOU HAVE TO FILL ALL FIELDS');
-    //     //makeReqAddUser(newUserData);
-    // } else {
+//     // if (!filledNewUserDataInputs) {
+//     //     alert('YOU HAVE TO FILL ALL FIELDS');
+//     //     //makeReqAddUser(newUserData);
+//     // } else {
 
-    // }
-    log(typeof filledNewUserDataInputs, filledNewUserDataInputs);
+//     // }
+//     log(typeof filledNewUserDataInputs, filledNewUserDataInputs);
 });
 
 

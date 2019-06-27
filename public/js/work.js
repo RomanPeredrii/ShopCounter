@@ -3,7 +3,7 @@
 "use strict"
 
 const log = console.log;
-
+import Gather from '../my_modules/gather.js';
 const divSendReq = document.querySelector('.divSendReq');
 const reqButton = document.querySelector('#sendReq');
 const timeStampS = document.querySelector('#timeStampS');
@@ -12,6 +12,9 @@ const dataTable = document.querySelector('#dataFromDB > tbody');
 const divPeriodSet = document.querySelector('#periodSet');
 const forDateChoise = document.querySelector('.forDateChoise');
 let request;
+
+
+
 //!! just for locking default values
 let defRequest = () => {
     return request = {
@@ -203,6 +206,15 @@ let makeTable = (parent, dataArr, period) => {
     });
 };
 
+let makeColor = () => {
+    let text = "";
+    let possible = "ABCDEF0123456789";
+    for (let i = 0; i < 6; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length))
+    };
+    //log('GENERATE TOKEN', text);
+    return `#${text}`;
+};
 
 // !! - bar chart
 let builtBarChat = async () => {
@@ -320,13 +332,14 @@ let builtLineGraph = async () => {
                         let retDataArr = [];
                         for (let i = 0; i < result.length; i++) {
                             // log(result[i]);
+                            let color = makeColor();
                             retDataArr.push({
-                                //label: dataFromDB,
+                                label: dataFromDB,
                                 data: result[i],
                                 fill: false,
-                                backgroundColor: '#298096',
-                                borderColor: '#202000',
-                                borderWidth: 1
+                                backgroundColor: color,
+                                borderColor: color,
+                                borderWidth: 2
                             });
                         };
                         return retDataArr;
@@ -371,7 +384,8 @@ document.querySelector('#line')
 function bildChart(dataFromDB, dateLabel, typeOfChart) {
     log(dataFromDB);
     // log(typeof dataFromDB);
-
+    const gather = new Gather('.left',{});
+    
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
     window.chartDB = new Chart(document.querySelector('#chartFromDB').getContext('2d'), {
         type: typeOfChart,
@@ -402,6 +416,7 @@ function bildChart(dataFromDB, dateLabel, typeOfChart) {
     });
     //log(delete window.chartDB.data.datasets[0].label)
 };
+
 
 function bildLineChart(dataFromDB, dateLabel, typeOfChart) {
     log(dataFromDB);
