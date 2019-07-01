@@ -7,18 +7,18 @@ block content
     .forOptions
       .forAdminGeneralOptions
         label Host:
-        input.options#optionsHost(type='text', value='localhost', title='host')
+        input.options#optionsHost(type='text', value='185.255.96.123', title='host')
         label Port:
         input.options#optionsPort(pattern = '^[ 0-9]+$', value = '3050', title='port')
         label Path:
-        input.options#optionsPath(type='text' value = 'D:/JS/vvv/COUNTER.FDB', title='database')   
+        input.options#optionsPath(type='text' value = '/var/lib/firebird/2.5/data/counter.fdb', title='database')   
         label Page Size:
         input.options#optionsPageSize(type='text', value = '4096', title='pageSize' )
       .forAdminOptions
         label User:
-        input.options#optionsUser(type='text', value = 'SYSDBA', title='user')
+        input.options#optionsUser(type='text', value = 'U_VIEW', title='user')
         label Password:
-        input.options#optionsPassword(type='text', value = 'a2vvczib', title='password')
+        input.options#optionsPassword(type='text', value = 'clv8bzg1', title='password')
         label Role:
         input.options#optionsRole(type='text', value = 'ADMIN', title='role')
       button#connect CONNECT

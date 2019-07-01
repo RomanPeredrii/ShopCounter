@@ -1,4 +1,4 @@
-import {log, dqs, dqsA} from '../my_modules/stuff.js';
+import {log, dqs} from '../my_modules/stuff.js';
 import Gather from '../my_modules/gather.js';
 import Request from '../my_modules/request.js';
 
@@ -9,7 +9,7 @@ dqs('#submitButton').addEventListener('click', async () => {
     else {
         try {
             const request = new Request();
-            const result = await request.makeRequest(gather.getValues());
+            const result = await request.makeRequest('/api/login', gather.getValues());
             if (result.error) alert('USER OR PASSWORD INCORRECT');
             else if (result.admin) window.location.replace('/pages/admin');
             else if (result.ok) window.location.replace('/pages/work');

@@ -6,13 +6,16 @@ const router = require('express').Router();
 const User = require('../models/user.js');
 
 router.post('/apidbusers', async (req, res, next) => {
+
+  log('get user');
 // !! - get user
   for (let opt in req.body.request) {
     if ((!req.body.request[opt]) && (opt !== 'address') && (opt !== 'point')) log('EMPTY PROPERTY:', opt);
   };
   let user = new User(req.body.request.options);
 // !! - save new user
-  //log(user);
+
+  log('save new user');
   try {
     user.save() ;
   } 

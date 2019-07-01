@@ -94,12 +94,13 @@ let makeReq = async (request) => {
 // !! - make new user
 dqs('#addUser').addEventListener('click', async () => {
     const gather = new Gather('.userData',{});
-//     let newUserData = options(dqsA('.userData >*> input'));
-
+    let newUserData = options(dqsA('.userData >*> input'));
+    makeReqAddUser(newUserData);
 //     const filledNewUserDataInputs = await new Promise((res, rej) => {
 // // check input value
 
 //         dqsA('.userData >*> input').forEach((input) => {
+//             log(input); 
 //             if (input.value.length < 2) {
 //                 res = false; log('1', input.value.length, res);
 //             }
@@ -108,13 +109,13 @@ dqs('#addUser').addEventListener('click', async () => {
 //         })
 //     });
     
-//     // if (!filledNewUserDataInputs) {
-//     //     alert('YOU HAVE TO FILL ALL FIELDS');
-//     //     //makeReqAddUser(newUserData);
-//     // } else {
+    // if (!filledNewUserDataInputs) {
+    //     alert('YOU HAVE TO FILL ALL FIELDS');
+    //    makeReqAddUser(newUserData);
+    // } else {
 
-//     // }
-//     log(typeof filledNewUserDataInputs, filledNewUserDataInputs);
+    // }
+    //log(typeof filledNewUserDataInputs, filledNewUserDataInputs);
 });
 
 
@@ -126,8 +127,8 @@ let makeReqAddUser = async (newUserData) => {
     request.db = false;
     request.products = false;
     request.adminOptions = options(forOptions);
-    log('makeReqAddUser REQUEST', request);
-    makeReq(request);
+    log('makeReqAddUser REQUEST ', request);
+    //makeReq(request);
     try {
         const rawResponse = await fetch('/api/apidbusers', {
             method: 'POST',

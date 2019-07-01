@@ -13,7 +13,7 @@ const divPeriodSet = document.querySelector('#periodSet');
 const forDateChoise = document.querySelector('.forDateChoise');
 let request;
 
-
+const gather = new Gather('.left',{});
 
 //!! just for locking default values
 let defRequest = () => {
@@ -53,7 +53,6 @@ let getCheckedDepartments = () => {
 document.addEventListener('DOMContentLoaded', async (request) => {
     request.startValue = true;
     const result = await makeReq(request);
-
     // !! - creating&rendering checkbox for choice of department according to data from mongo
     const counters = document.querySelector('.counters');
     let departmentArr = result[1].department.split(';')
@@ -61,8 +60,8 @@ document.addEventListener('DOMContentLoaded', async (request) => {
     departmentArr.map((department, i) => {
         let check = document.createElement('input');
         check.type = "checkbox";
-        //check.checked = "true";
         check.value = department;
+        check.name = i;
         counters.appendChild(check);
         counters.innerHTML += `<label for=${check}>${department}</label><br>`
     });
@@ -218,6 +217,7 @@ let makeColor = () => {
 
 // !! - bar chart
 let builtBarChat = async () => {
+    log(gather._getContext());
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
@@ -229,7 +229,7 @@ let builtBarChat = async () => {
                 request.barChat = true;
                 request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
                 request.serial = getCheckedDepartments();
-                // log(request);
+                 log(getCheckedDepartments());
                 const result = await makeReq(request);
 
                 // !! - checking session
@@ -264,6 +264,8 @@ let builtBarChat = async () => {
 
 // !! - pie chart
 let builtPieChat = async () => {
+    log(getCheckedDepartments());
+    log(gather._getContext());
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
@@ -305,6 +307,7 @@ let builtPieChat = async () => {
 
 // !! - line graph
 let builtLineGraph = async () => {
+    log(gather._getContext());
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
@@ -382,10 +385,10 @@ document.querySelector('#line')
 
 // !! - build chart with Cartjs module
 function bildChart(dataFromDB, dateLabel, typeOfChart) {
-    log(dataFromDB);
+    //log(dataFromDB);
     // log(typeof dataFromDB);
-    const gather = new Gather('.left',{});
-    
+    log(gather.getChekedValues());
+    log(gather.getAllValues());
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
     window.chartDB = new Chart(document.querySelector('#chartFromDB').getContext('2d'), {
         type: typeOfChart,

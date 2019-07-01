@@ -15,7 +15,7 @@ class Gather {
     _getContext() {
         return document.querySelectorAll(`${this.parent} input`);
     };
-    
+
     getValues() {
         let values = {};
         this._getContext().forEach((context) => {
@@ -25,6 +25,21 @@ class Gather {
         return this.default;
     };
 
+    getChekedValues() {
+        let values = {};
+        this._getContext().forEach((context) => {
+            if (context.checked) values[context.name] = context.value;
+        });
+        this.default = { ...this.default, ...values };
+        return this.default;
+    };
+
+    getAllValues() { 
+        return this.default = { ...this.default, ...this.getChekedValues(), ...this.getValues() };
+    };
+
 };
 
 export default Gather;
+
+
