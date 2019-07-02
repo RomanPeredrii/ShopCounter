@@ -3,19 +3,34 @@
 "use strict"
 
 const log = console.log;
+import Request from '../my_modules/request.js';
 import Gather from '../my_modules/gather.js';
 const divSendReq = document.querySelector('.divSendReq');
-const reqButton = document.querySelector('#sendReq');
+//const reqButton = document.querySelector('#sendReq');
 const timeStampS = document.querySelector('#timeStampS');
 const timeStampF = document.querySelector('#timeStampF');
 const dataTable = document.querySelector('#dataFromDB > tbody');
 const divPeriodSet = document.querySelector('#periodSet');
 const forDateChoise = document.querySelector('.forDateChoise');
 let request;
+//!!! just for locking default revalues
+const defaultRequest = () => {
+    return {
+        startValue: false,
+        timeStamp: false,
+        serial: false,
+        pieChart: false,
+        lineGraph: false,
+        barChat: false,
+        period: false
+    };
+};
 
-const gather = new Gather('.left',{});
+let gather = new Gather('.left', defaultRequest()); // have to be deleted!!!!!!!!!!!!!!!!
 
-//!! just for locking default values
+
+
+//!!! just for locking default values
 let defRequest = () => {
     return request = {
         startValue: false,
@@ -38,7 +53,8 @@ const day = 86400000;
 const hour = 3600000;
 
 
-// !!! - getCheckedDepartments method for specification user`s request according to department
+// !!! - getCheckedDepartments method for specification user`s request according to department 
+// WILL BE DELETED!!!!!
 let getCheckedDepartments = () => {
     let serialsArrNumber = [];
     let serials = document.querySelectorAll('.counters>input');
@@ -46,66 +62,49 @@ let getCheckedDepartments = () => {
         if (serial.checked) serialsArrNumber.push(i);
     });
     return serialsArrNumber;
-};
+}; //WILL BE REMOVED!!!!!
 
-
-// !! - make first request for getting user object from mongo & start date from firebird 
-document.addEventListener('DOMContentLoaded', async (request) => {
-    request.startValue = true;
-    const result = await makeReq(request);
-    // !! - creating&rendering checkbox for choice of department according to data from mongo
-    const counters = document.querySelector('.counters');
-    let departmentArr = result[1].department.split(';')
+// !!! - creating&rendering checkbox for choice of department according to data from mongo
+const showCountersList = (data, parent) => {
+    const counters = document.querySelector(parent);
+    let departmentArr = data[1].department.split(';')
     departmentArr.pop();
     departmentArr.map((department, i) => {
         let check = document.createElement('input');
         check.type = "checkbox";
         check.value = department;
-        check.name = i;
+        check.name = `counter${i}`;
         counters.appendChild(check);
         counters.innerHTML += `<label for=${check}>${department}</label><br>`
     });
-
-
-    // !! - filing start date from firebird
-    if (result.unlogged) {
-        window.location.replace('/');
-    }
-    else if (result) {
-
-        // !! - forming date string
-        let dateTimeS = new Date(Date.parse(result[0][0]));
-        timeStampS.value = dateTimeS.getFullYear() + '-'
-            + (dateTimeS.getMonth() < 10
-                ? ('0' + (dateTimeS.getMonth() + 1))
-                : (dateTimeS.getMonth() + 1))
-            + '-'
-            + (dateTimeS.getDate() < 10
-                ? ('0' + dateTimeS.getDate())
-                : (dateTimeS.getDate()));
-        let dateTimeF = new Date();
-        timeStampF.value = dateTimeF.getFullYear() + '-'
-            + (dateTimeF.getMonth() < 10
-                ? ('0' + (dateTimeF.getMonth() + 1))
-                : (dateTimeF.getMonth() + 1))
-            + '-'
-            + (dateTimeF.getDate() < 10
-                ? ('0' + dateTimeF.getDate())
-                : (dateTimeF.getDate()));
-
-    };
-
-    // !! - just checking!!! for next idea 
-    // document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
-    document.querySelectorAll('.counters > input').forEach((counter) => counter.addEventListener('change', getCheckedDepartments));
-
-});
-
-
-// !! - rendering radio for choice period for user`s request to firebird
-function setPeriod(from, to) {
+};
+// !!! - set default dates
+const setDefaultDates = (date) => {
+    // !! - forming start date string
+    let dateTimeS = new Date(Date.parse(date));
+    timeStampS.value = dateTimeS.getFullYear() + '-'
+        + (dateTimeS.getMonth() < 10
+            ? ('0' + (dateTimeS.getMonth() + 1))
+            : (dateTimeS.getMonth() + 1))
+        + '-'
+        + (dateTimeS.getDate() < 10
+            ? ('0' + dateTimeS.getDate())
+            : (dateTimeS.getDate()));
+    // !! - forming finish date string
+    let dateTimeF = new Date();
+    timeStampF.value = dateTimeF.getFullYear() + '-'
+        + (dateTimeF.getMonth() < 10
+            ? ('0' + (dateTimeF.getMonth() + 1))
+            : (dateTimeF.getMonth() + 1))
+        + '-'
+        + (dateTimeF.getDate() < 10
+            ? ('0' + dateTimeF.getDate())
+            : (dateTimeF.getDate()));
+};
+// !!! - rendering radio for choice period for user`s request to firebird
+const setPeriod = (from, to) => {
     let period = ["hour", "day", "week", "month"];
-    let periodMs = [hour, day, week, month];
+    let periodMs = [3600000, 86400000, 604800000, 2678400000];
     let inputs = '';
     for (let i = from; i <= to; i++) {
         inputs += `
@@ -116,6 +115,44 @@ function setPeriod(from, to) {
          `};
     divPeriodSet.innerHTML = inputs;
 };
+
+// !! - weekend must get red color
+const setColourOfWeekend = (date, period) => {
+    date = new Date(Date.parse(date));
+    if ((period === day) && ((date.getDay() === 0) || (date.getDay() === 6)))
+        return '#e46464';
+};
+
+// !!! - make different colors numbers
+const makeRandomColor = () => {
+    let text = "";
+    let possible = "ABCDEF0123456789";
+    for (let i = 0; i < 6; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length))
+    };
+    return `#${text}`;
+};
+
+// !!! - make first request for getting user object from mongo & start date from firebird 
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const gather = new Gather('.left', defaultRequest());
+        gather.getCheckedValues().startValue = true;
+        const request = new Request();
+        const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
+        //!!! - create list of counters
+        showCountersList(result, '.counters');
+        // !!! - filing start date from firebird
+        if (result.unlogged) {
+            window.location.replace('/');
+        }
+        else if (result) {
+            setDefaultDates(result[0][0]);
+        };
+    } catch (err) { log('counters list', err) };
+});
+
+
 
 
 // !! - check&create period above
@@ -138,14 +175,9 @@ divPeriodSet.addEventListener('click', () => divSendReq.style.display = 'inline-
 forDateChoise.addEventListener('change', periodValidator);
 forDateChoise.addEventListener('click', periodValidator);
 
-let TimeStamp = (timeStampS, timeStampF, periodChoice) => {
-    return {
-        timeStart: Date.parse(timeStampS.value),
-        timeFinish: Date.parse(timeStampF.value),
-        period: getChoicePeriod(periodChoice)
-    };
-};
 
+// // // // // // // // // // // // // // // // // // // // // // // // // 
+// MUST BE MOVED ON BACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // !! - get chosen period for user`s request to firebird
 function getChoicePeriod(periodCheck) {
@@ -153,14 +185,7 @@ function getChoicePeriod(periodCheck) {
         if (period.checked) return +period.value;
     };
 };
-
-
-// !! - weekend must get red color
-function colourOfWeekend(date, period) {
-    date = new Date(Date.parse(date));
-    if ((period === day) && ((date.getDay() === 0) || (date.getDay() === 6)))
-        return '#e46464'; //(period === day ? (date.getDay() === 0 || date.getDay() === 6 ? ('#e46464') : ('#ffffff')) : ('#ffffff'));
-};
+// // // // // // // // // // // // // // // // // // // // // // // // // 
 
 
 // !! - forming date string for datatable 
@@ -172,6 +197,11 @@ function makeDateForPerfomance(dateTime, period) {
         : (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
             dateTime.getDate()));
 };
+
+
+
+
+
 
 
 // !! - wrapping for fetch
@@ -200,24 +230,56 @@ let makeTable = (parent, dataArr, period) => {
         td1.textContent = makeDateForPerfomance(rowResult[1], getChoicePeriod(period));
         td2.textContent = rowResult[2];
         [td0, td1, td2].map(td => tr.appendChild(td));
-        tr.style.background = colourOfWeekend(rowResult[0], getChoicePeriod(period));
+        tr.style.background = setColourOfWeekend(rowResult[0], getChoicePeriod(period));
         parent.appendChild(tr);
     });
 };
 
-let makeColor = () => {
-    let text = "";
-    let possible = "ABCDEF0123456789";
-    for (let i = 0; i < 6; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length))
+// !! - pie chart
+let builtPieChat = async () => {
+
+    if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
+    else {
+        const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
+        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
+        else {
+            try {
+                const gather = new Gather('.left', defaultRequest());
+                gather.getCheckedValues().pieChart = true;
+                const request = new Request();
+                log('request', gather.getCheckedValues());
+                const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
+
+
+                // !! - checking session
+                if (result.unlogged) {
+                    log('RESULT:', result);
+                    window.location.replace('/');
+                }
+                else if (result) {
+                    //log('RESULT:', result);
+                    dataTable.style.display = 'block';
+                    makeTable(dataTable, result, periodChoice);
+
+
+                    // !!! necessary to add useful labels & legends
+                    //const departmentLabels = document.querySelectorAll('.counters > label');
+                    //log(departmentLabels[i].textContent);
+
+                    bildChart(result.map(arr => arr[2]),
+                        result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'pie');
+                } else throw err;
+            }
+            catch (err) { log(err) };
+        };
+        document.querySelector('.guide').style.display = 'none';
+        // const typeOfChart = document.querySelector('.typeOfChart');
+        // typeOfChart.style.display = 'block';
     };
-    //log('GENERATE TOKEN', text);
-    return `#${text}`;
 };
 
 // !! - bar chart
 let builtBarChat = async () => {
-    log(gather._getContext());
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
@@ -229,7 +291,10 @@ let builtBarChat = async () => {
                 request.barChat = true;
                 request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
                 request.serial = getCheckedDepartments();
-                 log(getCheckedDepartments());
+
+                gather.getCheckedValues().barChat = true;
+
+
                 const result = await makeReq(request);
 
                 // !! - checking session
@@ -262,10 +327,11 @@ let builtBarChat = async () => {
 //================================================================================
 
 
-// !! - pie chart
-let builtPieChat = async () => {
-    log(getCheckedDepartments());
-    log(gather._getContext());
+
+
+// !! - line graph
+let builtLineGraph = async () => {
+    log(gather.getCheckedValues())
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
@@ -273,48 +339,6 @@ let builtPieChat = async () => {
         else {
             try {
                 let request = defRequest();
-                request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
-                request.serial = getCheckedDepartments();
-                request.pieChart = true;
-                const result = await makeReq(request);
-
-                // !! - checking session
-                if (result.unlogged) {
-                    log('RESULT:', result);
-                    window.location.replace('/');
-                }
-                else if (result) {
-                    //log('RESULT:', result);
-                    dataTable.style.display = 'block';
-                    makeTable(dataTable, result, periodChoice);
-
-
-                    // !!! necessary to add useful labels & legends
-                    //const departmentLabels = document.querySelectorAll('.counters > label');
-                    //log(departmentLabels[i].textContent);
-
-                    bildChart(result.map(arr => arr[2]),
-                        result.map(arr => makeDateForPerfomance(arr[0], getChoicePeriod(periodChoice))), 'pie');
-                } else throw err;
-            }
-            catch (err) { log(err) };
-        };
-        document.querySelector('.guide').style.display = 'none';
-        // const typeOfChart = document.querySelector('.typeOfChart');
-        // typeOfChart.style.display = 'block';
-    };
-};
-
-// !! - line graph
-let builtLineGraph = async () => {
-    log(gather._getContext());
-    if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
-    else {
-        const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
-        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
-        else {
-            try {
-                let request = defRequest();;
                 request.lineGraph = true;
                 request.timeStamp = TimeStamp(timeStampS, timeStampF, periodChoice);
                 request.serial = getCheckedDepartments();
@@ -335,7 +359,7 @@ let builtLineGraph = async () => {
                         let retDataArr = [];
                         for (let i = 0; i < result.length; i++) {
                             // log(result[i]);
-                            let color = makeColor();
+                            let color = makeRandomColor();
                             retDataArr.push({
                                 label: dataFromDB,
                                 data: result[i],
@@ -387,8 +411,9 @@ document.querySelector('#line')
 function bildChart(dataFromDB, dateLabel, typeOfChart) {
     //log(dataFromDB);
     // log(typeof dataFromDB);
-    log(gather.getChekedValues());
-    log(gather.getAllValues());
+    log(getCheckedDepartments());
+    log(gather.getCheckedValues());
+
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
     window.chartDB = new Chart(document.querySelector('#chartFromDB').getContext('2d'), {
         type: typeOfChart,

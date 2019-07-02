@@ -25,7 +25,7 @@ class Gather {
         return this.default;
     };
 
-    getChekedValues() {
+    getCheckedValues() {
         let values = {};
         this._getContext().forEach((context) => {
             if (context.checked) values[context.name] = context.value;
@@ -35,7 +35,7 @@ class Gather {
     };
 
     getAllValues() { 
-        return this.default = { ...this.default, ...this.getChekedValues(), ...this.getValues() };
+        return this.default = { ...this.default, ...this.getCheckedValues(), ...this.getValues() };
     };
 
 };

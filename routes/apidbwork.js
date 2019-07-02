@@ -1,9 +1,5 @@
-'use strict';
-
 const log = console.log;
-// var express = require('express');
-// var router = express.Router();
-var firebird = require('node-firebird');
+const firebird = require('node-firebird');
 const router = require('express').Router();
 const User = require('../models/user.js');
 
@@ -19,70 +15,70 @@ const result = {
 let getUserOptions = async (token) => {
     try {
         let user = await User.findOne({ token });
-        //log('getUserOptions ----> USER', user)
-        if (!user) { log('USER NOT EXIST') }
-        else {
-            var options = {
-                host: user.host,
-                port: user.port,
-                database: user.database,
-                user: user.username,
-                password: user.password,
-                pageSize: user.pageSize,
-                role: user.role,
-                counters: user.counters,
-                department: user.department,
-                products: user.products
-            };
+        if (!user) { log('USER NOT EXIST'); return null}
+        return {
+            host: user.host,
+            port: user.port,
+            database: user.database,
+            user: user.username,
+            password: user.password,
+            pageSize: user.pageSize,
+            role: user.role,
+            counters: user.counters,
+            department: user.department,
+            products: user.products
         };
-        return options;
     } catch (err) { log('\n USER ERROR', err) };
 };
 
-
-
 // !! - the main router
-router.post('/apidbwork', async (req, res, next) => {
+router.post('/apidbwork', async (req, res) => {
     let userOptions = await getUserOptions(req.cookies.token);
-    log(req.body.request.timeStamp);
     // !! - send start date of COUNTERDATA 
-    if (req.body.request.startValue) {
-        log(1);
+    if (req.body.startValue) {
+        log('1 startValue = true');
         res.json((await makeQuery(userOptions, "SELECT MIN (TIMEPOINT) FROM COUNTERDATA")
             .then(res => { res.push(userOptions); return res })
             .catch(err => { log('REJ ERROR', err); log(err) })));
     }
 
-    // !! - send data according to user's request for bar chart (with sql injection defense)
-    else if ((req.body.request.timeStamp) && (req.body.request.barChat)) {
-        log(2);
-        let countersArr = userOptions.counters.split(';');
-        countersArr.pop();
-        let serialArr = [];
-        req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
-        res.json(await selectionFromDBforBarChart(req.body.request.timeStamp, req.cookies.token, serialArr));
-    }
+
+    // // !! - send data according to user's request for bar chart (with sql injection defense)
+    // else if ((req.body.request.timeStamp) && (req.body.request.barChat)) {
+    //     log(2);
+    //     let countersArr = userOptions.counters.split(';');
+    //     countersArr.pop();
+    //     let serialArr = [];
+    //     req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+    //     res.json(await selectionFromDBforBarChart(req.body.request.timeStamp, req.cookies.token, serialArr));
+    // }
+
 
     // !! - send data according to user's request for pie chart (with sql injection defense)
-    else if ((req.body.request.timeStamp) && (req.body.request.pieChart)) {
-        log(3);
+    else if (req.body.pieChart) {
+        log(`${3} pieChart=true`);
         let countersArr = userOptions.counters.split(';');
         countersArr.pop();
         let serialArr = [];
-        req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
-        res.json(await selectionFromDBforPieChart(req.body.request.timeStamp, req.cookies.token, serialArr));
+        let indexArr = [];
+
+        Object.keys(req.body).map((prop) => {
+            if ((prop.substr(0, 7) === 'counter') && (typeof +prop[7] === "number")) indexArr.push(+prop.substring(7))
+        });
+        indexArr.map((serial) => { serialArr.push(countersArr[serial]) });
+        res.json(await selectionFromDBforPieChart(req.body.startDate, req.body.finishDate, req.cookies.token, serialArr));
     }
 
     // !! - send data according to user's request (with sql injection defense)
-    else if ((req.body.request.timeStamp) && (req.body.request.lineGraph)) {
-        log(4);
-        let countersArr = userOptions.counters.split(';');
-        countersArr.pop();
-        let serialArr = [];
-        req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
-        res.json(await selectionFromDBforLineGraph(req.body.request.timeStamp, req.cookies.token, serialArr));
-    };
-    // ДУРКА!!!! ЯК ВОНА Є
+    // else if ((req.body.request.timeStamp) && (req.body.request.lineGraph)) {
+    //     log(4);
+    //     let countersArr = userOptions.counters.split(';');
+    //     countersArr.pop();
+    //     let serialArr = [];
+    //     req.body.request.serial.map((serial) => { serialArr.push(countersArr[serial]) })
+    //     res.json(await selectionFromDBforLineGraph(req.body.request.timeStamp, req.cookies.token, serialArr));
+    // };
+    // // ДУРКА!!!! ЯК ВОНА Є
 
 });
 
@@ -159,9 +155,23 @@ let selectionFromDBforBarChart = async (timePoints, token, serials) => {
     return (arrRes);
 };
 
-async function selectionFromDBforPieChart(timePoints, token, serials) {
-    let dateStart = new Date(timePoints.timeStart);
-    let dateFinish = new Date(timePoints.timeFinish + 86400000);
+async function selectionFromDBforPieChart(startDate, finishDate, token, serials) {
+
+    let TimeStamp = (timeStampS, timeStampF, periodChoice) => {
+        return {
+            timeStart: Date.parse(timeStampS.value),
+            timeFinish: Date.parse(timeStampF.value),
+            period: getChoicePeriod(periodChoice)
+        };
+    };
+
+
+
+
+
+    let dateStart = new Date(Date.parse(startDate));
+    let dateFinish = new Date(Date.parse(finishDate) + 86400000);
+    log(dateStart, dateFinish);
     let arrRes = [];
 
     // !! - make response array

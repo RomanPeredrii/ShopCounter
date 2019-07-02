@@ -9,7 +9,7 @@ dqs('#submitButton').addEventListener('click', async () => {
     else {
         try {
             const request = new Request();
-            const result = await request.makeRequest('/api/login', gather.getValues());
+            const result = await request.makeRequest('/api/login', gather.getCheckedValues());
             if (result.error) alert('USER OR PASSWORD INCORRECT');
             else if (result.admin) window.location.replace('/pages/admin');
             else if (result.ok) window.location.replace('/pages/work');
