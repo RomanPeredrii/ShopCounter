@@ -2,20 +2,23 @@ const log = console.log;
 const firebird = require('node-firebird');
 const router = require('express').Router();
 const User = require('../models/user.js');
+const Dispatcher = require('../public/my_modules/dispatcher.js')
 
 
 const result = {
     ok: false,
     admin: false,
     error: false,
-    logged: true
+    logged: true,
+    data: {
+    }
 };
 
 // !! - OPTION FOR ATTACH DB
 let getUserOptions = async (token) => {
     try {
         let user = await User.findOne({ token });
-        if (!user) { log('USER NOT EXIST'); return null}
+        if (!user) { log('USER NOT EXIST'); return null }
         return {
             host: user.host,
             port: user.port,
@@ -33,6 +36,24 @@ let getUserOptions = async (token) => {
 
 // !! - the main router
 router.post('/apidbwork', async (req, res) => {
+
+    const dispatcher = new Dispatcher(req);
+    //log(await dispatcher._makeDataForPieChartQuery());
+    dispatcher._makeRequest();
+
+
+
+
+    /*
+    
+    
+    const dispatcher = new Dispatcher(req);
+    const respondent = new Respondent(dispatcher.data());
+    res.json(await respondent.response());
+    
+    
+    */
+    //  log(req.body);
     let userOptions = await getUserOptions(req.cookies.token);
     // !! - send start date of COUNTERDATA 
     if (req.body.startValue) {
@@ -55,7 +76,12 @@ router.post('/apidbwork', async (req, res) => {
 
 
     // !! - send data according to user's request for pie chart (with sql injection defense)
-    else if (req.body.pieChart) {
+    else if (req.body.type === 'pieChart') {
+
+
+
+
+
         log(`${3} pieChart=true`);
         let countersArr = userOptions.counters.split(';');
         countersArr.pop();
@@ -66,6 +92,7 @@ router.post('/apidbwork', async (req, res) => {
             if ((prop.substr(0, 7) === 'counter') && (typeof +prop[7] === "number")) indexArr.push(+prop.substring(7))
         });
         indexArr.map((serial) => { serialArr.push(countersArr[serial]) });
+
         res.json(await selectionFromDBforPieChart(req.body.startDate, req.body.finishDate, req.cookies.token, serialArr));
     }
 
@@ -157,21 +184,9 @@ let selectionFromDBforBarChart = async (timePoints, token, serials) => {
 
 async function selectionFromDBforPieChart(startDate, finishDate, token, serials) {
 
-    let TimeStamp = (timeStampS, timeStampF, periodChoice) => {
-        return {
-            timeStart: Date.parse(timeStampS.value),
-            timeFinish: Date.parse(timeStampF.value),
-            period: getChoicePeriod(periodChoice)
-        };
-    };
-
-
-
-
-
     let dateStart = new Date(Date.parse(startDate));
-    let dateFinish = new Date(Date.parse(finishDate) + 86400000);
-    log(dateStart, dateFinish);
+    let dateFinish = new Date(Date.parse(finishDate) + 86399999);
+    //log(dateStart, dateFinish);
     let arrRes = [];
 
     // !! - make response array
@@ -183,7 +198,7 @@ async function selectionFromDBforPieChart(startDate, finishDate, token, serials)
         arrRes.push(rawData);
         // log("arrRes->>", arrRes);
     };
-    log("arrRes", arrRes);
+    //log("arrRes", arrRes);
     return (arrRes);
 };
 
@@ -240,9 +255,12 @@ function queryToDB(script, db) {
 
 // !! - make date for script
 function makeDateString(dateVal) {
-    return (dateVal.getUTCFullYear() + '-' + (dateVal.getUTCMonth() + 1) + '-' +
-        dateVal.getUTCDate() + ' ' + dateVal.getUTCHours() + ':' +
-        dateVal.getUTCMinutes() + ':' + dateVal.getUTCSeconds());
+    return (`${dateVal.getUTCFullYear()
+        }-${(dateVal.getUTCMonth() + 1)
+        }-${dateVal.getUTCDate()
+        } ${dateVal.getUTCHours()
+        }:${dateVal.getUTCMinutes()
+        }:${dateVal.getUTCSeconds()}`);
 };
 
 

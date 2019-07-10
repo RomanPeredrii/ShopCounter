@@ -19,9 +19,6 @@ const defaultRequest = () => {
         startValue: false,
         timeStamp: false,
         serial: false,
-        pieChart: false,
-        lineGraph: false,
-        barChat: false,
         period: false
     };
 };
@@ -245,7 +242,7 @@ let builtPieChat = async () => {
         else {
             try {
                 const gather = new Gather('.left', defaultRequest());
-                gather.getCheckedValues().pieChart = true;
+                gather.getCheckedValues().type = 'pieChart';
                 const request = new Request();
                 log('request', gather.getCheckedValues());
                 const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
@@ -411,8 +408,8 @@ document.querySelector('#line')
 function bildChart(dataFromDB, dateLabel, typeOfChart) {
     //log(dataFromDB);
     // log(typeof dataFromDB);
-    log(getCheckedDepartments());
-    log(gather.getCheckedValues());
+    // log(getCheckedDepartments());
+    // log(gather.getCheckedValues());
 
     if (window.chartDB && window.chartDB !== null) window.chartDB.destroy();
     window.chartDB = new Chart(document.querySelector('#chartFromDB').getContext('2d'), {

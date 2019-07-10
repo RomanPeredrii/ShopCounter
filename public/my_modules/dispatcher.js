@@ -23,7 +23,7 @@ class Dispatcher {
             dateVal.getUTCSeconds()}`);
     };
 
-    async makeDataForPieChartQuery() {
+    async _makeDataForPieChartQuery() {
         try {
             const mongoRequester = new MongoRequester();
             //!!! - get list of counters serial number from MongoDb
@@ -40,55 +40,26 @@ class Dispatcher {
             });
             //!!! - make list [] of required counters serial number
             indexArr.map(index => serialArr.push(countersArr[index]));
+
             return {
-                dateStart: this._makeDateString(new Date(Date.parse(this.request.body.startDate))),
-                dateFinish: this._makeDateString(new Date(Date.parse(this.request.body.finishDate) + 86399999)),
+                dates: [[
+                    this._makeDateString(new Date(Date.parse(this.request.body.startDate))),
+                    this._makeDateString(new Date(Date.parse(this.request.body.finishDate) + 86399999))
+                ]],
                 token: this.request.cookies.token,
-                serials: countersArr
+                serials: serialArr
             };
         }
         catch (error) {
             log('ERROR in makeDataForPieChartQuery()', error);
         };
+    };
 
-
-
-
-
-
-        //     // !! - make response array
-        //     for (let i = 0; i < serials.length; i++) {
-        //         let serial = [serials[i]];
-        //         let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
-        //             catch(err => log('CONNECTION TO DB ERROR ', err)));
-        //         rawData.push(serials[i]);
-        //         arrRes.push(rawData);
-        //         // log("arrRes->>", arrRes);
-        //     };
-        //     log("arrRes", arrRes);
-        //     return (arrRes);
-        // };
-
-
-        // // !! - getDataFomDb according to client conditions from request body
-        // async function getDataFomDb(timePointSart, timePointFinish, accessOptions, serials) {
-        //     //log('accessOptions', serials);
-        //     return new Promise((res, rej) => {
-        //         firebird.attach(accessOptions, async (err, db) => {
-        //             if (err) { log(err); rej(err) }
-        //             else {
-        //                 let arr = [timePointSart, timePointFinish];
-        //                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
-        //                     .catch(err => log('SQL SCRIPT ERROR!', err)));
-        //                 res(arr);
-        //             };
-        //         });
-        //     });
-        // };
-
-        // res.json(await selectionFromDBforPieChart(req.body.startDate, req.body.finishDate, req.cookies.token, serialArr));
-
-
-    }
+    async _makeRequest() {
+        log('this.request',this.request.body);
+        log('await this._makeDataForPieChartQuery()',await this._makeDataForPieChartQuery());
+    const firebirdRequester = new FirebirdRequester(await this._makeDataForPieChartQuery());
+    firebirdRequester._scriptGetSUM();
+};
 };
 module.exports = Dispatcher;

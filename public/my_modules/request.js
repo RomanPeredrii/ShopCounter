@@ -3,18 +3,15 @@ var log = console.log;
 /* class for request*/
 
 class Request {
-    constructor(_method, _headers) {
+    constructor(
+        _method = 'POST',
+        _headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }) {
 
-        this.method = _method
-            ? _method
-            : 'POST'
-
-        this.headers = _headers
-            ? _headers
-            : {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            };
+        this.method = _method;
+        this.headers = _headers;
     };
 
     _throwError(error) {
