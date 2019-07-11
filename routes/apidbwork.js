@@ -78,22 +78,7 @@ router.post('/apidbwork', async (req, res) => {
     // !! - send data according to user's request for pie chart (with sql injection defense)
     else if (req.body.type === 'pieChart') {
 
-
-
-
-
-        log(`${3} pieChart=true`);
-        let countersArr = userOptions.counters.split(';');
-        countersArr.pop();
-        let serialArr = [];
-        let indexArr = [];
-
-        Object.keys(req.body).map((prop) => {
-            if ((prop.substr(0, 7) === 'counter') && (typeof +prop[7] === "number")) indexArr.push(+prop.substring(7))
-        });
-        indexArr.map((serial) => { serialArr.push(countersArr[serial]) });
-
-        res.json(await selectionFromDBforPieChart(req.body.startDate, req.body.finishDate, req.cookies.token, serialArr));
+        res.json(await dispatcher._makeRequest());
     }
 
     // !! - send data according to user's request (with sql injection defense)
@@ -194,11 +179,12 @@ async function selectionFromDBforPieChart(startDate, finishDate, token, serials)
         let serial = [serials[i]];
         let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
             catch(err => log('CONNECTION TO DB ERROR ', err)));
+
         rawData.push(serials[i]);
         arrRes.push(rawData);
         // log("arrRes->>", arrRes);
     };
-    //log("arrRes", arrRes);
+   log("arrRes", arrRes);
     return (arrRes);
 };
 

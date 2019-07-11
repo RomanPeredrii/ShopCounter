@@ -42,12 +42,13 @@ class Dispatcher {
             indexArr.map(index => serialArr.push(countersArr[index]));
 
             return {
-                dates: [[
+                dates: [
                     this._makeDateString(new Date(Date.parse(this.request.body.startDate))),
                     this._makeDateString(new Date(Date.parse(this.request.body.finishDate) + 86399999))
-                ]],
-                token: this.request.cookies.token,
-                serials: serialArr
+                ],
+                options: await mongoRequester.getUserOptions(this.request.cookies.token),
+                serials: serialArr,
+                period: this.request.body.period
             };
         }
         catch (error) {
@@ -56,10 +57,14 @@ class Dispatcher {
     };
 
     async _makeRequest() {
-        log('this.request',this.request.body);
-        log('await this._makeDataForPieChartQuery()',await this._makeDataForPieChartQuery());
-    const firebirdRequester = new FirebirdRequester(await this._makeDataForPieChartQuery());
-    firebirdRequester._scriptGetSUM();
-};
+        //        log('this.request',this.request.body);
+        //        log('await this._makeDataForPieChartQuery()',await this._makeDataForPieChartQuery());
+        const mongoRequester = new MongoRequester();
+        await mongoRequester.getUserOptions(this.request.cookies.token);
+
+        const firebirdRequester = new FirebirdRequester(await this._makeDataForPieChartQuery());
+        log('firebirdRequester._makeAnswer', await firebirdRequester._makeAnswer());
+        return await firebirdRequester._makeAnswer();
+    };
 };
 module.exports = Dispatcher;
