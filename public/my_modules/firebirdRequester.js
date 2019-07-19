@@ -1,6 +1,28 @@
 /* unit for make request to firebird */
-log = console.log;
+
+/* income Obj {
+ dates: [ 'startDate', 'finishDate' ],                              // dates of user request:"yyyy-M-d H:m:s"
+  options:                                                          //optoins for attach FirebirdDB: object { String }
+   { host: 'xxxxxxxxxxxxxx',
+     port: 'XXXX',
+     database: 'XXXXXXXXXXXXX',
+     user: 'xxxxxxx',
+     password: 'xxxxxxx',
+     pageSize: 'XXXXXX',
+     role: 'xxxxxx',
+     counters: 'XXXX;XXXX;...;XXXX;',                               //list of serial numbers available for this user counters: String
+     department: 'xxxxxxxxxxxxxxxxx;..;xxxxxxxxxxxxxxxxxxxxx;,      //description of departments according to serial numbers: String
+     products: 'xxxxxxxx',..,'xxxxxx'},                             //description of products usually city or brand: String 
+  serials: [XXXX;XXXX;...;XXXX],                                    //list of serial numbers for current user's request Array ['String']
+  departments: [ 'xxxxxxxxxxx','xxxxxxxxxxxx',..,'xxxx'],           //list of of departments according current user's request for add to request
+  period: 'month'                                                   //period for selection data
+}*/
+
+
+const log = require('./stuffBE.js').log;
 const firebird = require('node-firebird');
+const makeRandomColor = require('./stuffBE.js').makeRandomColor;
+require('datejs')
 
 class FirebirdRequester {
     constructor(requestData) {
@@ -11,124 +33,125 @@ class FirebirdRequester {
         throw error;
     };
 
-    _serialsScriptCondition() {
-        let serialsScriptCondition = '';
-        this.requestData.serials.map((serial, i) => {
-            const isLast = (i === (this.requestData.serials.length - 1));
-            if (isLast) serialsScriptCondition += `SERIAL = '${serial}'`;
-            else serialsScriptCondition += `SERIAL = '${serial}' OR `;
-        });
-        return serialsScriptCondition;
-    }
-
-    _scriptGetDataForPieChart() {
-        let timePointS = this.requestData.dates[0];
-        let timePointF = this.requestData.dates[1];
-
-        // const g = ' ';
-        // let S = `SELECT${
-        //     g}EXTRACT(YEAR FROM TIMEPOINT) AS DE,${
-        //     g}EXTRACT(MONTH FROM TIMEPOINT) AS DM,${
-        //     g}EXTRACT(DAY FROM TIMEPOINT) AS DD,${
-        //     g}EXTRACT(HOUR FROM TIMEPOINT) DH,${
-        //     g}SUM(CH1) AS CNT${
-        //     g}FROM${
-        //     g}COUNTERDATA${
-        //     g}WHERE${
-        //     this._serialsScriptCondition()}) ${
-        //     g}AND (CAST(TIMEPOINT AS TIMESTAMP) >= '${timePointS
-        //     }') AND (CAST(TIMEPOINT AS TIMESTAMP) <= '${timePointF
-        //     }') GROUP BY${
-        //     g}DE, DM, DD DH`
-
-        // log(this.requestData);
-        // log(S);
-        // return S;
-
-        let s = (`SELECT SUM(CH1) AS CNT, SERIAL FROM COUNTERDATA WHERE ${this._serialsScriptCondition()} AND (CAST(TIMEPOINT AS TIMESTAMP) >='${timePointS
-            }') AND (CAST(TIMEPOINT AS TIMESTAMP) <= '${timePointF}') GROUP BY SERIAL`);
-        //log(this.requestData);
-        //log(s);
-        return s;
-
-        //  return (`SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >='${
-        //      timePointS}') AND (CAST(TIMEPOINT AS TIMESTAMP) <= '${
-        //      timePointF}') AND (${this._serialsScriptCondition()})`);
-    };
-
-
     _query(db, script) {
         return (new Promise((res, rej) => {
             db.execute(script, (err, result) => {
                 if (err) rej(err);
+                if (!result[0][0]) result = [[0]];
                 res(result);
+
             });
+
         }));
     };
 
-    _getAnswerFromDB() {
+    // !! - getDataFomDb according to client conditions
+    _getAnswerFromDB(script) {
         return new Promise((res, rej) => {
             firebird.attach(this.requestData.options, async (err, db) => {
                 try {
                     if (err) rej(err);
-                    res(await this._query(db, this._scriptGetDataForPieChart()));
+                    res(await this._query(db, script))
+                    db.detach();
                 }
                 catch (err) { log('DB ERROR ------>', (err.message)) };
             });
-
         });
     };
 
-    async _makeAnswer() {
-        let rawAnswer = await this._getAnswerFromDB();
-        rawAnswer.map((list, i) => rawAnswer[i].unshift(this.requestData.dates[0], this.requestData.dates[1]));
+    //!! script for getting first date of DB items
+    _scriptGetMinDate() {
+        return "SELECT MIN (TIMEPOINT) FROM COUNTERDATA";
+    };
+    // !! - get SUMs for pieChart according to request condition
+    _scriptGetDataForPieChart() {
+        let timePointS = this.requestData.dates[0];
+        let timePointF = this.requestData.dates[1];
+        return (`SELECT SUM(CH1), SERIAL FROM COUNTERDATA WHERE SERIAL IN (${this.requestData.serials.join(', ')
+            }) AND (CAST(TIMEPOINT AS TIMESTAMP) >='${
+            timePointS}') AND (CAST(TIMEPOINT AS TIMESTAMP) <= '${
+            timePointF}') GROUP BY SERIAL`);
+    };
 
+    // !! - get SUMs for barChart according to request condition
+    _scriptGetDataForBarChart([timePointS, timePointF]) {
+        return (`SELECT SUM(CH1) FROM COUNTERDATA WHERE SERIAL IN (${
+            this.requestData.serials.join(', ')
+            }) AND CAST(TIMEPOINT AS TIMESTAMP) BETWEEN '${
+            timePointS}' AND '${
+            timePointF}'`);
+    };
+
+    //!! all add... just increase base date for next period
+    _addMonth(date) {
+        let _date = new Date.parse(date);
+        return _date.addMonths(1)
+    }
+
+    _addWeek(date) {
+        let _date = new Date.parse(date);
+        return _date.addWeeks(1)
+    }
+
+    //!! make period of selection from DB according to user answer
+    _period(date, period) {
+        let _date = new Date.parse(date);
+        switch (period) {
+            case 'hour': return (1);
+            case 'day': return (2);
+            case 'week': return {
+                date: [
+                    _date.last().monday().toString("yyyy-M-d H:m:s"),
+                    _date.next().sunday().toString("yyyy-M-d H:m:s"),
+                ],
+                incr: this._addWeek
+            };
+            case 'month': return {
+                date: [
+                    _date.set({ day: 1 }).toString("yyyy-M-d H:m:s"),
+                    _date.next().month().set({ day: 1 }).addDays(-1).toString("yyyy-M-d H:m:s"),
+                ],
+                incr: this._addMonth
+            };
+            case 'year': return date.addYears(4);
+        };
+    };
+
+    //!! all makeAnswer.... just generalize data 
+    async makeAnswerForGetStartData() {
+        let rawAnswer = await this._getAnswerFromDB(this._scriptGetMinDate());
+        rawAnswer.push(this.requestData.options.department);
+        return rawAnswer
+    };
+
+    async makeAnswerForPieChart() {
+        let rawAnswer = await this._getAnswerFromDB(this._scriptGetDataForPieChart());
+        rawAnswer.map((list, i) => {
+            rawAnswer[i].unshift(this.requestData.departments[i]);
+            rawAnswer[i].push(makeRandomColor());
+        });
         return rawAnswer;
+    }
+
+    async makeAnswerForBarChart() {
+        let from = Date.parse(this.requestData.dates[0]);
+        let rawAnswer = [];
+        do {
+            let result = await this._getAnswerFromDB(this._scriptGetDataForBarChart(this._period(from, this.requestData.period).date));
+            result[0].push(Date.parse(from).toString("yyyy-M"));
+            result[0].push(this.requestData.departments.join());
+            rawAnswer.push(result[0]);
+            from = this._period(from, this.requestData.period).incr(from);
+        }
+        while (from <= Date.parse(this.requestData.dates[1]));
+        return rawAnswer;
+    };
+
+    async makeAnswerForLineGraph() {
 
     }
 
-    // _makeFantomAnswer() {
-    //     let dateS = new Date(Date.parse(this.requestData.dates[0]));
-    //     let dateF = new Date(Date.parse(this.requestData.dates[1]));
-
-    //     log('dates', dateS, dateF);
-    //     let fantom = [{ DE: 2019, DM: 1, DD: 31, DH: 10, CNT: 0 }];        
-    // }
-
-
-    //     // !! - make response array
-    //     for (let i = 0; i < serials.length; i++) {
-    //         let serial = [serials[i]];
-    //         let rawData = (await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
-    //             catch(err => log('CONNECTION TO DB ERROR ', err)));
-    //         rawData.push(serials[i]);
-    //         arrRes.push(rawData);
-    //         // log("arrRes->>", arrRes);
-    //     };
-    //     log("arrRes", arrRes);
-    //     return (arrRes);
-    // };
-
-
-    // // !! - getDataFomDb according to client conditions from request body
-    // async function getDataFomDb(timePointSart, timePointFinish, accessOptions, serials) {
-    //     //log('accessOptions', serials);
-    //     return new Promise((res, rej) => {
-    //         firebird.attach(accessOptions, async (err, db) => {
-    //             if (err) { log(err); rej(err) }
-    //             else {
-    //                 let arr = [timePointSart, timePointFinish];
-    //                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
-    //                     .catch(err => log('SQL SCRIPT ERROR!', err)));
-    //                 res(arr);
-    //             };
-    //         });
-    //     });
-    // };
-
-    // res.json(await selectionFromDBforPieChart(req.body.startDate, req.body.finishDate, req.cookies.token, serialArr));
-
-
-
 };
 module.exports = FirebirdRequester;
+
+/* output Array [different items depends on request] */

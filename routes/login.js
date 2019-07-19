@@ -1,22 +1,19 @@
-var log = console.log;
-var router = require('express').Router();
-const User = require('../models/user.js');
+const log = require('../public/my_modules/stuffBE').log;
+const router = require('express').Router();
+const MongoRequester = require('../public/my_modules/mongoRequester');
 
-router.post('/login', function (req, res, next) {
+
+router.post('/login', async (req, res, next) => {
+const mongoRequester = new MongoRequester();
   const result = {
     ok: false,
     admin: false,
     error: false,
     unlogged: false
   };
-  let user = req.body;
-  log(req.body);
   // !! - get session 
-  getUser(user).then((user) => {
-    if (!user) /*{
-      log('!USER', user);
-      return res.json(result);
-    } */ { }
+  mongoRequester.getUser(req.body).then((user) => {
+    if (!user) res.json(null);
     else if (user.token) {
       result.ok = true;
       result.logged = true;
@@ -31,40 +28,11 @@ router.post('/login', function (req, res, next) {
   }).catch((err) => { log('getUser ERROR', err); result.error = true; res.json(result); });
 });
 
-// !! - get user from mongo
-async function getUser(UserLogInfo) {
-  try {
-    log('37 USER INCOME OBJECT', UserLogInfo)
-    let tokenString = makeid();
-    let user = await
-      User.findOneAndUpdate(
-        {
-          username: UserLogInfo.userName,
-          password: UserLogInfo.pswd
-        },
-        {
-          token: tokenString
-        });
-    log('USER', user)
-    if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') }
-    else {
-      user.token = tokenString;
-    };
-    return user;
-  } catch (err) { log('\n ERROR', err) };
-};
 
 
-// !! - make token
-function makeid() {
-  let text = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 20; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length))
-  };
-  //log('GENERATE TOKEN', text);
-  return text;
-};
+
+
+
 
 
 module.exports = router;

@@ -126,8 +126,8 @@ input:focus
   text-align: left;
   margin-bottom: 20px;
   width: 20em;
-  max-height : 10em;
-  font-size: 12px;
+  max-height : 20em;
+  font-size: 15px;
   color: #000000;
   overflow-y: auto;  
 }

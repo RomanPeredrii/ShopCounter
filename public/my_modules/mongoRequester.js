@@ -1,7 +1,7 @@
 /* unit for make request to MongoDB */
 log = console.log;
 const User = require('../../models/user.js');
-
+const makeid = require('./stuffBE.js').makeid;
 class MongoRequester {
     constructor() {
     };
@@ -12,7 +12,6 @@ class MongoRequester {
 
     // !!! - get user option for attach FirebirdDB from MongoDB according to token
     async getUserOptions(token) {
-        log('token', token);
         try {
             let user = await User.findOne({ token });
             if (!user) { log('USER NOT EXIST'); this._throwError(); return null }
@@ -30,6 +29,26 @@ class MongoRequester {
             };
         } catch (err) { log('\n USER ERROR', err) };
     };
+// !! - get user from mongo
+    async getUser(UserLogInfo) {
+    try {
+        let tokenString = makeid();
+        let user = await
+            User.findOneAndUpdate(
+                {
+                    username: UserLogInfo.userName,
+                    password: UserLogInfo.pswd
+                },
+                {
+                    token: tokenString
+                });
+        if (!user) { log('USER NOT EXIST OR PASSWORD UNCORRECT') }
+        else {
+            user.token = tokenString;
+        };
+        return user;
+    } catch (err) { log('\n ERROR', err) };
+};
 
 };
 module.exports = MongoRequester;
