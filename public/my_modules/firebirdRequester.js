@@ -22,22 +22,34 @@
 const log = require('./stuffBE.js').log;
 const firebird = require('node-firebird');
 const makeRandomColor = require('./stuffBE.js').makeRandomColor;
-require('datejs')
+require('datejs');
 
 class FirebirdRequester {
     constructor(requestData) {
         this.requestData = requestData;
     };
 
+    //!!! - make date string special for Firebird SQL script
+    _makeDateString(dateVal) {
+        return (`${dateVal.getUTCFullYear()}-${
+                dateVal.getUTCMonth()}-${
+                dateVal.getUTCDate()} ${
+                dateVal.getUTCHours()}:${
+                dateVal.getUTCMinutes()}:${
+                dateVal.getUTCSeconds()}`);
+    };
+
     _throwError(error) {
         throw error;
     };
 
-    _query(db, script) {
+    _queryArr(db, script) {
         return (new Promise((res, rej) => {
             db.execute(script, (err, result) => {
                 if (err) rej(err);
-                if (!result[0][0]) result = [[0]];
+                if (!result[0][0]) result = [
+                    [0]
+                ];
                 res(result);
 
             });
@@ -45,16 +57,25 @@ class FirebirdRequester {
         }));
     };
 
+    _queryObj(db, script) {
+        return (new Promise((res, rej) => {
+            db.query(script, (err, result) => {
+                if (err) rej(err);
+                res(result);
+            });
+        }));
+    };
+
     // !! - getDataFomDb according to client conditions
-    _getAnswerFromDB(script) {
+    _getAnswerFromDB(script, func) {
         return new Promise((res, rej) => {
-            firebird.attach(this.requestData.options, async (err, db) => {
+            firebird.attach(this.requestData.options, async(err, db) => {
                 try {
                     if (err) rej(err);
-                    res(await this._query(db, script))
+                    //res(await this._query(db, script))
+                    res(await func(db, script))
                     db.detach();
-                }
-                catch (err) { log('DB ERROR ------>', (err.message)) };
+                } catch (err) { log('DB ERROR ------>', (err.message)) };
             });
         });
     };
@@ -77,55 +98,120 @@ class FirebirdRequester {
     _scriptGetDataForBarChart([timePointS, timePointF]) {
         return (`SELECT SUM(CH1) FROM COUNTERDATA WHERE SERIAL IN (${
             this.requestData.serials.join(', ')
-            }) AND CAST(TIMEPOINT AS TIMESTAMP) BETWEEN '${
-            timePointS}' AND '${
+            }) AND CAST(TIMEPOINT AS TIMESTAMP) >= '${
+            timePointS}' AND CAST(TIMEPOINT AS TIMESTAMP) <= '${
             timePointF}'`);
     };
 
+
+    // !! - get list of DEPARTMENTS
+    _scriptGetDataForGetSerialsProductsDepartment() {
+        const g = ' ';
+        return (`SELECT${
+    g}COUNTERDATA.SERIAL, PRODUCTS.PRODDESCR, DEPARTMENT.DEPDESCR${
+    g}FROM COUNTERDATA${
+    g}JOIN COUNTERLIST ON COUNTERLIST.SERIAL = COUNTERDATA.SERIAL${
+    g}JOIN PRODUCTS ON COUNTERLIST.PRODID = PRODUCTS.PRODID${
+    g}JOIN DEPARTMENT ON COUNTERLIST.DEPID = DEPARTMENT.DEPID${
+    g}GROUP BY PRODUCTS.PRODDESCR, COUNTERDATA.SERIAL, DEPARTMENT.DEPDESCR`);
+    };
+
     //!! all add... just increase base date for next period
-    _addMonth(date) {
-        let _date = new Date.parse(date);
-        return _date.addMonths(1)
-    }
-
-    _addWeek(date) {
-        let _date = new Date.parse(date);
-        return _date.addWeeks(1)
-    }
-
     //!! make period of selection from DB according to user answer
     _period(date, period) {
         let _date = new Date.parse(date);
         switch (period) {
-            case 'hour': return (1);
-            case 'day': return (2);
-            case 'week': return {
-                date: [
-                    _date.last().monday().toString("yyyy-M-d H:m:s"),
-                    _date.next().sunday().toString("yyyy-M-d H:m:s"),
-                ],
-                incr: this._addWeek
-            };
-            case 'month': return {
-                date: [
-                    _date.set({ day: 1 }).toString("yyyy-M-d H:m:s"),
-                    _date.next().month().set({ day: 1 }).addDays(-1).toString("yyyy-M-d H:m:s"),
-                ],
-                incr: this._addMonth
-            };
-            case 'year': return date.addYears(4);
+            case 'hour':
+                return {
+                    date: [
+                        _date.toString("yyyy-M-d H:m:s"),
+                        _date.toString("yyyy-M-d H:m:s"),
+                    ],
+                    add(date) {
+                        let _date = new Date.parse(date);
+                        return _date.addHours(1)
+                    },
+                    legend(date) {
+                        return Date.parse(date).toString("yyyy-M-d H:mm")
+                    }
+                };
+            case 'day':
+                return {
+                    date: [
+                        _date.toString("yyyy-M-d H:m:s"),
+                        _date.addDays(1).toString("yyyy-M-d H:m:s"),
+                    ],
+                    add(date) {
+                        let _date = new Date.parse(date);
+                        return _date.addDays(1)
+                    },
+                    legend(date) {
+                        return Date.parse(date).toString("yyyy-M-d ddd")
+                    }
+                };
+            case 'week':
+                return {
+                    date: [
+                        _date.last().monday().toString("yyyy-M-d"),
+                        _date.next().sunday().toString("yyyy-M-d"),
+                    ],
+                    add(date) {
+                        let _date = new Date.parse(date);
+                        return _date.addWeeks(1)
+                    },
+                    legend(date) {
+                        return `${Date.parse(date).
+                        toString('yyyy-W')} (${
+                            _date.last().monday().toString('MMM.d')} - ${
+                                _date.next().sunday().toString('MMM.d')})`
+                    }
+                };
+            case 'month':
+                return {
+                    date: [
+                        _date.set({ day: 1 }).toString("yyyy-M-d"),
+                        _date.next().month().set({ day: 1 }).addDays(-1).toString("yyyy-M-d"),
+                    ],
+                    add(date) {
+                        let _date = new Date.parse(date);
+                        return _date.addMonths(1)
+                    },
+                    legend(date) {
+                        return Date.parse(date).toString("yyyy-MMM")
+                    }
+                };
+            case 'year':
+                return {
+                    // date: [
+                    //     _date.set({ day: 1 }).toString("yyyy-M-d"),
+                    //     _date.next().month().set({ day: 1 }).addDays(-1).toString("yyyy-M-d"),
+                    // ],
+                    date: [
+                        _date.january().set({ day: 1 }).toString("yyyy-M-d"),
+                        _date.december().set({ day: 31 }).toString("yyyy-M-d"),
+                    ],
+
+                    add(date) {
+                        let _date = new Date.parse(date);
+                        //return _date.addMonths(1)
+                        return _date.addYears(1)
+                    },
+                    legend(date) {
+                        return Date.parse(date).toString("yyyy-MM")
+                    }
+                };
         };
     };
 
     //!! all makeAnswer.... just generalize data 
     async makeAnswerForGetStartData() {
-        let rawAnswer = await this._getAnswerFromDB(this._scriptGetMinDate());
+        let rawAnswer = await this._getAnswerFromDB(this._scriptGetMinDate(), this._queryArr);
         rawAnswer.push(this.requestData.options.department);
         return rawAnswer
     };
 
     async makeAnswerForPieChart() {
-        let rawAnswer = await this._getAnswerFromDB(this._scriptGetDataForPieChart());
+        let rawAnswer = await this._getAnswerFromDB(this._scriptGetDataForPieChart(), this._queryArr);
         rawAnswer.map((list, i) => {
             rawAnswer[i].unshift(this.requestData.departments[i]);
             rawAnswer[i].push(makeRandomColor());
@@ -137,19 +223,24 @@ class FirebirdRequester {
         let from = Date.parse(this.requestData.dates[0]);
         let rawAnswer = [];
         do {
-            let result = await this._getAnswerFromDB(this._scriptGetDataForBarChart(this._period(from, this.requestData.period).date));
-            result[0].push(Date.parse(from).toString("yyyy-M"));
+            let result = await this._getAnswerFromDB(this._scriptGetDataForBarChart(this._period(from, this.requestData.period).date), this._queryArr);
+            result[0].push(this._period(from, this.requestData.period).legend(from));
             result[0].push(this.requestData.departments.join());
             rawAnswer.push(result[0]);
-            from = this._period(from, this.requestData.period).incr(from);
+            from = this._period(from, this.requestData.period).add(from);
         }
         while (from <= Date.parse(this.requestData.dates[1]));
         return rawAnswer;
     };
 
-    async makeAnswerForLineGraph() {
+    async makeAnswerForLineGraph() {};
 
-    }
+    async makeAnswerForGetSerialsProductsDepartment() {
+        let serialsList = {};
+        let result = await this._getAnswerFromDB(this._scriptGetDataForGetSerialsProductsDepartment(), this._queryObj);
+        result.forEach(i => serialsList[i.SERIAL.trim()] = `${i.PRODDESCR}, ${i.DEPDESCR}`);
+        return serialsList;
+    };
 
 };
 module.exports = FirebirdRequester;

@@ -1,4 +1,3 @@
-
 // !!! - coments
 import Request from '../my_modules/request.js';
 import Gather from '../my_modules/gather.js';
@@ -20,7 +19,7 @@ const defaultRequest = () => {
     };
 };
 
-let gather = new Gather('.left', defaultRequest()); // have to be deleted!!!!!!!!!!!!!!!!
+let gather = new Gather('.left'); // have to be deleted!!!!!!!!!!!!!!!!
 
 
 
@@ -71,24 +70,24 @@ const showCountersList = (data, parent) => {
 const setDefaultDates = (date) => {
     // !! - forming start date string
     let dateTimeS = new Date(Date.parse(date));
-    timeStampS.value = dateTimeS.getFullYear() + '-'
-        + (dateTimeS.getMonth() < 10
-            ? ('0' + (dateTimeS.getMonth() + 1))
-            : (dateTimeS.getMonth() + 1))
-        + '-'
-        + (dateTimeS.getDate() < 10
-            ? ('0' + dateTimeS.getDate())
-            : (dateTimeS.getDate()));
+    timeStampS.value = dateTimeS.getFullYear() + '-' +
+        (dateTimeS.getMonth() < 10 ?
+            ('0' + (dateTimeS.getMonth() + 1)) :
+            (dateTimeS.getMonth() + 1)) +
+        '-' +
+        (dateTimeS.getDate() < 10 ?
+            ('0' + dateTimeS.getDate()) :
+            (dateTimeS.getDate()));
     // !! - forming finish date string
     let dateTimeF = new Date();
-    timeStampF.value = dateTimeF.getFullYear() + '-'
-        + (dateTimeF.getMonth() < 10
-            ? ('0' + (dateTimeF.getMonth() + 1))
-            : (dateTimeF.getMonth() + 1))
-        + '-'
-        + (dateTimeF.getDate() < 10
-            ? ('0' + dateTimeF.getDate())
-            : (dateTimeF.getDate()));
+    timeStampF.value = dateTimeF.getFullYear() + '-' +
+        (dateTimeF.getMonth() < 10 ?
+            ('0' + (dateTimeF.getMonth() + 1)) :
+            (dateTimeF.getMonth() + 1)) +
+        '-' +
+        (dateTimeF.getDate() < 10 ?
+            ('0' + dateTimeF.getDate()) :
+            (dateTimeF.getDate()));
 };
 // !!! - rendering radio for choice period for user`s request to firebird
 const setPeriod = (from, to) => {
@@ -101,7 +100,8 @@ const setPeriod = (from, to) => {
             <input id="period${period[i]}" type="radio" name="period" value= ${period[i]} />
             <label for="period${period[i]}"> ${period[i]} </label>
             </div>
-         `};
+         `
+    };
     divPeriodSet.innerHTML = inputs;
 };
 
@@ -123,7 +123,7 @@ const makeRandomColor = () => {
 };
 
 // !!! - make first request for getting user object from mongo & start date from firebird 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const gather = new Gather('.left', defaultRequest());
         gather.getCheckedValues().startValue = true;
@@ -159,8 +159,15 @@ function periodValidator() {
     };
 };
 
-forDateChoise.addEventListener('click', () => divSendReq.style.display = 'none');
-divPeriodSet.addEventListener('click', () => divSendReq.style.display = 'inline-block');
+//forDateChoise.addEventListener('click', () => divSendReq.style.display = 'none');
+
+
+forDateChoise.addEventListener('click', () => {
+    divSendReq.style.display = 'block';
+    dqs('#pie').style.display = 'block'
+});
+divPeriodSet.addEventListener('click', () => { dqs('#bar').style.display = 'block', dqs('#line').style.display = 'block' });
+
 forDateChoise.addEventListener('change', periodValidator);
 forDateChoise.addEventListener('click', periodValidator);
 
@@ -180,10 +187,10 @@ function getChoicePeriod(periodCheck) {
 // !! - forming date string for datatable 
 function makeDateForPerfomance(dateTime, period) {
     dateTime = new Date(Date.parse(dateTime));
-    return (period === hour
-        ? (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
-            dateTime.getDate() + ' ' + dateTime.getHours() + ':' + dateTime.getMinutes() + '0')
-        : (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
+    return (period === hour ?
+        (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
+            dateTime.getDate() + ' ' + dateTime.getHours() + ':' + dateTime.getMinutes() + '0') :
+        (dateTime.getFullYear() + '-' + (dateTime.getMonth() + 1) + '-' +
             dateTime.getDate()));
 };
 
@@ -194,7 +201,7 @@ function makeDateForPerfomance(dateTime, period) {
 
 
 // !! - wrapping for fetch
-let makeReq = async (request) => {
+let makeReq = async(request) => {
     try {
         const rawResponse = await fetch('/api/apidbwork', {
             method: 'POST',
@@ -203,8 +210,7 @@ let makeReq = async (request) => {
         });
         const result = await rawResponse.json();
         return result;
-    }
-    catch (err) { 'fetch ERROR', log(err) };
+    } catch (err) { 'fetch ERROR', log(err) };
 };
 
 // !! - creating table for rendering requested data from firebird
@@ -223,11 +229,11 @@ let makeTable = (parent, dataArr, period) => {
 };
 
 // !! - pie chart
-const builtPieChat = async () => {
+const builtPieChat = async() => {
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
-        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
+        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true; // захист від дурнів
         else {
             try {
                 const gather = new Gather('.left', defaultRequest());
@@ -240,8 +246,7 @@ const builtPieChat = async () => {
                 if (result.unlogged) {
                     log('RESULT:', result);
                     window.location.replace('/');
-                }
-                else if (result) {
+                } else if (result) {
                     dataTable.style.display = 'block';
                     makeTable(dataTable, result, periodChoice);
 
@@ -249,19 +254,18 @@ const builtPieChat = async () => {
                         result.map(arr => arr[0]),
                         result.map(arr => arr[3]), 'pie', true);
                 } else throw err;
-            }
-            catch (err) { log(err) };
+            } catch (err) { log(err) };
         };
         dqs('.guide').style.display = 'none';
     };
 };
 
 // !! - bar chart
-let builtBarChat = async () => {
+let builtBarChat = async() => {
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
-        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
+        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true; // захист від дурнів
         else {
             try {
                 const gather = new Gather('.left', defaultRequest());
@@ -273,8 +277,7 @@ let builtBarChat = async () => {
                 // !! - checking session
                 if (result.unlogged) {
                     window.location.replace('/');
-                }
-                else if (result) {
+                } else if (result) {
                     //log('RESULT:', result);
                     dataTable.style.display = 'block';
                     makeTable(dataTable, result, periodChoice);
@@ -283,8 +286,7 @@ let builtBarChat = async () => {
 
                     bildChart(result.map(arr => arr[0]), result.map(arr => arr[1]), '#5c745f', 'bar', false);
                 } else throw err;
-            }
-            catch (err) { log(err) };
+            } catch (err) { log(err) };
         };
         document.querySelector('.guide').style.display = 'none';
         // const typeOfChart = document.querySelector('.typeOfChart');
@@ -301,12 +303,12 @@ let builtBarChat = async () => {
 
 
 // !! - line graph
-let builtLineGraph = async () => {
+let builtLineGraph = async() => {
     log(gather.getCheckedValues())
     if (getCheckedDepartments().length === 0) alert("CHOICE SOME DEPARTMENT")
     else {
         const periodChoice = document.querySelectorAll('#periodSet > .periodSet > input');
-        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true;  // захист від дурнів
+        if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true; // захист від дурнів
         else {
             try {
                 let request = defRequest();
@@ -320,8 +322,7 @@ let builtLineGraph = async () => {
                 if (result.unlogged) {
                     //log('RESULT:', result);
                     window.location.replace('/');
-                }
-                else if (result) {
+                } else if (result) {
                     //log('RESULT:', result);
                     dataTable.style.display = 'none';
 
@@ -360,8 +361,7 @@ let builtLineGraph = async () => {
                     bildLineChart(dataArr(result.map(arr => arr.map(arr => arr[2]))),
                         labelArr(result.map(arr => arr.map(arr => arr[0])))[0].map(arr => makeDateForPerfomance(arr), getChoicePeriod(periodChoice)), 'line');
                 } else throw err;
-            }
-            catch (err) { log(err) };
+            } catch (err) { log(err) };
         };
         document.querySelector('.guide').style.display = 'none';
         // const typeOfChart = document.querySelector('.typeOfChart');
@@ -382,15 +382,14 @@ function bildChart(dataFromDB, dateLabel, color, typeOfChart, legend) {
         type: typeOfChart,
         data: {
             labels: dateLabel,
-            datasets: [
-                {
-                    label: '',
-                    data: dataFromDB,
-                    fill: false,
-                    backgroundColor: color,
-                    borderColor: '#202000',
-                    borderWidth: 1
-                }]
+            datasets: [{
+                label: '',
+                data: dataFromDB,
+                fill: false,
+                backgroundColor: color,
+                borderColor: '#202000',
+                borderWidth: 1
+            }]
         },
         options: {
             legend: {

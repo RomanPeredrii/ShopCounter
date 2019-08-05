@@ -1,7 +1,7 @@
 * {
     margin: 0;
     padding: 0;
- }
+}
 
 body {
     height: 100vh;
@@ -23,72 +23,66 @@ footer {
     width: auto;
     flex: 0 0 auto;
     background-color: #1a181854;
-    color: #ffffff; 
+    color: #ffffff;
     border-radius: 0.25em;
     text-align: center;
     padding: 0.5em;
     margin: 0 auto;
     border: 1px solid rgba(0, 0, 0, 0.15);
-} 
-
-
+}
 
 .startform {
-  text-align: center;
-  padding-top: 1.5em;
-  height: auto;
-  margin-bottom: 2em;
+    text-align: center;
+    padding-top: 1.5em;
+    height: auto;
+    margin-bottom: 2em;
 }
 
 #submitButton {
-  margin: 0.5em;
+    margin: 0.5em;
 }
 
 p {
-  display: inline-block;
-  margin: 0 auto;
-  width: 23em;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  padding: 0.5em;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
+    display: inline-block;
+    margin: 0 auto;
+    width: 23em;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 0.5em;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25em;
 }
 
 .information {
-  margin: 0em;
-  text-align: center;
-  width: 100%;    
+    margin: 0em;
+    text-align: center;
+    width: 100%;
 }
 
 
 /* // Small devices (landscape phones, 576px and up) */
-@media (max-width: 576px) {  
 
+@media (max-width: 576px) {
     .startform {
         text-align: center;
         padding-top: 1.5em;
-        height: 10em;  
+        height: 10em;
         margin-bottom: 2em;
         width: 95%;
         margin-left: 2.5%;
-      }
-      p {
+    }
+    p {
         width: inherit;
         border: 1px solid rgba(0, 0, 0, 0.15);
         border-radius: 0.25em;
-      }
-      .information {
+    }
+    .information {
         margin-top: 2em;
         width: 100%;
         text-align: center;
         font-size: 24px;
         font-weight: bold;
         padding: 0.5em;
-      }
-
-
-
-
+    }
 }

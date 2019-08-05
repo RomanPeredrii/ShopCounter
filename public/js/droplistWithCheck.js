@@ -16,6 +16,7 @@ class DropListWithCheck {
             wrap.innerHTML = `
                                 <style type="text/css">
                                         .dropList {
+                                        font: 2.5em bold Helvetica, Arial, sans-serif;
                                         background:#fff;
                                         }
                                         .items {
@@ -25,6 +26,12 @@ class DropListWithCheck {
                                         background-color: #e0e0e0;
                                         font-weight: bold
                                         } 
+                                        tr{
+                                        width: 80%;
+                                        }
+                                        input {
+                                        display: block;    
+                                        }
                                 </style>
                                 <table class="items">
                                     <tr></tr>
@@ -61,8 +68,7 @@ class DropListWithCheck {
                         if (this.input.value.indexOf(item, 0) === -1) {
                             this.input.value += item + ';';
                         };
-                    }
-                    else {
+                    } else {
                         let valueString = this.input.value.replace((item + ', '), '');
                         this.input.value = valueString;
                     }
@@ -92,5 +98,3 @@ class DropListWithCheck {
         };
     };
 };
-
-

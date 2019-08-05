@@ -1,66 +1,34 @@
-extends layout
 //- values&labels just for check must be deleted||replaced!!!
 block content
+
+  meta(name="viewport" content="width=device-width, initial-scale=1.0")
   link(rel='stylesheet', href='/css/adminStyle.css')
-  h1= title
-  .whole
-    .forOptions
-      .forAdminGeneralOptions
-        label Host:
-        input.options#optionsHost(type='text', value='185.255.96.123', title='host')
-        label Port:
-        input.options#optionsPort(pattern = '^[ 0-9]+$', value = '3050', title='port')
-        label Path:
-        input.options#optionsPath(type='text' value = '/var/lib/firebird/2.5/data/counter.fdb', title='database')   
-        label Page Size:
-        input.options#optionsPageSize(type='text', value = '4096', title='pageSize' )
-      .forAdminOptions
-        label User:
-        input.options#optionsUser(type='text', value = 'U_VIEW', title='user')
-        label Password:
-        input.options#optionsPassword(type='text', value = 'clv8bzg1', title='password')
-        label Role:
-        input.options#optionsRole(type='text', value = 'ADMIN', title='role')
-      button#connect CONNECT
-    //- .view
-    //-   .viewDb
-    //-     table#compositionDB
-    //-       tbody 
-    //-   .viewHead
-    //-     table#compositionHeadTable 
-    //-       tbody
-    //-   .viewTable
-    //-     table#compositionTable 
-    //-       tbody
-    //-   .dSlider
-    .userData
-      .forNewUserGeneralOptions
-        label Host:
-        input.options#optionsHostNewUser(type='text', value = '', title='host', checked)
-        label Port:
-        input.options#optionsPortNewUser(pattern = "^[ 0-9]+$", value = '', title='port', checked)
-        label Path:
-        input.options#optionsPathNewUser(type='text', value = '', title='database', checked)
-        label Page Size:
-        input.options#optionsPageSizeNewUser(type='text', value = '', title='pageSize', checked)
-      .forNewUserOptions
-        label User:
-        input.options#optionsUserNewUser(type='text', value = '', title='username', checked)
-        label Password:
-        input.options#optionsPasswordNewUser(type='text', value = '', title='password', checked)
-        label Role:
-        input.options#optionsRoleNewUser(type='text', value = '', title='role', checked)
-      .forPoint
-        label Products:
-        input#productsUserData(type='text', value = '', title='products', checked)
-        label Department:
-        input#departmentUserData(type = 'text', value = '', title='department', checked)
-        label Counters:
-        input#countersUserData(type = 'text', value = '', title='counters', checked)
-      button#addUser ADDUSER
+  title ADMIN PAGE
+  .main
+    .options
+      p ADMIN PAGE
+      //- label host:
+      input#host(type='text', placeholder=' DB host', value='185.255.96.123', title='host', name='host')
+      //- label port:
+      input#port(pattern = '^[ 0-9]+$', placeholder=' port', value = '3050', title='port', name='port')
+      //- label database:
+      input#database(type='text', placeholder=' database', value = '/var/lib/firebird/2.5/data/counter.fdb', name='database', title='database')   
+      //- label page size:
+      input#pageSize(type='text', placeholder=' page size', value = '4096', name='pageSize', title='pageSize')
+      //- label user:
+      input#user(type='text', placeholder=' username', value = 'U_VIEW', name='user', title='user')
+      //- label password:
+      input#password(type='text', placeholder=' password', value = 'clv8bzg1', name='password', title='password')
+      //- label role:
+      input#role(type='text', placeholder=' role', name='role', title='role')
+      //- label Products:
+      input#products(type='text', placeholder=' products or city', name='products', title='products')
       .drList
-  
-  script(src="/js/doubleslider.js")
+      //- label Department:
+      input#department(type = 'text', placeholder=' department', name='department', title='department')
+    button#addUser(disabled) ADD USER
+    button#delUser(disabled) DEL USER
+  footer 
+    p produced by roman.peredrii +380979170088
   script(src='/js/admin.js' type= 'module')
-  script(src="/js/droplist.js")
-  script(src="/js/dropListWithCheck.js")
+  script(src='/js/dropListWithCheck.js')

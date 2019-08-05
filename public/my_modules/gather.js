@@ -7,7 +7,12 @@ _parent - parent DOM container;
 _default - you can set default values (no obligatorily), just pass {} */
 
 class Gather {
-    constructor(_parent, _default) {
+    constructor(_parent, _default = {
+        startValue: false,
+        timeStamp: false,
+        serial: false,
+        period: false
+    }) {
         this.parent = _parent;
         this.default = _default
     };
@@ -21,7 +26,7 @@ class Gather {
         this._getContext().forEach((context) => {
             if (context.value) values[context.name] = context.value;
         });
-        this.default = { ...this.default, ...values };
+        this.default = {...this.default, ...values };
         return this.default;
     };
 
@@ -30,16 +35,13 @@ class Gather {
         this._getContext().forEach((context) => {
             if (context.checked) values[context.name] = context.value;
         });
-        this.default = { ...this.default, ...values };
+        this.default = {...this.default, ...values };
         return this.default;
     };
 
-    getAllValues() { 
-        return this.default = { ...this.default, ...this.getCheckedValues(), ...this.getValues() };
+    getAllValues() {
+        return this.default = {...this.default, ...this.getCheckedValues(), ...this.getValues() };
     };
-
 };
 
 export default Gather;
-
-
