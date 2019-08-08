@@ -4,7 +4,7 @@ import Request from '../my_modules/request.js';
 
 // !! - make query for get next page according to name&pswd
 dqs('#submitButton').addEventListener('click', async() => {
-    const gather = new Gather('main');
+    const gather = new Gather('.main');
     if (!dqs('#accept').checked) alert("DON'T YOU AGREE LEGAL TERMS?")
     else {
         try {

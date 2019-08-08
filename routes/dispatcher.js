@@ -1,5 +1,5 @@
 /* unit for obtaining request from font & call firebird or mongo methods */
-const log = require('./stuffBE.js').log;
+const log = require('./stuff.js').log;
 const MongoRequester = require('./mongoRequester.js');
 const FirebirdRequester = require('./firebirdRequester.js');
 
@@ -137,13 +137,11 @@ class Dispatcher {
 
     async makeRequestForPieChart() {
         const firebirdRequester = new FirebirdRequester(await this._makeDataForPieChartQuery());
-        //log(await this._makeDataForBarChartQuery());
         return await firebirdRequester.makeAnswerForPieChart();
     };
 
     async makeRequestForBarChart() {
         const firebirdRequester = new FirebirdRequester(await this._makeDataForPieChartQuery());
-        // log(await firebirdRequester.makeAnswerForBarChart())
         return await firebirdRequester.makeAnswerForBarChart();
     };
 
@@ -151,6 +149,11 @@ class Dispatcher {
         const firebirdRequester = new FirebirdRequester({ options: this.request.body });
         return (await firebirdRequester.makeAnswerForGetSerialsProductsDepartment());
     };
+
+    async makeRequestForGetRoles() {
+        const firebirdRequester = new FirebirdRequester({ options: this.request.body });
+        return (await firebirdRequester.makeAnswerForGetRoles());
+    }
 
 };
 module.exports = Dispatcher;

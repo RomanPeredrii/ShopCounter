@@ -19,9 +19,9 @@
 }*/
 
 
-const log = require('./stuffBE.js').log;
+const log = require('./stuff.js').log;
 const firebird = require('node-firebird');
-const makeRandomColor = require('./stuffBE.js').makeRandomColor;
+const makeRandomColor = require('./stuff.js').makeRandomColor;
 require('datejs');
 
 class FirebirdRequester {
@@ -115,6 +115,10 @@ class FirebirdRequester {
     g}JOIN DEPARTMENT ON COUNTERLIST.DEPID = DEPARTMENT.DEPID${
     g}GROUP BY PRODUCTS.PRODDESCR, COUNTERDATA.SERIAL, DEPARTMENT.DEPDESCR`);
     };
+
+    _scriptGetRoles() {
+        return `SELECT RDB$ROLE_NAME FROM RDB$ROLES`;
+    }
 
     //!! all add... just increase base date for next period
     //!! make period of selection from DB according to user answer
@@ -241,6 +245,10 @@ class FirebirdRequester {
         result.forEach(i => serialsList[i.SERIAL.trim()] = `${i.PRODDESCR}, ${i.DEPDESCR}`);
         return serialsList;
     };
+
+    async makeAnswerForGetRoles() {
+        return (await this._getAnswerFromDB(this._scriptGetRoles(), this._queryArr));
+    }
 
 };
 module.exports = FirebirdRequester;

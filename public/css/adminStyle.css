@@ -1,16 +1,17 @@
 body {
     display: flex;
-    margin: 0;
+    margin: auto;
     padding: 0;
     width: 100%;
     height: 100%;
     flex-flow: column nowrap;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
-p {
+h1 {
     text-align: center;
-    font: 2.5em bold Helvetica, Arial, sans-serif;
+    font: 40px bold Helvetica, Arial, sans-serif;
+    color: #757575
 }
 
 .main {
@@ -18,22 +19,51 @@ p {
     margin: auto;
     flex-grow: 1;
     padding: 0;
-    width: 25em;
+    width: 400px;
     align-self: flex-start;
-    align-items: space-between;
     flex-flow: column wrap;
 }
 
-.dList {
-    display: none
+.wrap {
+    width: 500px;
+}
+
+.options {
+    width: 100%;
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.role,
+.departmentsList {
+    overflow-x: hidden;
+    width: 100%;
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    border: 0.1em solid #dadada;
+    border-radius: 0.2em;
+    font: 1.2em Helvetica, Arial, sans-serif;
+    color: #757575
+}
+
+.role input,
+.departmentsList input {
+    width: 1em;
+    font: 1em Helvetica, Arial, sans-serif;
+}
+
+.wrap:hover {
+    width: 500px;
+    background-color: #e0e0e0;
+}
+
+.departmentsList label {
+    width: 500px;
 }
 
 input {
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-bottom: 1%;
-    margin-top: 1%;
+    width: 100%;
+    margin: 0.1em;
     padding: 0.1em;
     border: 0.1em solid #dadada;
     border-radius: 0.2em;
@@ -46,11 +76,9 @@ button {
     font-weight: normal;
     line-height: 1.25em;
     color: #fff;
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-bottom: 1%;
-    margin-top: 1%;
+    width: 100%;
+    margin: 0.1em;
+    padding: 0.1em;
     white-space: nowrap;
     border: 0.05em solid transparent;
     font-size: 1.2em;
@@ -64,11 +92,9 @@ button:disabled {
     font-weight: normal;
     line-height: 1.25em;
     color: #fff;
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-bottom: 1%;
-    margin-top: 1%;
+    width: 100%;
+    margin: 0.1em;
+    padding: 0.1em;
     white-space: nowrap;
     border: 0.1em solid transparent;
     font-size: 1.2em;
@@ -77,13 +103,11 @@ button:disabled {
 
 footer {
     width: 400px;
-    height: 5em;
     margin: auto;
     padding: 0;
     flex-grow: 0;
     background-color: #1a181854;
     color: #ffffff;
-    /* border: 0.1em solid rgba(0, 0, 0, 0.15); */
     border-radius: 0.2em;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
@@ -95,6 +119,28 @@ footer p {
     align-items: center;
     text-align: center;
     font: 1em bold Helvetica, Arial, sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888888;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2e2e2e;
+}
+
+::-webkit-calendar-picker-indicator {
+    background: inherit;
+    color: #2e2e2e;
 }
 
 

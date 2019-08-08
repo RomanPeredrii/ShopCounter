@@ -6,13 +6,16 @@
 import { log, dqs, dqsA } from '../my_modules/stuff.js';
 import Gather from '../my_modules/gather.js';
 import Request from '../my_modules/request.js';
+import List from '../my_modules/list.js';
 
 const addUser = dqs('#addUser');
 const delUser = dqs('#delUser');
-const products = dqs('#products');
+const role = dqs('.role');
 const optionsList = dqsA('.options>input')
-const dList = dqs('.drList');
+const departmentsList = dqs('.departmentsList');
 let gather = new Gather('.options', null);
+
+let state = {};
 
 ['click', 'change', 'keyup'].map(evt => {
     optionsList.forEach((cont, i) => cont.addEventListener(evt, () => {
@@ -25,8 +28,7 @@ let gather = new Gather('.options', null);
         let add =
             gather.getValues().role &&
             gather.getValues().password &&
-            gather.getValues().products &&
-            gather.getValues().department;
+            gather.getValues().departments;
 
         if (del) {
             delUser.disabled = false
@@ -38,7 +40,7 @@ let gather = new Gather('.options', null);
     }))
 });
 // !! - 
-products.addEventListener('click', async(evt) => {
+role.addEventListener('click', async() => {
     gather = new Gather('.options', null);
     if (
         gather.getValues().port &&
@@ -46,42 +48,89 @@ products.addEventListener('click', async(evt) => {
         gather.getValues().user &&
         gather.getValues().database &&
         gather.getValues().password) {
+
+        gather.getValues().getRoles = true;
+
+        if (!state.rolesList) {
+            const request = new Request();
+            const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
+            log(result);
+            if (result.unlogged) {
+                window.location.replace('/');
+            };
+            state.rolesList = true;
+            role.style.color = "#000000";
+            const rolesList = new List(result, "radio", "role", ".role");
+            rolesList.init();
+        };
+    };
+    dqsA(".role div").forEach((cont) => {
+        log(cont)
+        cont.addEventListener('click', (evt) => {
+            state.rolesList = false;
+            log(evt)
+        })
+    });
+});
+
+
+departmentsList.addEventListener('click', async() => {
+    gather = new Gather('.options', null);
+    if (
+        gather.getValues().port &&
+        gather.getValues().database &&
+        gather.getValues().user &&
+        gather.getValues().database &&
+        gather.getValues().password) {
+
         gather.getValues().getDepProd = true;
-        //log(gather.getValues());
         const request = new Request();
         const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
         log(result);
         if (result.unlogged) {
             window.location.replace('/');
-        } else {
-            dList.style.display = 'inline-block';
-            const drListWithCheck = new DropListWithCheck(evt.target, Object.values(result));
-            evt = null;
         };
-
-
+        if (!state.listWithCheckbox) {
+            state.listWithCheckbox = true;
+            departmentsList.style.color = "#000000";
+            const listWithCheckbox = new List(result, "checkbox", "departments", ".departmentsList");
+            listWithCheckbox.init();
+        };
     };
-
-
-
-
-    // request.tableName = 'PRODUCTS';
-    // request.products = true;
-    // request.addUser = false;
-    // request.db = false;
-    // request.options = false;
-    // request.adminOptions = options(forOptions);
-    // try {
-    //     request.data = true;
-    //     const result = await makeReq(request);
-    //     if (result.unlogged) {
-    //         window.location.replace('/');
-    //     } else {
-    //         dList.style.display = 'inline-block';
-    //         drList = new DropList(evt.target, result);
-    //     };
-    // } catch (err) { log(err) };
 });
+
+
+dqsA(".role input").forEach((cont) => {
+    log(1);
+    cont.addEventListener('click', (evt) => {
+        state.rolesList = false;
+        log(cont)
+    })
+});
+
+
+
+
+
+
+
+// request.tableName = 'PRODUCTS';
+// request.products = true;
+// request.addUser = false;
+// request.db = false;
+// request.options = false;
+// request.adminOptions = options(forOptions);
+// try {
+//     request.data = true;
+//     const result = await makeReq(request);
+//     if (result.unlogged) {
+//         window.location.replace('/');
+//     } else {
+//         dList.style.display = 'inline-block';
+//         drList = new DropList(evt.target, result);
+//     };
+// } catch (err) { log(err) };
+
 
 
 
@@ -331,4 +380,4 @@ products.addEventListener('click', async(evt) => {
 //     else {
 //         alert("PRODUCTS => DEPARTMENT => COUNTERLIST");
 //     };
-// });00000
+// });0000

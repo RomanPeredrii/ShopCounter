@@ -9,6 +9,7 @@
     "body-parser": "^1.18.3",
     "const": "^1.0.0",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
     "datejs": "^1.0.0-rc3",
     "debug": "~2.6.9",
     "express": "^4.16.4",

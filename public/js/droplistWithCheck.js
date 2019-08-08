@@ -26,9 +26,6 @@ class DropListWithCheck {
                                         background-color: #e0e0e0;
                                         font-weight: bold
                                         } 
-                                        tr{
-                                        width: 80%;
-                                        }
                                         input {
                                         display: block;    
                                         }
@@ -58,11 +55,16 @@ class DropListWithCheck {
             this.dropList = document.querySelector('.dropList');
             this.itemlist.map((item) => {
                 const tr = document.createElement('tr');
-                const td = document.createElement('td');
+                const td1 = document.createElement('td');
+                const td2 = document.createElement('td');
                 let check = document.createElement('input');
                 check.type = "checkbox";
-                td.textContent = item;
-                tr.appendChild(td);
+                check.style.width = "2em"
+                td1.textContent = item;
+                // td2.textContent = check;
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                td2.appendChild(check);
                 check.addEventListener('change', () => {
                     if (check.checked) {
                         if (this.input.value.indexOf(item, 0) === -1) {
@@ -73,11 +75,11 @@ class DropListWithCheck {
                         this.input.value = valueString;
                     }
                 });
-                td.addEventListener('click', () => {
-                    this.dropList.parentNode.removeChild(this.dropList);
-                    this.dropList.remove();
-                });
-                tr.appendChild(check);
+                // td2.addEventListener('click', () => {
+                //     this.dropList.parentNode.removeChild(this.dropList);
+                //     this.dropList.remove();
+                // });
+                //tr.appendChild(check);
                 list.appendChild(tr);
             });
             // this.itemlist.map((item) => {

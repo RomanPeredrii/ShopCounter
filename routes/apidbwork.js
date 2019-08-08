@@ -1,8 +1,8 @@
-const log = require('../public/my_modules/stuffBE.js').log;
+const log = require('./stuff.js').log;
 const firebird = require('node-firebird');
 const router = require('express').Router();
 const User = require('../models/user.js');
-const Dispatcher = require('../public/my_modules/dispatcher.js')
+const Dispatcher = require('./dispatcher.js')
 
 
 const result = {
@@ -10,12 +10,11 @@ const result = {
     admin: false,
     error: false,
     logged: true,
-    data: {
-    }
+    data: {}
 };
 
 // !! - OPTION FOR ATTACH DB
-let getUserOptions = async (token) => {
+let getUserOptions = async(token) => {
     try {
         let user = await User.findOne({ token });
         if (!user) { log('USER NOT EXIST'); return null }
@@ -35,7 +34,7 @@ let getUserOptions = async (token) => {
 };
 
 // !! - the main router
-router.post('/apidbwork', async (req, res) => {
+router.post('/apidbwork', async(req, res) => {
 
 
 
@@ -53,7 +52,7 @@ router.post('/apidbwork', async (req, res) => {
     //  log(req.body);
     let userOptions = await getUserOptions(req.cookies.token);
 
- // !! - send data for departments list according to user (with sql injection defense)
+    // !! - send data for departments list according to user (with sql injection defense)
     if (req.body.startValue) {
         log(1);
         const dispatcher = new Dispatcher(req);
@@ -93,9 +92,11 @@ router.post('/apidbwork', async (req, res) => {
 async function getDataFomDb(timePointSart, timePointFinish, accessOptions, serials) {
     //log('accessOptions', serials);
     return new Promise((res, rej) => {
-        firebird.attach(accessOptions, async (err, db) => {
-            if (err) { log(err); rej(err) }
-            else {
+        firebird.attach(accessOptions, async(err, db) => {
+            if (err) {
+                log(err);
+                rej(err)
+            } else {
                 let arr = [timePointSart, timePointFinish];
                 arr.push(await queryToDB(scriptGetSUM(timePointSart, timePointFinish, serials), db)
                     .catch(err => log('SQL SCRIPT ERROR!', err)));
@@ -109,10 +110,13 @@ async function getDataFomDb(timePointSart, timePointFinish, accessOptions, seria
 // !! - request to firebird must be refactored & united with queryToDB
 async function makeQuery(options, script) {
     return new Promise((res, rej) => {
-/*??????*/ try {
-            firebird.attach(options, async (err, db) => {
-                if (err) { log('ERR', err); rej(err) }
-                else {
+        /*??????*/
+        try {
+            firebird.attach(options, async(err, db) => {
+                if (err) {
+                    log('ERR', err);
+                    rej(err)
+                } else {
                     //log('---------->', script);
                     var resQ = new Promise((res, rej) => {
                         db.execute(script, (err, result) => {
@@ -121,14 +125,13 @@ async function makeQuery(options, script) {
                         });
                     });
                     res(await resQ.then(res => {
-                        /*log('res---------->', res);*/
-                        return res
-                    }).catch(err => { log('REJ ERROR', err) })
+                            /*log('res---------->', res);*/
+                            return res
+                        }).catch(err => { log('REJ ERROR', err) })
                         .finally(db.detach()));
                 };
             });
-        }
-        catch (err) {
+        } catch (err) {
             ('makeQuery ERROR', log(err))
         };
     });
@@ -136,7 +139,7 @@ async function makeQuery(options, script) {
 
 // !! - make time stamps for requests to firebird according to clients request bar chart
 
-let selectionFromDBforBarChart = async (timePoints, token, serials) => {
+let selectionFromDBforBarChart = async(timePoints, token, serials) => {
 
     let dateStart = new Date(timePoints.timeStart);
     let dateFinish = new Date(timePoints.timeFinish + 86400000);
@@ -155,8 +158,7 @@ let selectionFromDBforBarChart = async (timePoints, token, serials) => {
 
         //log('selectionFromDB', serials);
         // !! - make response array
-        arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serials).
-            catch(err => log('CONNECTION TO DB ERROR ', err)));
+        arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serials).catch(err => log('CONNECTION TO DB ERROR ', err)));
 
         timePoints.timeFinish = timePoints.timeStart + timePoints.period;
         timePoints.timeStart += timePoints.period;
@@ -165,7 +167,7 @@ let selectionFromDBforBarChart = async (timePoints, token, serials) => {
 };
 
 
-let selectionFromDBforLineGraph = async (tPoints, token, serials) => {
+let selectionFromDBforLineGraph = async(tPoints, token, serials) => {
     let rawData = [];
     for (let j = 0; j < serials.length; j++) {
         let timeStart = tPoints.timeStart;
@@ -180,8 +182,7 @@ let selectionFromDBforLineGraph = async (tPoints, token, serials) => {
             timeFinish = timeStart + period;
             dateFinish = new Date(timeFinish);
             dateStart = new Date(timeStart);
-            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).
-                catch(err => log('CONNECTION TO DB ERROR ', err)));
+            arrRes.push(await getDataFomDb(makeDateString(dateStart), makeDateString(dateFinish), await getUserOptions(token), serial).catch(err => log('CONNECTION TO DB ERROR ', err)));
             timeFinish = timeStart + period;
             timeStart += period;
         };
@@ -235,9 +236,9 @@ function scriptGetSUM(timePointS, timePointF, serials) {
     // log((" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
     //     + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
     //     + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )"));
-    return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= "
-        + "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= "
-        + "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
+    return (" SELECT SUM(CH1) FROM COUNTERDATA WHERE (CAST(TIMEPOINT AS TIMESTAMP) >= " +
+        "'" + timePointS + "'" + ") AND (CAST(TIMEPOINT AS TIMESTAMP) <= " +
+        "'" + timePointF + "'" + ") AND ( " + scriptCondition + " )");
 };
 
 

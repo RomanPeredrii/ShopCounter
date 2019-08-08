@@ -1,6 +1,6 @@
-const log = require('../public/my_modules/stuffBE').log;
+const log = require('./stuff').log;
 const router = require('express').Router();
-const MongoRequester = require('../public/my_modules/mongoRequester');
+const MongoRequester = require('./mongoRequester');
 
 
 router.post('/login', async(req, res, next) => {

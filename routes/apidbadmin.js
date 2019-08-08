@@ -1,14 +1,12 @@
-const log = require('../public/my_modules/stuffBE.js').log;
+const log = require('./stuff.js').log;
 const firebird = require('node-firebird');
 const router = require('express').Router();
 const User = require('../models/user.js');
-const Dispatcher = require('../public/my_modules/dispatcher.js');
+const Dispatcher = require('./dispatcher.js');
 
 router.post('/apidbadmin', async(req, res, next) => {
     /// !! - get products & department
     if (req.body.getDepProd) {
-
-
         const dispatcher = new Dispatcher(req);
         res.json(await dispatcher.makeRequestForGetSerialsProductsDepartment());
 
@@ -18,7 +16,10 @@ router.post('/apidbadmin', async(req, res, next) => {
         //         log('REJ ERROR', err);
         //         log(err)
         //     }));
-    };
+    } else if (req.body.getRoles) {
+        const dispatcher = new Dispatcher(req);
+        res.json(await dispatcher.makeRequestForGetRoles());
+    }
 });
 
 

@@ -1,7 +1,7 @@
 /* unit for make request to MongoDB */
 log = console.log;
-const User = require('../../models/user.js');
-const makeid = require('./stuffBE.js').makeid;
+const User = require('../models/user.js');
+const makeid = require('./stuff.js').makeid;
 class MongoRequester {
     constructor() {};
 

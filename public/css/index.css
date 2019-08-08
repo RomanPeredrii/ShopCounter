@@ -10,59 +10,83 @@ body {
 }
 
 h1 {
-    height: auto;
-    word-break: break-all;
+    padding-top: 1em;
+    text-align: center;
+    font: 40px bold Helvetica, Arial, sans-serif;
+    color: #757575
 }
 
-main {
-    flex: 1 0 auto;
+.main {
+    display: flex;
+    margin: auto;
+    flex-grow: 1;
+    padding: 0;
+    width: 300px;
+    align-self: flex-start;
+    flex-flow: column wrap;
+}
+
+input {
+    width: 300px;
+    margin: 0.1em;
+    padding: 0.1em;
+    border: 0.1em solid #dadada;
+    border-radius: 0.2em;
+    font: 1.2em Helvetica, Arial, sans-serif;
 }
 
 footer {
-    height: auto;
-    width: auto;
-    flex: 0 0 auto;
+    width: 300px;
+    margin: auto;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    flex-grow: 0;
     background-color: #1a181854;
     color: #ffffff;
-    border-radius: 0.25em;
+    border-radius: 0.2em;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
     text-align: center;
-    padding: 0.5em;
-    margin: 0 auto;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    font: 16px bold Helvetica, Arial, sans-serif;
 }
 
-.startform {
-    text-align: center;
-    padding-top: 1.5em;
-    height: auto;
-    margin-bottom: 2em;
-}
-
-#submitButton {
-    margin: 0.5em;
+button {
+    background-color: #0275d8;
+    border-color: #0275d8;
+    font-weight: normal;
+    line-height: 1.25em;
+    color: #fff;
+    width: 100%;
+    margin-top: 0.2em;
+    margin-bottom: 0.5em;
+    padding: 0.2em;
+    white-space: nowrap;
+    border: 0.05em solid transparent;
+    font-size: 1.2em;
+    border-radius: 0.2em;
 }
 
 p {
     display: inline-block;
     margin: 0 auto;
-    width: 23em;
     text-align: center;
-    font-size: 24px;
+    font: 16px Helvetica, Arial, sans-serif;
     font-weight: bold;
-    padding: 0.5em;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 0.25em;
+    border: 0.1em solid #dadada;
+    border-radius: 0.2em;
 }
 
-.information {
-    margin: 0em;
+.startform {
     text-align: center;
-    width: 100%;
+    padding: 0;
+    height: auto;
 }
 
 
 /* // Small devices (landscape phones, 576px and up) */
 
+
+/* 
 @media (max-width: 576px) {
     .startform {
         text-align: center;
@@ -85,4 +109,4 @@ p {
         font-weight: bold;
         padding: 0.5em;
     }
-}
+} */

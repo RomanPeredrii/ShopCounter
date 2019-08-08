@@ -1,34 +1,28 @@
-//- values&labels just for check must be deleted||replaced!!!
-block content
 
+block content
   meta(name="viewport" content="width=device-width, initial-scale=1.0")
   link(rel='stylesheet', href='/css/adminStyle.css')
   title ADMIN PAGE
+  header
+    h1 ADMIN PAGE
   .main
-    .options
-      p ADMIN PAGE
-      //- label host:
-      input#host(type='text', placeholder=' DB host', value='185.255.96.123', title='host', name='host')
-      //- label port:
-      input#port(pattern = '^[ 0-9]+$', placeholder=' port', value = '3050', title='port', name='port')
-      //- label database:
-      input#database(type='text', placeholder=' database', value = '/var/lib/firebird/2.5/data/counter.fdb', name='database', title='database')   
-      //- label page size:
-      input#pageSize(type='text', placeholder=' page size', value = '4096', name='pageSize', title='pageSize')
-      //- label user:
-      input#user(type='text', placeholder=' username', value = 'U_VIEW', name='user', title='user')
-      //- label password:
-      input#password(type='text', placeholder=' password', value = 'clv8bzg1', name='password', title='password')
-      //- label role:
-      input#role(type='text', placeholder=' role', name='role', title='role')
-      //- label Products:
-      input#products(type='text', placeholder=' products or city', name='products', title='products')
-      .drList
-      //- label Department:
-      input#department(type = 'text', placeholder=' department', name='department', title='department')
+    .options      
+      //- input#host(type='text', placeholder=' DB host', value='185.255.96.123', title='host', name='host')
+      //- input#port(pattern = '^[ 0-9]+$', placeholder=' port', value = '3050', title='port', name='port')
+      //- input#database(type='text', placeholder=' database', value = '/var/lib/firebird/2.5/data/counter.fdb', name='database', title='database')   
+      //- input#pageSize(type='text', placeholder=' page size', value = '4096', name='pageSize', title='pageSize')
+      //- input#user(type='text', placeholder=' username', value = 'U_VIEW', name='user', title='user')
+      //- input#password(type='text', placeholder=' password', value = 'clv8bzg1', name='password', title='password')
+      input#host(type='text', placeholder='DB host', value='localhost', title='host', name='host')
+      input#port(pattern = '^[ 0-9]+$', placeholder='port', value = '3050', title='port', name='port')
+      input#database(type='text', placeholder='database', value = 'D:/JS/vvv/COUNTER.FDB', name='database', title='database')   
+      input#pageSize(type='text', placeholder='page size', value = '4096', name='pageSize', title='pageSize')
+      input#user(type='text', placeholder='username', value = 'SYSDBA', name='user', title='user')
+      input#password(type='text', placeholder='password', value = 'a2vvczib', name='password', title='password')
+      .role role      
+      .departmentsList departments
     button#addUser(disabled) ADD USER
     button#delUser(disabled) DEL USER
   footer 
     p produced by roman.peredrii +380979170088
   script(src='/js/admin.js' type= 'module')
-  script(src='/js/dropListWithCheck.js')
