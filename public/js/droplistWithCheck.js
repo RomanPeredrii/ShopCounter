@@ -64,7 +64,7 @@ class DropListWithCheck {
                 // td2.textContent = check;
                 tr.appendChild(td1);
                 tr.appendChild(td2);
-                td2.appendChild(check);
+                td1.appendChild(check);
                 check.addEventListener('change', () => {
                     if (check.checked) {
                         if (this.input.value.indexOf(item, 0) === -1) {

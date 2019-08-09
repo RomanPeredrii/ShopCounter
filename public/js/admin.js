@@ -50,29 +50,29 @@ role.addEventListener('click', async() => {
         gather.getValues().password) {
 
         gather.getValues().getRoles = true;
-
         if (!state.rolesList) {
             const request = new Request();
             const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
-            log(result);
+            // log(result);
             if (result.unlogged) {
                 window.location.replace('/');
             };
             state.rolesList = true;
             role.style.color = "#000000";
-            const rolesList = new List(result, "radio", "role", ".role");
-            rolesList.init();
+            const rolesList = new List(result, "role", ".role");
+            rolesList.chooseValues();
         };
     };
-    dqsA(".role div").forEach((cont) => {
-        log(cont)
-        cont.addEventListener('click', (evt) => {
-            state.rolesList = false;
-            log(evt)
-        })
-    });
 });
 
+dqsA(".role").forEach((cont) => {
+    log(cont)
+    cont.addEventListener('click', (evt) => {
+        role.innerText = ` ${evt.target.innerText}`;
+        state.rolesList = false;
+        log(evt.target.innerText)
+    })
+});
 
 departmentsList.addEventListener('click', async() => {
     gather = new Gather('.options', null);
@@ -82,19 +82,18 @@ departmentsList.addEventListener('click', async() => {
         gather.getValues().user &&
         gather.getValues().database &&
         gather.getValues().password) {
-
-        gather.getValues().getDepProd = true;
-        const request = new Request();
-        const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
-        log(result);
-        if (result.unlogged) {
-            window.location.replace('/');
-        };
         if (!state.listWithCheckbox) {
-            state.listWithCheckbox = true;
+            gather.getValues().getDepProd = true;
+            const request = new Request();
+            const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
+            log(result);
+            if (result.unlogged) {
+                window.location.replace('/');
+            };
             departmentsList.style.color = "#000000";
-            const listWithCheckbox = new List(result, "checkbox", "departments", ".departmentsList");
-            listWithCheckbox.init();
+            const listWithCheckbox = new List(result, "department", ".departmentsList");
+            listWithCheckbox.chooseValues();
+            state.listWithCheckbox = true;
         };
     };
 });

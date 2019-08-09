@@ -6,6 +6,8 @@ body {
     height: 100%;
     flex-flow: column nowrap;
     overflow-y: auto;
+    font: 1.2em bold Helvetica, Arial, sans-serif;
+    color: #757575
 }
 
 h1 {
@@ -22,10 +24,6 @@ h1 {
     width: 400px;
     align-self: flex-start;
     flex-flow: column wrap;
-}
-
-.wrap {
-    width: 500px;
 }
 
 .options {
@@ -46,19 +44,22 @@ h1 {
     color: #757575
 }
 
-.role input,
-.departmentsList input {
-    width: 1em;
+table {
+    width: 500px;
+    border: 0.1em;
+}
+
+table tr:hover {
+    position: relative;
+    width: 500px;
+    background-color: #d5d5d5;
     font: 1em Helvetica, Arial, sans-serif;
+    color: #000000
 }
 
-.wrap:hover {
-    width: 500px;
-    background-color: #e0e0e0;
-}
-
-.departmentsList label {
-    width: 500px;
+table tr {
+    border: 0.05em solid transparent;
+    border-radius: 0.2em;
 }
 
 input {
@@ -86,7 +87,6 @@ button {
 }
 
 button:disabled {
-    background-color: #9cc1e273;
     background-color: #9cc1e273;
     border-color: #0275d8;
     font-weight: normal;
