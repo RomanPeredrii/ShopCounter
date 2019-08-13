@@ -2,6 +2,7 @@
 import Request from '../my_modules/request.js';
 import Gather from '../my_modules/gather.js';
 import { log, dqs, dqsA } from '../my_modules/stuff.js';
+import Preloader from '../my_modules/preloader.js';
 const divSendReq = document.querySelector('.divSendReq');
 const timeStampS = document.querySelector('#timeStampS');
 const timeStampF = document.querySelector('#timeStampF');
@@ -20,7 +21,7 @@ const defaultRequest = () => {
 };
 
 let gather = new Gather('.left'); // have to be deleted!!!!!!!!!!!!!!!!
-
+const preloader = new Preloader('.preloader');
 
 
 //!!! just for locking default values
@@ -128,13 +129,17 @@ document.addEventListener('DOMContentLoaded', async() => {
         const gather = new Gather('.left', defaultRequest());
         gather.getCheckedValues().startValue = true;
         const request = new Request();
+        preloader.show();
         const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
-        //!!! - create list of counters
-        showCountersList(result, '.counters');
+
+        //log(result);
         // !!! - filing start date from firebird
         if (result.unlogged) window.location.replace('/')
         else if (result) {
             setDefaultDates(result[0][0]);
+            //!!! - create list of counters
+            showCountersList(result, '.counters');
+            preloader.hide();
         };
     } catch (err) { log('counters list', err) };
 });
@@ -239,9 +244,10 @@ const builtPieChat = async() => {
                 const gather = new Gather('.left', defaultRequest());
                 gather.getCheckedValues().type = 'pieChart';
                 const request = new Request();
-                log('request', gather.getCheckedValues());
+                preloader.show();
+                // log('request', gather.getCheckedValues());
                 const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
-                log('result', result);
+                // log('result', result);
                 // !! - checking session
                 if (result.unlogged) {
                     log('RESULT:', result);
@@ -253,6 +259,7 @@ const builtPieChat = async() => {
                     bildChart(result.map(arr => arr[1]),
                         result.map(arr => arr[0]),
                         result.map(arr => arr[3]), 'pie', true);
+                    preloader.hide();
                 } else throw err;
             } catch (err) { log(err) };
         };
@@ -270,7 +277,10 @@ let builtBarChat = async() => {
             try {
                 const gather = new Gather('.left', defaultRequest());
                 gather.getCheckedValues().type = 'barChat';
+
                 const request = new Request();
+
+                preloader.show();
                 log('request', gather.getCheckedValues());
                 const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
                 log('RESULT:', result);
@@ -278,13 +288,13 @@ let builtBarChat = async() => {
                 if (result.unlogged) {
                     window.location.replace('/');
                 } else if (result) {
+
                     //log('RESULT:', result);
                     dataTable.style.display = 'block';
                     makeTable(dataTable, result, periodChoice);
-
                     // !!! necessary to add useful labels & legends
-
                     bildChart(result.map(arr => arr[0]), result.map(arr => arr[1]), '#5c745f', 'bar', false);
+                    preloader.hide();
                 } else throw err;
             } catch (err) { log(err) };
         };
