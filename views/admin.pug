@@ -19,10 +19,12 @@ block content
       input#pageSize(type='text', placeholder='page size', value = '4096', name='pageSize', title='pageSize')
       input#user(type='text', placeholder='username', value = 'SYSDBA', name='user', title='user')
       input#password(type='text', placeholder='password', value = 'a2vvczib', name='password', title='password')
-      .role role      
+      input#role(type='text', placeholder='role', name='role', title='role', autocomplete='off')
+      //- .roles role      
       .departmentsList departments
     button#addUser(disabled) ADD USER
     button#delUser(disabled) DEL USER
   footer 
     p produced by roman.peredrii +380979170088
+  .preloader
   script(src='/js/admin.js' type= 'module')

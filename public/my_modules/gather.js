@@ -18,12 +18,24 @@ class Gather {
     };
 
     _getContext() {
+        let content = document.querySelectorAll(`${this.parent} input`);
+        content.forEach((cont) => {
+            //log(typeof cont);
+            // if (cont=="input") 
+            //log(cont);
+        });
+
+
+
+
         return document.querySelectorAll(`${this.parent} input`);
     };
 
     getValues() {
         let values = {};
+        //log(this._getContext());
         this._getContext().forEach((context) => {
+            // log(context);
             if (context.value) values[context.name] = context.value;
         });
         this.default = {...this.default, ...values };

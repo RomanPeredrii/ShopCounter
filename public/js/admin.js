@@ -7,18 +7,20 @@ import { log, dqs, dqsA } from '../my_modules/stuff.js';
 import Gather from '../my_modules/gather.js';
 import Request from '../my_modules/request.js';
 import List from '../my_modules/list.js';
+import Preloader from '../my_modules/preloader.js';
 
 const addUser = dqs('#addUser');
 const delUser = dqs('#delUser');
-const role = dqs('.role');
-const optionsList = dqsA('.options>input')
+const roleInp = dqs('#role');
+const optionsList = dqsA('.options>*')
 const departmentsList = dqs('.departmentsList');
 let gather = new Gather('.options', null);
+const preloader = new Preloader('.preloader');
 
 let state = {};
-
 ['click', 'change', 'keyup'].map(evt => {
-    optionsList.forEach((cont, i) => cont.addEventListener(evt, () => {
+    optionsList.forEach((cont, i) => cont.addEventListener(evt, (evt) => {
+        // log(evt);
         gather = new Gather('.options', null);
         let del =
             gather.getValues().port &&
@@ -35,12 +37,12 @@ let state = {};
         } else { delUser.disabled = true };
 
         if (add && del) {
-            addUser.disabled = false
-        } else { addUser.disabled = true };
+            addUser.disabled = false;
+        } else { addUser.disabled = false };
     }))
 });
 // !! - 
-role.addEventListener('click', async() => {
+roleInp.addEventListener('click', async(evt) => {
     gather = new Gather('.options', null);
     if (
         gather.getValues().port &&
@@ -52,27 +54,30 @@ role.addEventListener('click', async() => {
         gather.getValues().getRoles = true;
         if (!state.rolesList) {
             const request = new Request();
+            preloader.show();
             const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
-            // log(result);
             if (result.unlogged) {
                 window.location.replace('/');
             };
+            const roles = document.createElement('div');
+            dqs('.options').insertBefore(roles, departmentsList);
+            roles.classList.add("roles");
             state.rolesList = true;
-            role.style.color = "#000000";
-            const rolesList = new List(result, "role", ".role");
+            roleInp.style.display = 'none';
+            roles.style.display = "block";
+            const rolesList = new List(result, "role", ".roles");
+            preloader.hide();
             rolesList.chooseValues();
-        };
+            roles.addEventListener('mouseup', evt => {
+                roleInp.value = evt.target.innerText;
+                roleInp.style.display = 'block';
+                roles.remove();
+                state.rolesList = false;
+            });
+        }
     };
 });
 
-dqsA(".role").forEach((cont) => {
-    log(cont)
-    cont.addEventListener('click', (evt) => {
-        role.innerText = ` ${evt.target.innerText}`;
-        state.rolesList = false;
-        log(evt.target.innerText)
-    })
-});
 
 departmentsList.addEventListener('click', async() => {
     gather = new Gather('.options', null);
@@ -82,31 +87,29 @@ departmentsList.addEventListener('click', async() => {
         gather.getValues().user &&
         gather.getValues().database &&
         gather.getValues().password) {
-        if (!state.listWithCheckbox) {
+        if (!state.list) {
             gather.getValues().getDepProd = true;
             const request = new Request();
+            preloader.show();
             const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
-            log(result);
             if (result.unlogged) {
                 window.location.replace('/');
             };
             departmentsList.style.color = "#000000";
-            const listWithCheckbox = new List(result, "department", ".departmentsList");
-            listWithCheckbox.chooseValues();
-            state.listWithCheckbox = true;
+            const list = new List(result, "department", ".departmentsList");
+            preloader.hide();
+            list.chooseValues();
+            state.list = true;
         };
     };
 });
 
 
-dqsA(".role input").forEach((cont) => {
-    log(1);
-    cont.addEventListener('click', (evt) => {
-        state.rolesList = false;
-        log(cont)
-    })
+addUser.addEventListener('click', (evt) => {
+    let gather = new Gather('.options', null);
+    let gather1 = new Gather('.departmentsList', null);
+    log({...gather1.getCheckedValues(), ...gather.getValues() });
 });
-
 
 
 

@@ -32,7 +32,18 @@ h1 {
     flex-flow: column wrap;
 }
 
-.role,
+.roles {
+    display: none;
+    overflow-x: hidden;
+    width: 100%;
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    border: 0.1em solid #dadada;
+    border-radius: 0.2em;
+    font: 1.2em Helvetica, Arial, sans-serif;
+    color: #757575
+}
+
 .departmentsList {
     overflow-x: hidden;
     width: 100%;
@@ -44,9 +55,30 @@ h1 {
     color: #757575
 }
 
+.preloader {
+    display: none;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
 table {
     width: 500px;
     border: 0.1em;
+}
+
+table input {
+    display: none;
+    border: 0;
+}
+
+table input label {
+    display: block;
+    border: 0;
 }
 
 table tr:hover {
@@ -58,8 +90,9 @@ table tr:hover {
 }
 
 table tr {
-    border: 0.05em solid transparent;
-    border-radius: 0.2em;
+    border: 0;
+    /* border: 0.05em solid transparent;
+    border-radius: 0.2em; */
 }
 
 input {
