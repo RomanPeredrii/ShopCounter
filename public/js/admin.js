@@ -8,6 +8,7 @@ import Gather from '../my_modules/gather.js';
 import Request from '../my_modules/request.js';
 import List from '../my_modules/list.js';
 import Preloader from '../my_modules/preloader.js';
+import ErrorMessage from '../my_modules/errorMessage.js';
 
 const addUser = dqs('#addUser');
 const delUser = dqs('#delUser');
@@ -15,7 +16,7 @@ const roleInp = dqs('#role');
 const optionsList = dqsA('.options>*')
 const departmentsList = dqs('.departmentsList');
 let gather = new Gather('.options', null);
-const preloader = new Preloader('.preloader');
+const preloader = new Preloader('.messager');
 
 let state = {};
 ['click', 'change', 'keyup'].map(evt => {
@@ -29,20 +30,19 @@ let state = {};
             gather.getValues().host;
         let add =
             gather.getValues().role &&
-            gather.getValues().password &&
-            gather.getValues().departments;
-
+            gather.getValues().password;
         if (del) {
             delUser.disabled = false
         } else { delUser.disabled = true };
 
         if (add && del) {
             addUser.disabled = false;
-        } else { addUser.disabled = false };
+        } else { addUser.disabled = true };
     }))
 });
 // !! - 
 roleInp.addEventListener('click', async(evt) => {
+    try {
     gather = new Gather('.options', null);
     if (
         gather.getValues().port &&
@@ -50,7 +50,6 @@ roleInp.addEventListener('click', async(evt) => {
         gather.getValues().user &&
         gather.getValues().database &&
         gather.getValues().password) {
-
         gather.getValues().getRoles = true;
         if (!state.rolesList) {
             const request = new Request();
@@ -68,14 +67,20 @@ roleInp.addEventListener('click', async(evt) => {
             const rolesList = new List(result, "role", ".roles");
             preloader.hide();
             rolesList.chooseValues();
+            
             roles.addEventListener('mouseup', evt => {
                 roleInp.value = evt.target.innerText;
                 roleInp.style.display = 'block';
                 roles.remove();
                 state.rolesList = false;
             });
-        }
-    };
+        };
+     };
+    }
+    catch (err) {
+        const message = new ErrorMessage('.messager');
+        message.show(err);
+    };        
 });
 
 
@@ -104,11 +109,24 @@ departmentsList.addEventListener('click', async() => {
     };
 });
 
+delUser.addEventListener('click', (evt) => {
+    let gather = new Gather('.options', null);
+    gather.getLocalValues().delUser = true;
+    const request = new Request();
+    log(gather.getLocalValues());
+    // preloader.show();
+    // const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
+    // preloader.hide();
+});
 
 addUser.addEventListener('click', (evt) => {
     let gather = new Gather('.options', null);
-    let gather1 = new Gather('.departmentsList', null);
-    log({...gather1.getCheckedValues(), ...gather.getValues() });
+    gather.getValues().addUser = true;
+    const request = new Request();
+    log(gather.getValues());
+    // preloader.show();
+    // const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
+    // preloader.hide();
 });
 
 

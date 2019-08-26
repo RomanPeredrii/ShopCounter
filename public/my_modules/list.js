@@ -27,19 +27,15 @@ class List {
         this.parent.innerHTML = "";
         let table = document.createElement('table');
         table.className = 'tableList';
-        let i = 0;
-        for (let item of this.data) {
+        for (let item in this.data) {
             const tr = document.createElement('tr');
             const check = document.createElement('input');
             check.type = "checked";
-            check.name = `${this.name}${i}`;
-            // check.style.display = 'none';
+            check.name = `${item}`;
             tr.appendChild(check);
             tr.bgColor = '#f4f4f4';
-            //tr.innerHTML += `${item}`;
-            tr.innerHTML += `<label for=${check}>${item}<label>`;
+            tr.innerHTML += `<label for=${check}>${this.data[item]}<label>`;
             tr.addEventListener('click', cont => this._check(cont));
-            i++;
             tr.checked = false;
             table.appendChild(tr);
         };
@@ -47,12 +43,13 @@ class List {
     }
 
     _check(cont) {
-        //log(cont.target.parentNode.children[0].checked);
+                // log(cont.target.parentNode.children[0].checked);
+        cont.target.parentNode.children[0].value = cont.target.parentNode.children[1].innerText;       
         cont.target.parentNode.children[0].checked = cont.target.parentNode.children[0].checked ? false : true;
         cont.target.parentNode.bgColor = cont.target.parentNode.children[0].checked ? '#0275d8' : '#ffffff';
         cont.target.style.color = cont.target.parentNode.children[0].checked ? '#ffffff' : '#757575';
         cont.target.style.fontSize = cont.target.parentNode.children[0].checked ? '1.1em' : '1em';
-        // log(cont.target.parentNode.children[0].checked);
+
     };
 };
 export default List;

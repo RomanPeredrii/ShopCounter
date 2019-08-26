@@ -7,24 +7,23 @@ block content
     h1 ADMIN PAGE
   .main
     .options      
-      //- input#host(type='text', placeholder=' DB host', value='185.255.96.123', title='host', name='host')
-      //- input#port(pattern = '^[ 0-9]+$', placeholder=' port', value = '3050', title='port', name='port')
-      //- input#database(type='text', placeholder=' database', value = '/var/lib/firebird/2.5/data/counter.fdb', name='database', title='database')   
-      //- input#pageSize(type='text', placeholder=' page size', value = '4096', name='pageSize', title='pageSize')
-      //- input#user(type='text', placeholder=' username', value = 'U_VIEW', name='user', title='user')
-      //- input#password(type='text', placeholder=' password', value = 'clv8bzg1', name='password', title='password')
-      input#host(type='text', placeholder='DB host', value='localhost', title='host', name='host')
-      input#port(pattern = '^[ 0-9]+$', placeholder='port', value = '3050', title='port', name='port')
-      input#database(type='text', placeholder='database', value = 'D:/JS/vvv/COUNTER.FDB', name='database', title='database')   
-      input#pageSize(type='text', placeholder='page size', value = '4096', name='pageSize', title='pageSize')
-      input#user(type='text', placeholder='username', value = 'SYSDBA', name='user', title='user')
-      input#password(type='text', placeholder='password', value = 'a2vvczib', name='password', title='password')
-      input#role(type='text', placeholder='role', name='role', title='role', autocomplete='off')
-      //- .roles role      
+      input#host(type='text', placeholder=' DB host', value='185.255.96.123', title='host', name='host')
+      input#port(pattern = '^[ 0-9]+$', placeholder=' port', value = '3050', title='port', name='port')
+      input#database(type='text', placeholder=' database', value = '/var/lib/firebird/2.5/data/counter.fdb', name='database', title='database')   
+      input#pageSize(type='text', placeholder=' page size', value = '4096', name='pageSize', title='pageSize')
+      input#user(type='text', placeholder=' username', value = 'U_VIEW', name='user', title='user')
+      input#password(type='text', placeholder=' password', value = 'clv8bzg1', name='password', title='password')
+      //- input#host(type='text', placeholder='DB host', value='localhost', title='host', name='host')
+      //- input#port(pattern = '^[ 0-9]+$', placeholder='port', value = '3050', title='port', name='port')
+      //- input#database(type='text', placeholder='database', value = 'D:/JS/vvv/COUNTER.FDB', name='database', title='database')   
+      //- input#pageSize(type='text', placeholder='page size', value = '4096', name='pageSize', title='pageSize')
+      //- input#user(type='text', placeholder='username', value = 'SYSDBA', name='user', title='user')
+      //- input#password(type='text', placeholder='password', value = 'a2vvczib', name='password', title='password')
+      input#role(type='text', placeholder='role', name='role', title='role', autocomplete='off') 
       .departmentsList departments
     button#addUser(disabled) ADD USER
     button#delUser(disabled) DEL USER
   footer 
     p produced by roman.peredrii +380979170088
-  .preloader
+  .messager
   script(src='/js/admin.js' type= 'module')

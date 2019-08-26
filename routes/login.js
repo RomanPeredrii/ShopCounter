@@ -19,12 +19,14 @@ router.post('/login', async(req, res, next) => {
         else if (user.token) {
             result.ok = true;
             result.logged = true;
+            result.cookie = user.token;
             res.cookie('token', user.token, { maxAge: 60000000, httpOnly: true })
         };
         if (user.username === "Admin") {
-            result.ok = false;
+            result.ok = true;
             result.admin = true;
             result.logged = true;
+            result.cookie = user.token;
         };
         res.json(result);
     }).catch((err) => {
