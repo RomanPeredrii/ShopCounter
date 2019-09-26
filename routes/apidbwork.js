@@ -54,7 +54,7 @@ router.post('/apidbwork', async(req, res) => {
 
     // !! - send data for departments list according to user (with sql injection defense)
     if (req.body.startValue) {
-        log(1);
+        // log('req.body.startValue', req.body);
         const dispatcher = new Dispatcher(req);
         res.json(await dispatcher.makeRequestForGetStartData());
     }

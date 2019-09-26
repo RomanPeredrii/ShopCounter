@@ -1,4 +1,5 @@
 // !!! - coments
+import List from '../my_modules/list.js';
 import Request from '../my_modules/request.js';
 import Gather from '../my_modules/gather.js';
 import { log, dqs, dqsA } from '../my_modules/stuff.js';
@@ -126,19 +127,18 @@ const makeRandomColor = () => {
 // !!! - make first request for getting user object from mongo & start date from firebird 
 document.addEventListener('DOMContentLoaded', async() => {
     try {
-        const gather = new Gather('.left', defaultRequest());
-        gather.getCheckedValues().startValue = true;
         const request = new Request();
         preloader.show();
-        const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
-
-        //log(result);
+        const result = await request.makeRequest('/api/apidbwork', { startValue: true });
         // !!! - filing start date from firebird
         if (result.unlogged) window.location.replace('/')
         else if (result) {
-            setDefaultDates(result[0][0]);
+            setDefaultDates(result[0].MIN);
             //!!! - create list of counters
-            showCountersList(result, '.counters');
+            const list = new List(result[1], "department", '.counters');
+            list.showCheckboxList();
+
+            // showCountersList(result, '.counters');
             preloader.hide();
         };
     } catch (err) { log('counters list', err) };
@@ -241,12 +241,12 @@ const builtPieChat = async() => {
         if (!getChoicePeriod(periodChoice)) periodChoice[0].checked = true; // захист від дурнів
         else {
             try {
-                const gather = new Gather('.left', defaultRequest());
-                gather.getCheckedValues().type = 'pieChart';
+                const gather = new Gather('.left', null);
+                // gather.getCheckedValues().type = 'pieChart';
                 const request = new Request();
                 preloader.show();
-                // log('request', gather.getCheckedValues());
-                const result = await request.makeRequest('/api/apidbwork', gather.getCheckedValues());
+                log('request', {...gather.getCheckedValues(), type: 'pieChart' });
+                const result = await request.makeRequest('/api/apidbwork', {...gather.getCheckedValues(), type: 'pieChart' });
                 // log('result', result);
                 // !! - checking session
                 if (result.unlogged) {

@@ -22,13 +22,18 @@ class MongoRequester {
                 host: user.host,
                 port: user.port,
                 database: user.database,
-                user: user.username,
-                password: user.password,
-                pageSize: user.pageSize,
-                role: user.role,
-                counters: user.counters,
-                department: user.department,
-                products: user.products
+                department: user.departments,
+                // user: user.username,
+                // password: user.password,
+
+
+                /*---------------*/
+                user: 'U_VIEW', // JUST FOR RESPECT
+                /*---------------*/
+                password: 'clv8bzg1', // JUST FOR RESPECT
+
+
+
             };
         } catch (err) { log('\n USER ERROR', err) };
     };
@@ -51,6 +56,31 @@ class MongoRequester {
             return user;
         } catch (err) { log('\n ERROR', err) };
     };
+
+    async addUser(newUser) {
+        // !! create new user document
+        let user = new User({
+            username: newUser.newUser.newUser,
+            password: newUser.newUser.newUserPassword,
+            host: newUser.host,
+            database: newUser.database,
+            port: newUser.port,
+            departments: newUser.newUser.departments
+        });
+        // !! - save new user document
+        try {
+            return await user.save();
+        } catch (err) { log('\n SAVE ERROR', err) };
+    };
+
+    async delUser(delUser) {
+        try {
+            let result = await User.findOneAndRemove({ username: delUser });
+            log('result', result);
+            return result;
+        } catch (err) { log('\n DELETE ERROR', err) };
+    };
+
 
 };
 module.exports = MongoRequester;

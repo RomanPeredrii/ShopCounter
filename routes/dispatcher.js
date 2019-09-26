@@ -2,6 +2,7 @@
 const log = require('./stuff.js').log;
 const MongoRequester = require('./mongoRequester.js');
 const FirebirdRequester = require('./firebirdRequester.js');
+const mongoRequester = new MongoRequester();
 
 class Dispatcher {
     constructor(_request) {
@@ -21,9 +22,11 @@ class Dispatcher {
     };
     async _makeDataForGetStartQuery() {
         try {
-            const mongoRequester = new MongoRequester();
+            // const mongoRequester = new MongoRequester();
             //!!! - get user options for attach FirebirdDB fom MongoDb
-            return { options: await mongoRequester.getUserOptions(this.request.cookies.token) }
+            return {
+                options: await mongoRequester.getUserOptions(this.request.cookies.token)
+            }
         } catch (error) {
             log('dispatcher ERROR in _makeDataForGetStartQuery()', error);
         };
@@ -41,8 +44,54 @@ class Dispatcher {
     // }
 
     async _makeDataForPieChartQuery() {
+        // try {
+        const mongoRequester = new MongoRequester();
+        //!!! - get list of counters serial number from MongoDb
+
+        let options = (await mongoRequester.getUserOptions(this.request.cookies.token));
+        log('countersArr', options.department);
+        log(Object.keys(options.department));
+        log(Object.values(options.department));
+
+        //         if ((property.substr(0, 7));
+        // !!! - get list of departments serial number from MongoDb
+        //     let departmentsArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
+        //         .then(options => options.department)).split(';');
+        //     departmentsArr.pop();
+        //     let serialArr = [];
+        //     let indexArr = [];
+        //     let departments = [];
+        //     //!!! - get indexes of required counters
+        //     Object.keys(this.request.body).map((property) => {
+        //         if ((property.substr(0, 7) === 'counter') && (typeof + property[7] === 'number'))
+        //             indexArr.push(+property.substring(7));
+
+        //     });
+        //     //!!! - make list [] of required counters serial number
+        //     indexArr.map((index, i) => {
+        //         serialArr.push(countersArr[index]);
+        //         departments.push(departmentsArr[index]);
+        //     });
+
+        //     return {
+        //         startDate: this.request.body.startDate,
+        //         finishDate: this.request.body.finishDate,
+        //         dates: [
+        //             this._makeDateString(new Date(Date.UTC(...this.request.body.startDate.replace((/-|:|\s/g), ", ").split(',')))),
+        //             this._makeDateString(new Date(Date.UTC(...this.request.body.finishDate.replace((/-|:|\s/g), ", ").split(',')) + 86399999))
+        //         ],
+        //         options: await mongoRequester.getUserOptions(this.request.cookies.token),
+        //         serials: serialArr,
+        //         departments: departments,
+        //         period: this.request.body.period
+        //     };
+        // } catch (error) {
+        //     log('dispatcher ERROR in _makeDataForPieChartQuery()', error);
+        // };
+    };
+    async __makeDataForPieChartQuery() {
         try {
-            const mongoRequester = new MongoRequester();
+            // const mongoRequester = new MongoRequester();
             //!!! - get list of counters serial number from MongoDb
             let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
                 .then(options => options.counters)).split(';');
@@ -83,9 +132,36 @@ class Dispatcher {
         };
     };
 
+
+    async makeRequestForAddUser() {
+        // log('makeRequestForAddUser()', this.request.body);
+        try {
+            // const mongoRequester = new MongoRequester();
+            mongoRequester.addUser(this.request.body);
+            //!!! - get list of counters serial number from MongoDb
+            // let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
+            //     .then(options => options.counters)).split(';');
+        } catch (error) {
+            log('dispatcher ERROR in makeRequestForAddUser()', error);
+        };
+    }
+
+    async makeRequestForDelUser() {
+        log('makeRequestForDelUser()', this.request.body);
+        try {
+            // const mongoRequester = new MongoRequester();
+            mongoRequester.delUser(this.request.body.delUser);
+            //!!! - get list of counters serial number from MongoDb
+            // let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
+            //     .then(options => options.counters)).split(';');
+        } catch (error) {
+            log('dispatcher ERROR in makeRequestForDelUser()', error);
+        };
+    }
+
     async _makeDataForBarChartQuery() {
         try {
-            const mongoRequester = new MongoRequester();
+
             //!!! - get list of counters serial number from MongoDb
             let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
                 .then(options => options.counters)).split(';');
@@ -131,8 +207,12 @@ class Dispatcher {
     };
 
     async makeRequestForGetStartData() {
+        let options = await mongoRequester.getUserOptions(this.request.cookies.token);
         const firebirdRequester = new FirebirdRequester(await this._makeDataForGetStartQuery());
-        return await firebirdRequester.makeAnswerForGetStartData();
+        let rawAnswer = (await firebirdRequester.makeAnswerForGetStartData());
+        rawAnswer.push(options.department);
+        // log('rawAnswer', rawAnswer);
+        return rawAnswer; //.push(options.department);
     };
 
     async makeRequestForPieChart() {

@@ -2,132 +2,167 @@
 // cont = context;
 // i = item;
 // opt = option;
-
 import { log, dqs, dqsA } from '../my_modules/stuff.js';
 import Gather from '../my_modules/gather.js';
 import Request from '../my_modules/request.js';
 import List from '../my_modules/list.js';
 import Preloader from '../my_modules/preloader.js';
 import ErrorMessage from '../my_modules/errorMessage.js';
+// import { getCiphers } from 'crypto';
 
 const addUser = dqs('#addUser');
-const delUser = dqs('#delUser');
-const roleInp = dqs('#role');
+const newUser = dqs('.newUser');
+const delUserB = dqs('#delUserB');
+const delUser = dqs('.delUser');
 const optionsList = dqsA('.options>*')
 const departmentsList = dqs('.departmentsList');
-let gather = new Gather('.options', null);
+const departments = dqs('#departmentsList');
 const preloader = new Preloader('.messager');
 
-let state = {};
+let state = {
+    list: false
+};
+
 ['click', 'change', 'keyup'].map(evt => {
-    optionsList.forEach((cont, i) => cont.addEventListener(evt, (evt) => {
-        // log(evt);
-        gather = new Gather('.options', null);
-        let del =
+    optionsList.forEach(cont => cont.addEventListener(evt, () => {
+        const gather = new Gather('.options', null);
+        if (gather.getValues().host &&
             gather.getValues().port &&
             gather.getValues().database &&
             gather.getValues().user &&
-            gather.getValues().host;
-        let add =
-            gather.getValues().role &&
-            gather.getValues().password;
-        if (del) {
-            delUser.disabled = false
-        } else { delUser.disabled = true };
-
-        if (add && del) {
-            addUser.disabled = false;
-        } else { addUser.disabled = true };
+            gather.getValues().password)
+            delUserB.disabled = addUser.disabled = false
+        else
+            delUserB.disabled = addUser.disabled = true;
     }))
 });
-// !! - 
-roleInp.addEventListener('click', async(evt) => {
-    try {
-    gather = new Gather('.options', null);
-    if (
-        gather.getValues().port &&
-        gather.getValues().database &&
-        gather.getValues().user &&
-        gather.getValues().database &&
-        gather.getValues().password) {
-        gather.getValues().getRoles = true;
-        if (!state.rolesList) {
-            const request = new Request();
-            preloader.show();
-            const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
-            if (result.unlogged) {
-                window.location.replace('/');
-            };
-            const roles = document.createElement('div');
-            dqs('.options').insertBefore(roles, departmentsList);
-            roles.classList.add("roles");
-            state.rolesList = true;
-            roleInp.style.display = 'none';
-            roles.style.display = "block";
-            const rolesList = new List(result, "role", ".roles");
-            preloader.hide();
-            rolesList.chooseValues();
-            
-            roles.addEventListener('mouseup', evt => {
-                roleInp.value = evt.target.innerText;
-                roleInp.style.display = 'block';
-                roles.remove();
-                state.rolesList = false;
-            });
+
+
+addUser.addEventListener('click', async() => {
+    if (state.list) {
+        const gatherOptions = new Gather('.options', null);
+        const gatherNewUser = new Gather('.newUser', null);
+        const gatherDepartmentsList = new Gather('.departmentsList', null);
+        let req = {
+            ...gatherOptions.getValues(),
+            newUser: {
+                ...gatherNewUser.getLocalCheckedValues(),
+                departments: gatherDepartmentsList.getLocalCheckedValues()
+            }
         };
-     };
-    }
-    catch (err) {
-        const message = new ErrorMessage('.messager');
-        message.show(err);
-    };        
+        if (Object.keys(gatherOptions.getValues()) == 0 ||
+            Object.keys(gatherNewUser.getLocalCheckedValues()) == 0 ||
+            Object.keys(gatherDepartmentsList.getLocalCheckedValues()) == 0) { log('ERROR') } else {
+            const request = new Request();
+            log(req);
+            // preloader.show();
+            const result = await request.makeRequest('/api/apidbadmin', req);
+        }
+    } else
+        delUserB.disabled = addUser.disabled = true;
+    // preloader.show();
+    const gather = new Gather('.options', null);
+    gather.getValues().checkConnection = true;
+    // const request = new Request();
+    optionsList.forEach(cont => cont.disabled = true);
+    newUser.style.display = 'block';
+
+    // const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
+    // preloader.hide();
 });
 
-
-departmentsList.addEventListener('click', async() => {
-    gather = new Gather('.options', null);
+departments.addEventListener('click', async() => {
+    const gather = new Gather('.options', null);
     if (
+        gather.getValues().host &&
         gather.getValues().port &&
         gather.getValues().database &&
         gather.getValues().user &&
-        gather.getValues().database &&
         gather.getValues().password) {
         if (!state.list) {
+            departments.disabled = true;
+            preloader.show();
             gather.getValues().getDepProd = true;
             const request = new Request();
-            preloader.show();
             const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
             if (result.unlogged) {
                 window.location.replace('/');
             };
-            departmentsList.style.color = "#000000";
-            const list = new List(result, "department", ".departmentsList");
             preloader.hide();
-            list.chooseValues();
+            departments.style.display = 'none';
+            departmentsList.style.display = 'block';
+            const list = new List(result, "department", ".departmentsList");
+            list.showCheckboxList();
+            checkFillingInputs();
             state.list = true;
         };
     };
 });
 
-delUser.addEventListener('click', (evt) => {
-    let gather = new Gather('.options', null);
-    gather.getLocalValues().delUser = true;
+
+let checkFillingInputs = () => {
+    dqsA('.newUser').forEach(cont => {
+        ['click', 'change', 'keyup'].map(evt => {
+            cont.addEventListener(evt, () => {
+                const gatherNewUser = new Gather('.newUser', null);
+                const gatherDepartmentsList = new Gather('.departmentsList', null);
+                if (
+                    (!gatherNewUser.getCheckedValues().newUser ||
+                        (gatherNewUser.getCheckedValues().newUser.trim() === '')) ||
+                    (!gatherNewUser.getCheckedValues().newUserPassword ||
+                        (gatherNewUser.getCheckedValues().newUserPassword.trim() === '')) ||
+                    (Object.keys(gatherDepartmentsList.getLocalCheckedValues()) == 0))
+                    addUser.disabled = true;
+                else addUser.disabled = false;
+            })
+        })
+    })
+};
+
+
+delUserB.addEventListener('click', async() => {
+    delUser.style.display = 'block';
+    delUserB.disabled = addUser.disabled = true;
+    optionsList.forEach(cont => cont.disabled = true);
+    const gatherOptions = new Gather('.options', null);
+    const gatherDelUser = new Gather('.delUser', null);
+    dqs('#delUser').addEventListener('keyup', () => {
+        const gatherDelUser = new Gather('.delUser', null);
+        if (!(Object.keys(gatherOptions.getValues()) == 0) &&
+            ((!gatherDelUser.getValues().delUser) ||
+                (gatherDelUser.getValues().delUser.trim() === '')))
+            delUserB.disabled = true
+        else delUserB.disabled = false;
+    });
+    let req = {
+        ...gatherOptions.getValues(),
+        ...gatherDelUser.getValues() ? gatherDelUser.getValues() : false
+    };
     const request = new Request();
-    log(gather.getLocalValues());
+    log(req);
+    // preloader.show();
+    const result = await request.makeRequest('/api/apidbadmin', req);
+
+
+    // gather.logD();
+    // gather.getLocalValues().delUser = true;
+
+    // const request = new Request();
+    // log(gather.getLocalValues());
     // preloader.show();
     // const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
     // preloader.hide();
 });
 
-addUser.addEventListener('click', (evt) => {
-    let gather = new Gather('.options', null);
-    gather.getValues().addUser = true;
-    const request = new Request();
-    log(gather.getValues());
-    // preloader.show();
-    // const result = await request.makeRequest('/api/apidbadmin', gather.getValues());
-    // preloader.hide();
-});
+
+
+
+
+
+
+
+
+
 
 
 

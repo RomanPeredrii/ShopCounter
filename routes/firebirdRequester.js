@@ -70,6 +70,7 @@ class FirebirdRequester {
     _getAnswerFromDB(script, func) {
         return new Promise((res, rej) => {
             firebird.attach(this.requestData.options, async(err, db) => {
+                // log(this.requestData.options);
                 try {
                     if (err) rej(err);
                     //res(await this._query(db, script))
@@ -209,8 +210,12 @@ class FirebirdRequester {
 
     //!! all makeAnswer.... just generalize data 
     async makeAnswerForGetStartData() {
-        let rawAnswer = await this._getAnswerFromDB(this._scriptGetMinDate(), this._queryArr);
-        rawAnswer.push(this.requestData.options.department);
+        // log(this.requestData.options);
+        let rawAnswer = await this._getAnswerFromDB(this._scriptGetMinDate(), this._queryObj);
+        // log(rawAnswer);
+
+
+        // rawAnswer.push(this.requestData.options.department);
         return rawAnswer
     };
 

@@ -3,6 +3,8 @@ var router = express.Router();
 
 // !! - /* All check cookies */
 router.all('/*', async (req, res, next) => {
+req.cookies.token = req.headers.token || req.cookies.token;
+
     if ((req.url === '/') || (req.url === '/api/login') || (req.url === '/pages/work')) {
         return next();
     };
@@ -10,7 +12,6 @@ router.all('/*', async (req, res, next) => {
     if ((!req.cookies.token) && (req.url.split('/')[1] === 'api')) {
         return res.json({ unlogged: true });
     }
-
     // ? token ==> cookies.token { maxAge: + 60000000}
     else if ((req.cookies.token) && (req.url.split('/')[1] === 'api'))
         res.cookie('token', req.cookies.token, { maxAge: 60000000, httpOnly: true });

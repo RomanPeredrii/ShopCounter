@@ -17,6 +17,7 @@ class Gather {
         this.default = _default
     };
 
+    logD =() => 'default';
     _getContext() {
         return document.querySelectorAll(`${this.parent} input`);
     };
@@ -36,12 +37,16 @@ class Gather {
     };
 
     getCheckedValues() {
-        let values = {};
+        let counters = {};
         this._getContext().forEach((context) => {
-            if (context.checked) values[context.name] = context.value;
+            if (context.checked && context.value) {counters[context.name] = context.value;
+                
+            // log(context.checked, context)
+        }
         });
-        this.default = {...this.default, ...values };
-        return this.default;
+        // log(this.default);
+        return {...this.default, ...counters };
+        //return this.default;
     };
     getLocalValues() {
         let values = {};
@@ -55,7 +60,7 @@ class Gather {
     getLocalCheckedValues() {
         let values = {};
         this._getFirstContext().forEach((context) => {
-            if (context.checked) values[context.name] = context.value;
+            if (context.checked && context.value) values[context.name] = context.value;
         });
         this.default = {...this.default, ...values };
         return this.default;

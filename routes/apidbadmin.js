@@ -6,7 +6,10 @@ const Dispatcher = require('./dispatcher.js');
 
 router.post('/apidbadmin', async(req, res, next) => {
     /// !! - get products & department
+    // log('/apidbadmin', req.body)
     if (req.body.getDepProd) {
+        // log('getDepProd', req.body.getDepProd);
+        // log('newUser', req.body.newUser);
         const dispatcher = new Dispatcher(req);
         res.json(await dispatcher.makeRequestForGetSerialsProductsDepartment());
 
@@ -16,9 +19,19 @@ router.post('/apidbadmin', async(req, res, next) => {
         //         log('REJ ERROR', err);
         //         log(err)
         //     }));
-    } else if (req.body.getRoles) {
+        // } else if (req.body.getRoles) {
+        //     const dispatcher = new Dispatcher(req);
+        //     res.json(await dispatcher.makeRequestForGetRoles());
+    } else if (req.body.newUser) {
+        //log('newUser', req.body.newUser);
+        //  log('getDepProd', req.body.getDepProd);
+
         const dispatcher = new Dispatcher(req);
-        res.json(await dispatcher.makeRequestForGetRoles());
+        res.json(await dispatcher.makeRequestForAddUser());
+    } else if (req.body.delUser) {
+        log('delUser', req.body.delUser);
+        const dispatcher = new Dispatcher(req);
+        res.json(await dispatcher.makeRequestForDelUser());
     }
 });
 

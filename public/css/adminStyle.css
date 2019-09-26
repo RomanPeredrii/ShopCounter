@@ -26,13 +26,17 @@ h1 {
     flex-flow: column wrap;
 }
 
-.options {
+.options, .addUser {
     width: 100%;
     display: flex;
     flex-flow: column wrap;
 }
 
-.roles {
+.newUser, .delUser {
+  display: none;
+}
+
+.departmentsList {
     display: none;
     overflow-x: hidden;
     width: 100%;
@@ -44,15 +48,9 @@ h1 {
     color: #757575
 }
 
-.departmentsList {
-    overflow-x: hidden;
-    width: 100%;
-    margin-top: 0.1em;
-    margin-bottom: 0.1em;
-    border: 0.1em solid #dadada;
-    border-radius: 0.2em;
-    font: 1.2em Helvetica, Arial, sans-serif;
-    color: #757575
+.departmentsListinput {
+  display: block;
+  
 }
 
 .messager {
@@ -66,7 +64,7 @@ h1 {
     top: 0;
 }
 
-table {
+/* table {
     width: 500px;
     border: 0.1em;
 }
@@ -92,8 +90,8 @@ table tr:hover {
 table tr {
     border: 0;
     /* border: 0.05em solid transparent;
-    border-radius: 0.2em; */
-}
+    border-radius: 0.2em; 
+} */
 
 input {
     width: 100%;
@@ -103,7 +101,9 @@ input {
     border-radius: 0.2em;
     font: 1.2em Helvetica, Arial, sans-serif;
 }
-
+.departmentsList input {
+  width: 0.7em;
+}
 button {
     background-color: #0275d8;
     border-color: #0275d8;
