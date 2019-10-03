@@ -16,6 +16,48 @@ body {
     min-width: 20em;
 }
 
+.left p {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.counters {
+    padding: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    border: 0;
+}
+
+.periodSetting {
+    display: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.periodSetting p {
+    margin: 0.5em;
+    font-weight: normal;
+}
+
+.periodSetting input {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #464a4c;
+    background-color: #fff;
+    background-image: none;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 0
+}
+
+.intervalSetting {
+    display: none;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 .date {
     margin-top: 1em;
     font-size: 16px;
@@ -30,11 +72,8 @@ body {
     font-size: 16px;
 }
 
-p {
-    font-weight: bold;
-}
-
 .canv {
+    height: 100%;
     margin: 1em;
 }
 
@@ -48,36 +87,16 @@ canvas {
     font-weight: bold;
 }
 
-.dinamic {
-    display: flex;
-}
-
 .periodSet {
     display: inline-block;
     min-width: 4em;
 }
 
-.divSendReq {
-    display: block;
-    margin: 1em;
-    position: relative;
+.sendRequest {
     display: none;
 }
 
-.timeStamp {
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.25;
-    color: #464a4c;
-    background-color: #fff;
-    background-image: none;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 0.25rem;
-}
-
-#sendReq {
+#piex {
     color: #fff;
     background-color: #0275d8;
     border-color: #0275d8;
@@ -95,13 +114,6 @@ canvas {
     border-radius: 0.25rem;
 }
 
-.counters {
-    padding: 0.5em;
-    margin: 0.5em;
-    border: #d7d7d7 1px solid;
-    border-radius: 0.25rem;
-}
-
 input:focus {
     background-color: #fafabf;
 }
@@ -112,7 +124,8 @@ input:focus {
     display: inline-block;
 }
 
-.dataFromDB {
+.table {
+    display: none;
     border-collapse: collapse;
     text-align: left;
     margin-bottom: 20px;
@@ -185,8 +198,11 @@ tr td:first-child {
     margin: 1em;
     width: 3em;
     height: 3em;
+    border: 1px solid transparent;
     border-radius: 0.5em;
-    background-image: url('../img/pie-slice-icon-12.jpg');
+    background-color: #0275aa;
+    border-color: #0275d8;
+    background-image: url('../img/pieW.png');
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 2em, 2em;
@@ -199,6 +215,8 @@ tr td:first-child {
     width: 3em;
     height: 3em;
     border-radius: 0.5em;
+    background-color: #0275aa;
+    border-color: #0275d8;
     background-image: url('../img/bar-graph-icon-11.jpg');
     background-position: center center;
     background-repeat: no-repeat;
@@ -212,6 +230,8 @@ tr td:first-child {
     width: 3em;
     height: 3em;
     border-radius: 0.5em;
+    background-color: #0275aa;
+    border-color: #0275d8;
     background-image: url('../img/line-graph-icon-13.jpg');
     background-position: center center;
     background-repeat: no-repeat;
@@ -279,7 +299,7 @@ tr td:first-child {
     .whole {
         flex-direction: column;
     }
-    .dataFromDB {
+    .table {
         text-align: inherit;
         max-height: 65vh;
     }

@@ -44,87 +44,26 @@ class Dispatcher {
     // }
 
     async _makeDataForPieChartQuery() {
-        // try {
-        const mongoRequester = new MongoRequester();
-        //!!! - get list of counters serial number from MongoDb
-
-        let options = (await mongoRequester.getUserOptions(this.request.cookies.token));
-        log('countersArr', options.department);
-        log(Object.keys(options.department));
-        log(Object.values(options.department));
-
-        //         if ((property.substr(0, 7));
-        // !!! - get list of departments serial number from MongoDb
-        //     let departmentsArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
-        //         .then(options => options.department)).split(';');
-        //     departmentsArr.pop();
-        //     let serialArr = [];
-        //     let indexArr = [];
-        //     let departments = [];
-        //     //!!! - get indexes of required counters
-        //     Object.keys(this.request.body).map((property) => {
-        //         if ((property.substr(0, 7) === 'counter') && (typeof + property[7] === 'number'))
-        //             indexArr.push(+property.substring(7));
-
-        //     });
-        //     //!!! - make list [] of required counters serial number
-        //     indexArr.map((index, i) => {
-        //         serialArr.push(countersArr[index]);
-        //         departments.push(departmentsArr[index]);
-        //     });
-
-        //     return {
-        //         startDate: this.request.body.startDate,
-        //         finishDate: this.request.body.finishDate,
-        //         dates: [
-        //             this._makeDateString(new Date(Date.UTC(...this.request.body.startDate.replace((/-|:|\s/g), ", ").split(',')))),
-        //             this._makeDateString(new Date(Date.UTC(...this.request.body.finishDate.replace((/-|:|\s/g), ", ").split(',')) + 86399999))
-        //         ],
-        //         options: await mongoRequester.getUserOptions(this.request.cookies.token),
-        //         serials: serialArr,
-        //         departments: departments,
-        //         period: this.request.body.period
-        //     };
-        // } catch (error) {
-        //     log('dispatcher ERROR in _makeDataForPieChartQuery()', error);
-        // };
-    };
-    async __makeDataForPieChartQuery() {
         try {
-            // const mongoRequester = new MongoRequester();
             //!!! - get list of counters serial number from MongoDb
-            let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
-                .then(options => options.counters)).split(';');
-            countersArr.pop();
-            //!!! - get list of departments serial number from MongoDb
-            let departmentsArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
-                .then(options => options.department)).split(';');
-            departmentsArr.pop();
+            let options = (await mongoRequester.getUserOptions(this.request.cookies.token));
             let serialArr = [];
-            let indexArr = [];
-            let departments = [];
-            //!!! - get indexes of required counters
-            Object.keys(this.request.body).map((property) => {
-                if ((property.substr(0, 7) === 'counter') && (typeof + property[7] === 'number'))
-                    indexArr.push(+property.substring(7));
-
+            ///!!! - SQL injection defence
+            Object.keys(this.request.body.departments).map(serial => {
+                if (Object.keys(options.department).indexOf(serial) === -1) this._throwError
+                    //!!! - make [list] of required counters serial number
+                else serialArr.push(serial);
             });
-            //!!! - make list [] of required counters serial number
-            indexArr.map((index, i) => {
-                serialArr.push(countersArr[index]);
-                departments.push(departmentsArr[index]);
-            });
-
             return {
-                startDate: this.request.body.startDate,
-                finishDate: this.request.body.finishDate,
+                startDate: this.request.body.dates.startDate,
+                finishDate: this.request.body.dates.finishDate,
                 dates: [
-                    this._makeDateString(new Date(Date.UTC(...this.request.body.startDate.replace((/-|:|\s/g), ", ").split(',')))),
-                    this._makeDateString(new Date(Date.UTC(...this.request.body.finishDate.replace((/-|:|\s/g), ", ").split(',')) + 86399999))
+                    this._makeDateString(new Date(Date.UTC(...this.request.body.dates.startDate.replace((/-|:|\s/g), ", ").split(',')))),
+                    this._makeDateString(new Date(Date.UTC(...this.request.body.dates.finishDate.replace((/-|:|\s/g), ", ").split(',')) + 86399999))
                 ],
                 options: await mongoRequester.getUserOptions(this.request.cookies.token),
                 serials: serialArr,
-                departments: departments,
+                departments: Object.values(this.request.body.departments),
                 period: this.request.body.period
             };
         } catch (error) {
@@ -134,28 +73,29 @@ class Dispatcher {
 
 
     async makeRequestForAddUser() {
-        // log('makeRequestForAddUser()', this.request.body);
+        log('makeRequestForAddUser()', this.request.body);
         try {
-            // const mongoRequester = new MongoRequester();
-            mongoRequester.addUser(this.request.body);
-            //!!! - get list of counters serial number from MongoDb
-            // let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
-            //     .then(options => options.counters)).split(';');
+            log(await mongoRequester.addUser(this.request.body));
+
         } catch (error) {
             log('dispatcher ERROR in makeRequestForAddUser()', error);
         };
     }
 
     async makeRequestForDelUser() {
-        log('makeRequestForDelUser()', this.request.body);
         try {
-            // const mongoRequester = new MongoRequester();
-            mongoRequester.delUser(this.request.body.delUser);
-            //!!! - get list of counters serial number from MongoDb
-            // let countersArr = (await mongoRequester.getUserOptions(this.request.cookies.token)
-            //     .then(options => options.counters)).split(';');
-        } catch (error) {
-            log('dispatcher ERROR in makeRequestForDelUser()', error);
+            let result = (await mongoRequester.delUser(this.request.body.delUser));
+            log('!!-  *result', result);
+            if (result === null) {
+                log('!!- !result', result);
+                const err = new Error;
+                err.message = 'USER NOT EXIST'
+                this._throwError(err);
+                // return { delUser: 'NOT EXIST' }
+            } else { log('!!- result', result); return result }
+        } catch (err) {
+            log('!!-  dispatcher ERROR in makeRequestForDelUser()', err.message);
+            return { error: err.message };
         };
     }
 
@@ -209,10 +149,9 @@ class Dispatcher {
     async makeRequestForGetStartData() {
         let options = await mongoRequester.getUserOptions(this.request.cookies.token);
         const firebirdRequester = new FirebirdRequester(await this._makeDataForGetStartQuery());
-        let rawAnswer = (await firebirdRequester.makeAnswerForGetStartData());
+        let rawAnswer = await firebirdRequester.makeAnswerForGetStartData();
         rawAnswer.push(options.department);
-        // log('rawAnswer', rawAnswer);
-        return rawAnswer; //.push(options.department);
+        return rawAnswer;
     };
 
     async makeRequestForPieChart() {
@@ -226,7 +165,10 @@ class Dispatcher {
     };
 
     async makeRequestForGetSerialsProductsDepartment() {
+
         const firebirdRequester = new FirebirdRequester({ options: this.request.body });
+
+        log(this.request.body);
         return (await firebirdRequester.makeAnswerForGetSerialsProductsDepartment());
     };
 

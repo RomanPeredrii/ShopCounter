@@ -9,11 +9,11 @@ import ParentMessager from '../my_modules/parentMessager.js';
 //     }
 // }
 
-class Preloader extends ParentMessager{
+class Preloader extends ParentMessager {
 
-  show() { 
-    super.show(
-      `
+    show() {
+        super.show(
+            `
       <style  type="text/css">
       .preload {
         display: flex;
@@ -144,8 +144,8 @@ class Preloader extends ParentMessager{
       </div>
     </div>
   `
-  )}
+        )
+    }
 
 }
-
-export default Preloader;
+export default Preloader

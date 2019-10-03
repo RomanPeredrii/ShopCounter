@@ -74,11 +74,10 @@ class MongoRequester {
     };
 
     async delUser(delUser) {
-        try {
-            let result = await User.findOneAndRemove({ username: delUser });
-            log('result', result);
-            return result;
-        } catch (err) { log('\n DELETE ERROR', err) };
+        // try {
+        let result = await User.findOneAndRemove({ username: delUser });
+        return result;
+        // } catch (err) { log('\n DELETE ERROR', err) };
     };
 
 

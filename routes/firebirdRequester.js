@@ -59,8 +59,11 @@ class FirebirdRequester {
 
     _queryObj(db, script) {
         return (new Promise((res, rej) => {
+
             db.query(script, (err, result) => {
-                if (err) rej(err);
+                if (err) {
+                    rej(err);
+                };
                 res(result);
             });
         }));
@@ -70,7 +73,7 @@ class FirebirdRequester {
     _getAnswerFromDB(script, func) {
         return new Promise((res, rej) => {
             firebird.attach(this.requestData.options, async(err, db) => {
-                // log(this.requestData.options);
+                log('cxcxcxc', this.requestData.options);
                 try {
                     if (err) rej(err);
                     //res(await this._query(db, script))
@@ -210,16 +213,13 @@ class FirebirdRequester {
 
     //!! all makeAnswer.... just generalize data 
     async makeAnswerForGetStartData() {
-        // log(this.requestData.options);
+        log('this.requestData', this.requestData);
         let rawAnswer = await this._getAnswerFromDB(this._scriptGetMinDate(), this._queryObj);
-        // log(rawAnswer);
-
-
-        // rawAnswer.push(this.requestData.options.department);
         return rawAnswer
     };
 
     async makeAnswerForPieChart() {
+        log('this.requestData', this.requestData);
         let rawAnswer = await this._getAnswerFromDB(this._scriptGetDataForPieChart(), this._queryArr);
         rawAnswer.map((list, i) => {
             rawAnswer[i].unshift(this.requestData.departments[i]);
@@ -229,6 +229,7 @@ class FirebirdRequester {
     }
 
     async makeAnswerForBarChart() {
+        log('this.requestData', this.requestData);
         let from = Date.parse(this.requestData.dates[0]);
         let rawAnswer = [];
         do {
@@ -246,7 +247,10 @@ class FirebirdRequester {
 
     async makeAnswerForGetSerialsProductsDepartment() {
         let serialsList = {};
-        let result = await this._getAnswerFromDB(this._scriptGetDataForGetSerialsProductsDepartment(), this._queryObj);
+
+        let result = await this._getAnswerFromDB(
+            this._scriptGetDataForGetSerialsProductsDepartment(), this._queryObj);
+
         result.forEach(i => serialsList[i.SERIAL.trim()] = `${i.PRODDESCR}, ${i.DEPDESCR}`);
         return serialsList;
     };

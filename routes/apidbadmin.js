@@ -8,9 +8,10 @@ router.post('/apidbadmin', async(req, res, next) => {
     /// !! - get products & department
     // log('/apidbadmin', req.body)
     if (req.body.getDepProd) {
-        // log('getDepProd', req.body.getDepProd);
+        log('getDepProd', req.body);
         // log('newUser', req.body.newUser);
         const dispatcher = new Dispatcher(req);
+
         res.json(await dispatcher.makeRequestForGetSerialsProductsDepartment());
 
         // let arrDEPID = (await makeQuery(req.body.request.adminOptions, scriptGETDEPARTMENTID(req.body.request.department, 'DEPDESCR'))
@@ -23,15 +24,19 @@ router.post('/apidbadmin', async(req, res, next) => {
         //     const dispatcher = new Dispatcher(req);
         //     res.json(await dispatcher.makeRequestForGetRoles());
     } else if (req.body.newUser) {
-        //log('newUser', req.body.newUser);
+        log('!!newUser', req.body.newUser);
         //  log('getDepProd', req.body.getDepProd);
 
         const dispatcher = new Dispatcher(req);
         res.json(await dispatcher.makeRequestForAddUser());
+
+
     } else if (req.body.delUser) {
-        log('delUser', req.body.delUser);
+        log('!!delUser', req.body.delUser);
         const dispatcher = new Dispatcher(req);
-        res.json(await dispatcher.makeRequestForDelUser());
+        let result = (await dispatcher.makeRequestForDelUser())
+        log('res', result);
+        res.json(result);
     }
 });
 

@@ -49,7 +49,7 @@ router.post('/apidbwork', async(req, res) => {
     
     
     */
-    //  log(req.body);
+    log(req.body);
     let userOptions = await getUserOptions(req.cookies.token);
 
     // !! - send data for departments list according to user (with sql injection defense)
@@ -68,7 +68,7 @@ router.post('/apidbwork', async(req, res) => {
 
 
     // !! - send data according to user's request for pie chart (with sql injection defense)
-    else if (req.body.type === 'barChat') {
+    else if (req.body.type === 'barChart') {
         log(3);
         const dispatcher = new Dispatcher(req);
         res.json(await dispatcher.makeRequestForBarChart());

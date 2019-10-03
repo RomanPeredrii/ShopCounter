@@ -7,11 +7,11 @@ block content
     h1 ADMIN PAGE
   .main
     .options      
-      input#host(type='text', placeholder=' host', value='185.255.96.123', title='host', name='host')
-      input#port(type='text', pattern = '^[ 0-9]+$', placeholder=' port', value = '3050', title='port', name='port')
-      input#database(type='text', placeholder=' database', value = '/var/lib/firebird/2.5/data/counter.fdb', name='database', title='database')   
-      input#user(type='text', placeholder=' admin', value = 'U_VIEW', name='user', title='user')
-      input#password(type='text', placeholder=' password', value = 'clv8bzg1', name='password', title='password')
+      input#host(type='text', placeholder=' host', title='host', name='host')
+      input#port(type='text', pattern = '^[ 0-9]+$', placeholder=' port', title='port', name='port')
+      input#database(type='text', placeholder=' database', name='database', title='database')   
+      input#user(type='text', placeholder=' admin', name='user', title='user')
+      input#password(type='text', placeholder=' password', name='password', title='password')
     .newUser      
       input#newUser(type='text', placeholder=' new user name', name='newUser', title='newUser', checked)
       input#newUserPassword(type='text', placeholder=' new user password', name='newUserPassword', title='newUserPassword', checked)

@@ -1,46 +1,38 @@
 block content
+  title WORK PAGE
   .whole
     .left
-      .counters
-      .period
-        label.choosePeriod CHOOSE PERIOD
-        .forDateChoise 
-          .divStart
-            label.date start date
-            br
-            input.timeStamp#timeStampS(type='date' value = '' checked=true name='startDate')
-          .divFinish 
-            label.date finish date
-            br
-            input.timeStamp#timeStampF(type='date' value = '' checked=true name='finishDate')
-        br
-      .dinamic
-        div#periodSet
-      .divSendReq
+      p CHOOSE DEPARTMENTS
+      .counters 
+      .periodSetting CHOOSE PERIOD
+        p start date
+        input#timeStampS(type='date' value = '' checked=true name='startDate')
+        p finish date
+        input#timeStampF(type='date' value = '' checked=true name='finishDate')
+      .intervalSetting
+      .sendRequest
         button#pie(value = 'pie')
         button#bar(value = 'bar')
         button#line(value = 'line')
-        //- button#sendReq REQUEST
       br
-      .dataFromDB 
-        table#dataFromDB 
+      .table
+        table#data
           tbody
     .right
       .guide 
         p GUIDE
           ol 
+            li choose departments
+            br
             li choose period by set start and finish dates
             br
             li set interval of display data from DB
             br
-            li push "REQUEST" button for get data from DB
+            li push button according to required type of cart
       .canv
         canvas#chartFromDB
-      //- .typeOfChart
-      //-     button#pie(value = 'pie')
-      //-     button#bar(value = 'bar')
-      //-     button#line(value = 'line')
   .preloader
+  .substrate
   link(rel='stylesheet', href='/css/workStyle.css')
   script(src='/libs/ChartBundle.js')
   script(src='/js/work.js' type= 'module')

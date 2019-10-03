@@ -22,7 +22,7 @@ router.post('/login', async(req, res, next) => {
             result.cookie = user.token;
             res.cookie('token', user.token, { maxAge: 60000000, httpOnly: true })
         };
-        if (user.username === "Admin") {
+        if ((user.username !== null) && (user.username === "Admin")) {
             result.ok = true;
             result.admin = true;
             result.logged = true;
@@ -30,8 +30,8 @@ router.post('/login', async(req, res, next) => {
         };
         res.json(result);
     }).catch((err) => {
-        log('getUser ERROR', err);
-        result.error = true;
+        log('getUser ERROR', err.message);
+
         res.json(result);
     });
 });
