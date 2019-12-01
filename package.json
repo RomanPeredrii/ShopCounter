@@ -1,0 +1,31 @@
+{
+  "name": "shop_counter",
+  "version": "0.0.0",
+  "description": "ShopCounter is the web application for displaying data from database which fixed count of customers visited merchant point or points",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node-dev --respawn index.ts",
+    "dev": "nodemon --exec ts-node index.ts"
+  },
+  "keywords": [
+    "angular",
+    "mongo",
+    "node",
+    "express",
+    "typescript"
+  ],
+  "author": "Roman Peredrii",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.2",
+    "@types/node": "^12.12.14",
+    "nodemon": "^2.0.1",
+    "ts-node": "^8.5.4",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
