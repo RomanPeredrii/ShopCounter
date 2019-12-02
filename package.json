@@ -2,11 +2,11 @@
   "name": "shop_counter",
   "version": "0.0.0",
   "description": "ShopCounter is the web application for displaying data from database which fixed count of customers visited merchant point or points",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node-dev --respawn index.ts",
-    "dev": "nodemon --exec ts-node index.ts"
+    "start": "ts-node-dev --respawn src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts"
   },
   "keywords": [
     "angular",
