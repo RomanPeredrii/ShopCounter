@@ -7,10 +7,10 @@ app.use(morgan('dev'));
 import { mongoURI } from './config/keys';
 
 import mongoose from 'mongoose';
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err.message));
-// app.use(morgan('dev'));
+
 
 import bodyParser from 'body-parser';
 app.use(bodyParser.urlencoded({extended: true}));

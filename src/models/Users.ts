@@ -15,19 +15,19 @@ const User = new Schema({
     },
     host: {
         type: String,
-        required: true
+        // required: true
     },
     database: {
         type: String,
-        required: true
+        // required: true
     },
     port: {
         type: String,
-        required: true
+        // required: true
     },
     departments: {
         type: Object,
-        required: true
+        // required: true
     }
 });
 
