@@ -6,7 +6,7 @@ export function login (req: any, res: any) {
         username: req.body.username,
         password: req.body.password
     }
-}); console.log(req.body)};
+})};
 
 export function register (req: any, res: any) {
     res.status(200).
