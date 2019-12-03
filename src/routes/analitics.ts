@@ -2,10 +2,7 @@ import express from 'express';
 import  { getData, getPoints } from '../controllers/analitics'
 const router = express.Router();
 
-// localhost:PORT/api/analitics/points
-router.get('/points', getPoints);
-
-// localhost:PORT/api/analitics/data
-router.get('/data', getData);
+router.get('/points/:id', getPoints);
+router.get('/data/:id', getData);
 
 export default router;
