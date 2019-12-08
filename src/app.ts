@@ -35,6 +35,4 @@ import analiticsRoutes from './routes/analitics';
 import { format } from 'path';
 app.use('/api/analitics', analiticsRoutes);
 
-
-
-export default app; 
+module.exports = app; 

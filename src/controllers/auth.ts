@@ -5,6 +5,7 @@ import { jwtString } from '../config/keys';
 
 export async function login(req: any, res: any) {
   const candidate = await User.findOne({ username: req.body.username });
+  
   if (candidate) {
     // @ts-ignore
     const paswordOk = bcrypt.compareSync(req.body.password, candidate.password);
