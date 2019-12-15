@@ -5,9 +5,12 @@ const router = express.Router();
 
 router.get(
   "/points",
-  passport.authenticate('jwt', { session: false }),
+  passport.authenticate("jwt", { session: false }),
   getPoints
 );
-router.get("/data", getData);
-
+router.get(
+  "/data", 
+  passport.authenticate("jwt", { session: false }), 
+  getData);
+  
 export default router;

@@ -3,7 +3,7 @@ import { jwtString } from "../config/keys";
 import User from "../models/Users";
 
 const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: jwtString
 };
 //@ts-ignore

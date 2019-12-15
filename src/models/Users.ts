@@ -1,4 +1,9 @@
 import mongoose from 'mongoose';
+import { mongoURI } from '../config/keys';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.log(err.message));
+
 const Schema = mongoose.Schema;
 const User = new Schema({
     username: {
