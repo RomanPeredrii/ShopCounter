@@ -1,5 +1,6 @@
 import express from 'express';
-import  { login, registration, remove } from '../controllers/auth'
+import  { login, registration, remove } from '../controllers/auth';
+import passport from 'passport';
 const router = express.Router();
 
 
